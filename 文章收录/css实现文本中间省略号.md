@@ -55,7 +55,7 @@
     text-align: justify;
     height: 2em;
     overflow: hidden;
-    top: -4em; // 正常状态上 .txt 上面；省略时覆盖 .txt
+    top: -4em; // 正常状态是在 .txt 上面；省略时覆盖 .txt
 }
 
 .txt {
@@ -78,14 +78,14 @@
 
 首先是空间足够的情况下，没有发生省略
 
-显示的是 .txt 标签，.title 标签由于设置 top: -4em 是在 .txt 标签上面，
+显示的是 .txt 标签，.title 标签由于设置 top: -4em 是在 .txt 标签上面（y轴上方），
 
 注意：.txt 和 .title 标签高度是 2em (正常状态下)
 
 发生省略时
 
-.txt 标签会触发换行，但最大高度是 4em，刚好让 .title 标签覆盖上面
+.txt 标签会触发换行，但最大高度是 4em，刚好让 .title 标签覆盖上面（wrap 限制了 2em 所以还是只会展示一行）
 
 ::before 是右浮动，所以会和 .title 标签在同一行
 
-direction 设置为 rtl 实现左省略，width 控制宽度
+direction 设置为 rtl 实现左省略，利用 width 控制宽度即可让 省略在中间
