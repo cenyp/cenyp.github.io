@@ -1,4 +1,5 @@
-参考文章 https://codepen.io/xboxyan/pen/VwpPNbm
+[源代码](https://codepen.io/xboxyan/pen/VwpPNbm)
+
 [CSS 文本超出提示效果](https://juejin.cn/post/6966042926853914654)
 
 ```html
