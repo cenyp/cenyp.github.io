@@ -1,3 +1,4 @@
+```ts
 /**复制到剪贴板 */
 export function copy(txt: string) {
     return new Promise<void>(resolve => {
@@ -36,3 +37,4 @@ export function copy(txt: string) {
         }
     })
 }
+```
