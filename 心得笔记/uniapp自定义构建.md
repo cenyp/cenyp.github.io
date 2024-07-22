@@ -104,6 +104,11 @@ export default defineConfig(({ mode }) => ({
 option.url = process.ENV_CONFIG[process.ENV_TYPE.type].wxUrl + option.url
 ```
 
+## 为什么不使用 vite 的环境变量来实现
+1. 在 Hbuildx 下通过菜单运行时执行的不是 npm 命令，环境变量无法注入
+2. vite.config.js 文件不支持访问 import.meta.env
+3. uniapp 项目一般是多小程序多环境，会产生多个环境配置文件
+
 # 自动化构建
 分支切换：使用 simple-git 库来执行命令
 支持根据环境变量，进行自动化构建：依赖上述的自定义构建，和微信小程序的CLI包
