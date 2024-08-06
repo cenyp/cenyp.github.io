@@ -38,7 +38,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 # 动态修改 css 值
 方法如下
 1. 通过在行内绑定变量
-```
+```vue
 <script setup>
 import { ref } from 'vue'
 const color = ref('red')
