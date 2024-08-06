@@ -39,9 +39,14 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 方法如下
 1. 通过在行内绑定变量
 ```
-<div :style="`color:${color}`"><div/>
-
+<script setup>
+import { ref } from 'vue'
 const color = ref('red')
+</script>
+
+<template>
+  <p :style="`color: ${color}`">hello</p>
+</template>
 ```
 2. 修改绑定的 class 
 3. 使用 v-bind
