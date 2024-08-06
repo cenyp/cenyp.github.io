@@ -32,4 +32,34 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 # vue 响应式变量打印小技巧
 打开调试控制台，找到右上角控制台设置，在偏好设置里找到控制台分类，在这个分类最后一个，勾选自定义格式设置工具
 ![打印效果](../image/17229091211238.png)
+
 有趣的是，可以清楚的看出 ref 在处理对象是，底层是使用 reactive 处理的
+
+# 动态修改 css 值
+方法如下
+1. 通过在行内绑定变量
+```
+<div :style="`color:${color}`"><div/>
+
+const color = ref('red')
+```
+2. 修改绑定的 class 
+3. 使用 v-bind
+```vue
+<script setup>
+import { ref } from 'vue'
+const theme = ref({
+    color: 'red',
+})
+</script>
+
+<template>
+  <p>hello</p>
+</template>
+
+<style scoped>
+p {
+  color: v-bind('theme.color');
+}
+</style>
+```
