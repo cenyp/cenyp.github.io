@@ -70,6 +70,7 @@ p {
 ```
 
 # vue 双向绑定对象
+在一些复杂表单页面要抽离组件，但是子组件要关联到父组件的变量，可以像下面这么写
 ```vue
 <script setup>
 import { ref } from 'vue'
@@ -95,7 +96,7 @@ const props = defineProps({
 })
 const dataCom = computed({
   get:()=>props.data,
-  // 实际上这个set是不能监听触发的，但是依然是可以双向绑定，ref 的监听是深层次的
+  // 但是有个问题，实际上这个set是不能监听触发的，但是依然是可以双向绑定，ref 的监听是深层次的
   // 3.4+版本可以看一下 defineModel 
   set:(e)=>emits('update:data',e)
 })
