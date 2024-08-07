@@ -68,3 +68,44 @@ p {
 }
 </style>
 ```
+
+# vue 双向绑定对象
+```vue
+<script setup>
+import { ref } from 'vue'
+const data = ref({
+    color: 'red',
+})
+</script>
+
+<template>
+  <child v-modal:data="data" />
+</template>
+```
+```vue
+<script setup>
+import { ref, computed } from 'vue'
+const emit = defineEmits<{
+  (_event: 'update:data', _data: any): void
+}>()
+const props = defineProps({
+  data:{
+    type: Object,
+  }   
+})
+const dataCom = computed({
+  get:()=>props.data,
+  // 实际上这个set是不能监听触发的，但是依然是可以双向绑定，ref 的监听是深层次的
+  // 3.4+版本可以看一下 defineModel 
+  set:(e)=>emits('update:data',e)
+})
+// 效果相当于
+/**
+ * const dataCom = computed(()=>props.data)
+ */
+</script>
+
+<template>
+  <child v-modal:data="data" />
+</template>
+```
