@@ -12,3 +12,6 @@ console.log(Proxy ,typeof Proxy === 'function');
 [JavaScript 支持情况](https://developers.weixin.qq.com/miniprogram/dev/framework/runtime/js-support.html)
 
 [开发者工具ES6转ES5不转Proxy吗？](https://developers.weixin.qq.com/community/develop/doc/000a60e7b1ce38818857f901656c00?highLine=proxy)
+
+# vueuse
+vueuse 大部分方法在小程序下是不能使用的，因为是没有 window 对象（或者是别的全局对象）
