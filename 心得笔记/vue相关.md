@@ -110,3 +110,20 @@ const dataCom = computed({
   <child v-modal:data="data" />
 </template>
 ```
+
+# vue 写官网seo优化 vite-plugin-seo-prerender
+原理是用 puppeteer 生成静态页面，但是在访问时会带上 / 后缀，
+如 /home/，后续在切换路径时，会变成 /home/xxxx，导致路由无法解析，
+原因是，生成的目录是路由目录，nginx做了 301 的转发
+
+解决方法：在守卫钩子做下重定向
+```js
+router.beforeEach((to, from, next) => {
+  // 目前只有一级路由，先简单判断
+  if (to.path.startsWith("/") && to.path.endsWith("/")) {
+    return next({ name: to.name, query: to.query });
+  }
+  return next();
+});
+```
+
