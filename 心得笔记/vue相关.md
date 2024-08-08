@@ -127,3 +127,16 @@ router.beforeEach((to, from, next) => {
 });
 ```
 
+# 自定义指令做按钮权限
+一般是判断有没有权限，然后用 removeChild 方法删除子节点，但是会有弊端，在特定情况下会有问题
+``` vue
+// 前面是虚拟节点
+<template v-if="xxx">
+  <a v-if="xxx" v-permission="xxx">xxx</a>
+</template>
+// 后面 v-if+自定义指令
+<a v-if="xxx" v-permission="xxx">xxx</a>
+```
+会报错：TypeError: Cannot read properties of null (reading 'emitsOptions') at shouldUpdateComponent
+
+补充：用来判断组件也是不行了，组件内部的初始化事件还会执行
