@@ -139,4 +139,4 @@ router.beforeEach((to, from, next) => {
 ```
 会报错：TypeError: Cannot read properties of null (reading 'emitsOptions') at shouldUpdateComponent
 
-补充：用来判断组件也是不行了，组件内部的初始化事件还会执行
+补充：用来判断组件也是不行的，组件内部的初始化事件还会执行（remove了节点，但是在vue里面还是存在的）
