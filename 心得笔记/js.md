@@ -3,3 +3,5 @@
 
 https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment
 
+# 跨标签页/窗口通讯
+window.open 也能跨窗口传递参数、声明 window[xxx] = xxx 或者是 url 上处理
