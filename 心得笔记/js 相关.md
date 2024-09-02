@@ -39,3 +39,48 @@ function g(){                //这个函数内执行了全局eval
 console.log(f(),x);            //改变了布局变了，输出 “local changed global”
 console.log(g(),y);            //改变了全局变量，输出  “local global changed”
 ```
+
+# 事件循环进阶
+```js 
+async function async1() {
+  await async2();
+  console.log("async1");
+}
+async function async2() {
+  console.log("async2");
+  Promise.resolve().then(() => { // 增加 return 在最前面 async1 会晚执行两个 then
+    console.log("async2-return");
+    // console.log("async1"); 相当于在这里
+  });
+}
+async1();
+new Promise((resolve) => {
+  console.log("promise");
+  resolve();
+})
+  .then(() => {
+    console.log("promise-1");
+  })
+  .then(() => {
+    console.log("promise-2");
+  })
+  .then(() => {
+    console.log("promise-3");
+  })
+  .then(() => {
+    console.log("promise-4");
+  })
+  .then(() => {
+    console.log("promise-5");
+  });
+```
+执行结果为：
+async2
+promise      
+async2-return
+async1
+promise-1
+promise-2
+promise-3
+promise-4
+promise-5
