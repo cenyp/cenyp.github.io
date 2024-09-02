@@ -140,3 +140,35 @@ router.beforeEach((to, from, next) => {
 会报错：TypeError: Cannot read properties of null (reading 'emitsOptions') at shouldUpdateComponent
 
 补充：用来判断组件也是不行的，组件内部的初始化事件还会执行（remove了节点，但是在vue里面还是存在的）
+
+# vue3 createvnode 和 h 区别
+两者都是用来创建虚拟节点的，使用上也差别不大
+
+从源码上可以看到 h 是基于 createvnode 实现的，在使用上是做了优化的
+```ts
+// Actual implementation
+export function h(type: any, propsOrChildren?: any, children?: any): VNode {
+  const l = arguments.length
+  if (l === 2) {
+    if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
+      // single vnode without props
+      if (isVNode(propsOrChildren)) {
+        return createVNode(type, null, [propsOrChildren])
+      }
+      // props without children
+      return createVNode(type, propsOrChildren)
+    } else {
+      // omit props
+      return createVNode(type, null, propsOrChildren)
+    }
+  } else {
+    if (l > 3) {
+      children = Array.prototype.slice.call(arguments, 2)
+    } else if (l === 3 && isVNode(children)) {
+      children = [children]
+    }
+    return createVNode(type, propsOrChildren, children)
+  }
+}
+```
+
