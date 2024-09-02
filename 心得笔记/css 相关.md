@@ -14,3 +14,54 @@ xxxxxxxxx
 2. offsetTop 替代 getBoundingClientRect 计算父子节点位置差
 
 问题：如果提示是在复杂组件内部或者是要依赖数据异步渲染的，要加延时以获取最终的定位（注意电脑性能影响）
+
+# flex相关
+flex可以作用于::after和::before
+
+gap属性可以快速完成flex子项的间隔设置
+```css
+.flexLine {
+    display: flex;
+    gap: 10px;
+}
+```
+
+# h5弹窗固定标题和底部按钮
+可以使用sticky定位，分别设置
+```css
+.title {
+    position: sticky;
+    top: 0;
+}
+.footer {
+    position: sticky;
+    bottom: 0;
+}
+```
+
+# 父元素高度为 auto 时子元素无法继承 min-height 的解决方案
+```css
+.fa {
+    height: auto;
+    min-height: 100%;
+}
+.ch {
+    height: 50%; // 算不出值
+}
+```
+```css
+.fa {
+    height: 0; // 改成0就可以了
+    min-height: 100%;
+}
+.ch {
+    height: 50%; 
+}
+```
+
+mdn 对 min-height 的解释是 
+1. CSS 属性 min-height 能够设置元素的最小高度。这样能够防止 height 属性的应用值小于 min-height 的值。
+2. 当 min-height 大于 max-height 或 height 时，元素的高度会设置为 min-height 的值。
+
+即：height 设置为 0 时，小于 100%，就会设置 height 为 100%;
+其实设置 height 为 100%/inherit 也能实现效果
