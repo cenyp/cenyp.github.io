@@ -95,3 +95,56 @@ direction 设置为 rtl 实现左省略，利用 width 控制宽度即可让 省
  **注：** 
 原文里面关于滚动为什么设置 translateX(-50%) 是因为有有本身和 ::after 两个文本，所以 50% 刚好是一个文本的宽度
 
+# 扩展 多行更多按钮
+```vue
+<template>
+    <div
+        :class="{
+            tagList: true,
+            showTag: record?.showTagList,
+        }"
+        >
+        <div class="hideDiv">
+            <div class="arrow" @click="record.showTagList = !record.showTagList">
+                <div v-if="!record?.showTagList">展开 <down-outlined /></div>
+                <div v-else>收起 <up-outlined /></div>
+            </div>
+            <div class="flex-box">
+                <button>tag1</button>
+                <button>tag2</button>
+                <button>tag3</button>
+                <button>tag4</button>
+            </div>
+        </div>
+    </div>
+</template>
+<style lang="scss" scoped>
+    .tagList {
+        overflow: hidden;
+        height: 28px; // 限制单行高度，做收起时使用
+        .hideDiv {
+            position: relative;
+            max-height: 52px; // 限制两行高度，避免 bottom 大小不够，.arrow 不在对应位置
+        }
+        .arrow {
+            position: absolute;
+            right: 0;
+            bottom: 28px;
+            cursor: pointer;
+        }
+        .flex-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-right: 46px; // 避免 .arrow 遮挡
+        }
+
+        &.showTag {
+            height: 100%;
+            .hideDiv {
+                max-height: 100%;
+            }
+        }
+    }
+</style>
+```
