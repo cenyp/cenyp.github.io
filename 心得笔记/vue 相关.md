@@ -174,4 +174,5 @@ export function h(type: any, propsOrChildren?: any, children?: any): VNode {
 
 # vue 依赖收集
 todo
-[Vue2与Vue3响应式原理与依赖收集详解]（https://juejin.cn/post/7202454684657107005 ）
+
+[Vue2与Vue3响应式原理与依赖收集详解](https://juejin.cn/post/7202454684657107005)
