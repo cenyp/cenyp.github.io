@@ -176,8 +176,3 @@ export function h(type: any, propsOrChildren?: any, children?: any): VNode {
 1. v-if 是从解析编译过程中判断显示还是不渲染，v-show 则是判断是否添加`display: none;`做隐藏
 2. v-if 是会重新渲染节点/组件，所以组件的生命周期会触发，在业务开发中要注意使用。比如 a-form-item 用 v-if 会重新渲染，改变默认值，影响重置功能。比如初始值是0，修改v-if判断，设置绑定变量为1，再让组件显示，这个时候重置会为1，因为初始值的存储是在a-form-item中执行的，不是a-form。
 3. 一般在性能场景下会做差异使用
-
-# vue 依赖收集
-todo
-
-[Vue2与Vue3响应式原理与依赖收集详解](https://juejin.cn/post/7202454684657107005)
