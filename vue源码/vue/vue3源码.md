@@ -6,7 +6,7 @@
 
 1. vue2 的响应式是通过发布订阅模式完成的，在 get 里面搜集依赖，在 set 里面触发依赖；vue3 的大体模式也差不多
 2. vue2 的依赖搜集是 dep + watcher 作双向依赖搜集完成的；vue3 是建立全局的 WeakMap 结构完成，以劫持监听的 obj 为 key，value 是一个 Map 类型，以属性名为 key，value 是一个 Set 类型，Set 里面存放的是 effect 函数，effect 就是副作用函数，用来更新
-![输入图片说明](../../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17261348564654.png)
+![输入图片说明](../../image/flowchart.png)
 
 ## reactive
 
