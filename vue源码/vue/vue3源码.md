@@ -323,3 +323,5 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 3. ref定义的变量，需要通过 `.value` 访问，reactive定义的变量直接访问
 4. ref 对普通数据类型做了优化，不用依赖于 proxy
 
+1. ref 和 reactive 都有解构的风险
+
