@@ -340,6 +340,24 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 - CSS 选择器添加对应的属性选择器 [data-v-x]
   + 编译时：同样生成唯一 id，然后替换掉原来的选择器。
 
+> 题外：
+css 的 v-bind 原理就是 css 的自定义变量，生成自定义变量，在使用 v-bind 的地方用 var() 处理
+
+```css
+:root {
+  // css 变量属性名需要以两个减号（--）开始
+  --text-color: 16px;
+}
+p {
+  color: var(--text-color); // 使用
+}
+```
+
+
+
+
+
+
 
 
 
