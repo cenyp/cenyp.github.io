@@ -29,7 +29,9 @@ function createReactiveObject(
   isReadonly: boolean,
   baseHandlers: ProxyHandler<any>,
   collectionHandlers: ProxyHandler<any>,
-  proxyMap: WeakMap<Target, any>
+  // WeakMap 是类似 map 的数据结构，只能使用对象作为键，不能使用基本数据类型。
+  // 并且是弱引用，当只有 WeakMap 引用时，它会被垃圾回收，WeakMap 中对应的条目也会被自动删除
+  proxyMap: WeakMap<Target, any> 
 ) {
   // 看缓存有没有，有直接返回
   const existingProxy = proxyMap.get(target);
