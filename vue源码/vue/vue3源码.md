@@ -334,11 +334,11 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 
 通过增加自定义属性 data-v-x 配合 css 的属性选择器完成作用域处理，data-v-x 会生成唯一 id
 
-1. html 增加自定义属性 data-v-x
-  1. 编译时：根据 vue 文件路径和文件 code，利用 node 的 createHash 函数生成唯一 id，即 data-v-x 里面的 x；给编译后的vue组件对象增加一个属性__scopeId，属性值就是data-v-x。`const kt=Me(rt,[["__scopeId","data-v-ab97a25e"]]);export{kt as default};`
-  2. 运行时：在 mountElement 函数生成 DOM 时，调用 setAttribute 方法给标签设置自定义属性 data-v-x，即传入的 __scopeId
-2. CSS 选择器添加对应的属性选择器 [data-v-x]
-  1. 编译时：同样生成唯一 id，然后替换掉原来的选择器。
+- html 增加自定义属性 data-v-x
+  + 编译时：根据 vue 文件路径和文件 code，利用 node 的 createHash 函数生成唯一 id，即 data-v-x 里面的 x；给编译后的vue组件对象增加一个属性__scopeId，属性值就是data-v-x。`const kt=Me(rt,[["__scopeId","data-v-ab97a25e"]]);export{kt as default};`
+  + 运行时：在 mountElement 函数生成 DOM 时，调用 setAttribute 方法给标签设置自定义属性 data-v-x，即传入的 __scopeId
+- CSS 选择器添加对应的属性选择器 [data-v-x]
+  + 编译时：同样生成唯一 id，然后替换掉原来的选择器。
 
 
 
