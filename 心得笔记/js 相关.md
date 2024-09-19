@@ -9,6 +9,12 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment
 https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver
 
 # 跨标签页/窗口通讯
+1. 缓存：localstorage等等
+2. serviceWorkers 利用 Service Workers，各个标签页可以通过 clients.matchAll() 方法找到所有其他客户端（如打开的标签页），然后使用 postMessage 发送消息
+3. BroadcastChannel 是一种在相同源的不同浏览器上下文之间实现简单高效通信的方法。之前很火的【跨窗口量子纠缠粒子效果】就是这个原理
+4. SharedWorker 提供了一种更传统的跨文档通信机制，在不同文档间共享状态和数据。你需要创建一个 SharedWorker 对象，并在所有的文档里监听来自该 worker 的消息。
+5. window.postMessage 是Web API中的一个方法，它允许来自不同源的文档安全地相互通信，通过调用 postMessage() 方法并指定目标窗口的origin，可以将消息发送到其他标签页，并通过监听message事件来接收消息。
+
 window.open 也能跨窗口传递参数、声明 window[xxx] = xxx 或者是 url 上处理
 
 # 执行环境
