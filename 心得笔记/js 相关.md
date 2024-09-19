@@ -3,6 +3,11 @@
 
 https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment
 
+# IntersectionObserver
+创建一个新的 IntersectionObserver 对象，当其监听到目标元素的可见部分（的比例）超过了一个或多个阈值（threshold）时，会执行指定的回调函数。
+
+https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver
+
 # 跨标签页/窗口通讯
 window.open 也能跨窗口传递参数、声明 window[xxx] = xxx 或者是 url 上处理
 
