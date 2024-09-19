@@ -5,7 +5,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 2. 在每句css选择器的末尾（编译后的生成的css语句）加一个当前组件的data属性选择器（如.box input[data-v-123]）来私有化样式
 3. 如果组件内部包含有其他组件，只会给其他组件的最外层标签加上当前组件的data属性
 
-``` vue
+```
 <template>
   <div class="example">This is an example</div>
 </template>
@@ -17,7 +17,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 </style>
 ```
 
-``` vue
+```
 <template>
   <div class="example" data-v-21e5b78>This is an example</div>
 </template>
