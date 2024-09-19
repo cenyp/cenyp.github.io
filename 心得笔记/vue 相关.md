@@ -5,7 +5,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 2. 在每句css选择器的末尾（编译后的生成的css语句）加一个当前组件的data属性选择器（如.box input[data-v-123]）来私有化样式
 3. 如果组件内部包含有其他组件，只会给其他组件的最外层标签加上当前组件的data属性
 
-```vue
+```
 <template>
   <div class="example">This is an example</div>
 </template>
@@ -17,7 +17,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 </style>
 ```
 
-```vue
+```
 <template>
   <div class="example" data-v-21e5b78>This is an example</div>
 </template>
@@ -38,7 +38,7 @@ Vue组件之间没有做到样式隔离，Vue中的样式隔离，是通过scope
 # 动态修改 css 值
 方法如下
 1. 通过在行内绑定变量
-```vue
+```
 <script setup>
 import { ref } from 'vue'
 const color = ref('red')
@@ -50,7 +50,7 @@ const color = ref('red')
 ```
 2. 修改绑定的 class 
 3. 使用 v-bind
-```vue
+```
 <script setup>
 import { ref } from 'vue'
 const theme = ref({
@@ -71,7 +71,7 @@ p {
 
 # vue 双向绑定对象
 在一些复杂表单页面要抽离组件，但是子组件要关联到父组件的变量，可以像下面这么写
-```vue
+```
 <script setup>
 import { ref } from 'vue'
 const data = ref({
@@ -83,7 +83,7 @@ const data = ref({
   <child v-modal:data="data" />
 </template>
 ```
-```vue
+```
 <script setup>
 import { ref, computed } from 'vue'
 const emit = defineEmits<{
@@ -129,7 +129,7 @@ router.beforeEach((to, from, next) => {
 
 # 自定义指令做按钮权限
 一般是判断有没有权限，然后用 removeChild 方法删除子节点，但是会有弊端，在特定情况下会有问题
-``` vue
+```
 // 前面是虚拟节点
 <template v-if="xxx">
   <a v-if="xxx" v-permission="xxx">xxx</a>
