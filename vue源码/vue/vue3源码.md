@@ -352,7 +352,10 @@ p {
 }
 ```
 
-
+# diff 算法
+## vue3 diff 算法
+## 与 vue2 diff 算法差异
+## key 作用
 
 
 
