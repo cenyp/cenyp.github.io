@@ -356,7 +356,62 @@ p {
 
 ## vue3 diff 算法
 
+前置知识
+用 JavaScript 实现寻找最长严格递增子序列长度的代码
+```js
+function lengthOfLIS(nums) {
+    if (nums.length === 0) return 0;
+
+    const dp = new Array(nums.length).fill(1); // 初始化 dp 数组
+
+    for (let i = 1; i < nums.length; i++) {
+        for (let j = 0; j < i; j++) {
+            if (nums[j] < nums[i]) {
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+                /**
+                 * [1, 1, 1, 1, 1, 1, 1, 1]
+                 * 对比到5时
+                 * [1, 1, 1, 2, 1, 1, 1, 1]
+                 * 对比到3时
+                 * [1, 1, 1, 2, 2, 1, 1, 1]
+                 * 对比到7时，dp[4]+1
+                 * [1, 1, 1, 2, 2, 3, 1, 1]
+                 * ...
+                 * [1, 1, 1, 2, 2, 3, 4, 4]
+                 * 原理通过之前对比的最大值+1就是当前的值
+                 * 比如，对比到7时，序列应该是 2,3,7
+                 * 即前面的最长序列是 2,3，或者是 2,5，就可以递增1，变成3
+                 */
+            }
+        }
+    }
+
+    return Math.max(...dp); // 返回 dp 中的最大值
+}
+
+// 示例用法
+const nums = [10, 9, 2, 5, 3, 7, 101, 18];
+const output = lengthOfLIS(nums);
+console.log(output); // 输出 4
+```
+
+不同于 vue2 的双端 diff 算法，vue3 使用的是快速 diff 算法（部分/全部有key的情况下生效），性能时优于双端 diff 算法的，借鉴了纯文本Diff算法的思路，步骤如下
+- 对比头部节点，相同则复用
+- 对比尾部节点，相同则复用
+- 对比剩余节点
+  + 只有新节点：创建新节点
+  + 只有老节点：删除老节点
+  + 都有：
+    - 获取新节点和老节点的最长递增子序列
+    - 更新那些能找到对应新子节点的旧子节点
+    - 卸载那些找不到对应新子节点的旧子节点
+    - 从后往前遍历新子节点
+
+
+
 ### 静态提升
+jsx 写法时没有的，所以官方是提倡使用 template 写法
+
 ``` html
 <div>
   <div>foo</div> <!-- 需提升 -->
@@ -364,6 +419,7 @@ p {
   <div>{{ dynamic }}</div>
 </div>
 ```
+
 像上面的前两个节点是不需要更新的，是可以不经历 diff 比较的，可以把对应的节点移出渲染函数外。
 
 参考链接：
@@ -395,14 +451,79 @@ p {
 [靶向更新](https://vue-compiler.iamouyang.cn/template/patchFlag.html)
 
 ### 树结构打平
+就是上面说的block 节点，会包含所有动态节点
 
-[](https://cn.vuejs.org/guide/extras/rendering-mechanism#tree-flattening)
+[树结构打平](https://cn.vuejs.org/guide/extras/rendering-mechanism#tree-flattening)
 
-## 与 vue2 diff 算法差异
+## 与 vue2/react 对比
+vue2 使用的是双端 diff 算法，通过新旧的头头尾尾对比，向中间靠拢
+react18 的 Fiber 是一个单向链表结构，简单来说，就是只能从左往右处理。eact18 没有使用双端 diff 算法，官方解释是 fiber 节点上都没有反向指针，认为对于列表反转和需要进行双端搜索的场景是少见的
+
 ## key 作用
+在 vue 中是用来辅助节点唯一性判断，但是不是完全根据 key 来判断的，比如下面是 vue2 的判断逻辑，可以看出来，key 是其中一个判断条件，但是不是唯一的判断条件。
+```js
+function sameVnode(a, b) {
+  return (
+    a.key === b.key &&
+    a.asyncFactory === b.asyncFactory &&
+    ((a.tag === b.tag &&
+      a.isComment === b.isComment &&
+      isDef(a.data) === isDef(b.data) &&
+      sameInputType(a, b)) ||
+      (isTrue(a.isAsyncPlaceholder) && isUndef(b.asyncFactory.error)))
+  )
+}
+```
+```js
+// vue3
+export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
+  return n1.type === n2.type && n1.key === n2.key
+}
+```
 
+以 index 为 key 会导致的问题：
+1. 不必要的性能消耗，因为不能通过 key 来判断节点是否相同，所以每次都会重新渲染。以下为例，点击 ADD 按钮时，会重新渲染所有节点，而不是只渲染新增的节点。可以通过 f12 观察（手动修改节点内容也可以）
+```vue
+<template>
+  <div>
+    <div v-for="(item, index) in arr" :key="index">
+      {{ item }}1111111
+     </div>
+    <button @click="arr.unshift('d')">ADD</button>
+  </div>
+</template>
 
+<script lang="ts" setup>
+import { ref } from "vue";
+const arr = ref(["a", "b", "c"]);
+</script>
+```
 
+2. 可能会导致渲染错误，比如列表顺序改变，但是没有使用 key，会导致渲染错误。如下所示，在输入框有值的情况下，新增节点会导致错位
+```vue
+<template>
+  <div>
+    <div v-for="(item, index) in arr" :key="index">
+      {{ item }}
+      <input type="text" />
+    </div>
+    <button @click="arr.unshift('d')">ADD</button>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { ref } from "vue";
+const arr = ref(["a", "b", "c"]);
+</script>
+```
+
+此外，如上文所述，在缺乏 key 的情况下，vue3 无法使用快速 diff 算法，对于节点会采用就地更新，性能会下降。
+
+> vue 官网描述
+
+Vue 默认按照“就地更新”的策略来更新通过 v-for 渲染的元素列表。当数据项的顺序改变时，Vue 不会随之移动 DOM 元素的顺序，而是就地更新每个元素，确保它们在原本指定的索引位置上渲染。
+
+默认模式是高效的，但只适用于列表渲染输出的结果不依赖子组件状态或者临时 DOM 状态 (例如表单输入值) 的情况。
 
 
 
