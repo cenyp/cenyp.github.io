@@ -353,7 +353,51 @@ p {
 ```
 
 # diff 算法
+
 ## vue3 diff 算法
+
+### 静态提升
+``` html
+<div>
+  <div>foo</div> <!-- 需提升 -->
+  <div>bar</div> <!-- 需提升 -->
+  <div>{{ dynamic }}</div>
+</div>
+```
+像上面的前两个节点是不需要更新的，是可以不经历 diff 比较的，可以把对应的节点移出渲染函数外。
+
+参考链接：
+
+[官网静态提升](https://cn.vuejs.org/guide/extras/rendering-mechanism#static-hoisting)
+
+[编译优化之“静态提升”](https://vue-compiler.iamouyang.cn/template/hoistStatic.html)
+
+### 靶向更新（更新类型标记）
+```
+<!-- 仅含 class 绑定 -->
+<div :class="{ active }"></div>
+
+<!-- 仅含 id 和 value 绑定 -->
+<input :id="id" :value="value">
+
+<!-- 仅含文本子节点 -->
+<div>{{ dynamic }}</div>
+```
+- 编译阶段：如上面的示例，需要对比更新的地方只是节点的部分，会生成对应的标记。如节点1的标记是`PatchFlags.CLASS`。
+- 运行阶段：
+  + 会把所有的动态节点放在 block 节点的 dynamicChildren 属性里面，block 节点在根节点和 v-if、v-for 下都会生成
+  + 然后在渲染时会把所有动态节点进行 diff，最终会通过 patchElement 函数根据 PatchFlags 来判断是什么类型的节点，执行对应的处理方法。比如 class 和 style 的处理是不一样的
+
+参考链接：
+
+[官网更新类型标记](https://cn.vuejs.org/guide/extras/rendering-mechanism#patch-flags)
+
+[靶向更新](https://vue-compiler.iamouyang.cn/template/patchFlag.html)
+
+### 树结构打平
+
+[](https://cn.vuejs.org/guide/extras/rendering-mechanism#tree-flattening)
+
 ## 与 vue2 diff 算法差异
 ## key 作用
 
