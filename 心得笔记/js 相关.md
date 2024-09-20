@@ -121,3 +121,46 @@ export const objectToString = Object.prototype.toString
 export const toTypeString = (value: unknown): string =>
   objectToString.call(value)
 ```
+
+# 异步并发控制
+```js
+/**
+ * 执行顺序：
+ * 1. 用 map 方法遍历数组，将每个 Promise 用 enqueue 包装一下，压入 executing 数组
+ * 2. enqueue 方法，将 Promise 包装一下，执行完删除数组的自身
+ * 2. 当 executing 数组长度超过 limit 时，用 Promise.race 方法，将 清理掉一个 Promise，然后重新执行 enqueue 方法，压入新的 Promise。注意 executing.length >= limit 判断不一定会触发，只要 Promise 执行够快
+ * 3. 返回 Promise.all 方法，等待所有 Promise 执行完毕
+ */
+/**
+ * 
+ * @param { Promise数组} promiseFactories 
+ * @param { 并发数量 } limit 
+ * @returns 
+ */
+function limitedConcurrency(promiseFactories, limit) {
+    // 异步队列数组
+    const executing = [];
+
+    
+    const enqueue = async (promiseFactory) => {
+        // 套一层，执行完删除数组的自身
+        const promise = promiseFactory().then(result => {
+            executing.splice(executing.indexOf(promise), 1);
+            return result;
+        });
+        // 加入数组
+        executing.push(promise);
+        return promise;
+    };
+
+    const promises = promiseFactories.map(factory => {
+        // 数组满了，利用Promise.race()方法，控制并发数量
+        if (executing.length >= limit) {
+            return Promise.race(executing).then(() => enqueue(factory));
+        }
+        return enqueue(factory);
+    });
+
+    return Promise.all(promises);
+}
+```
