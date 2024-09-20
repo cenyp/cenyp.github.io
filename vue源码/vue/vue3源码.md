@@ -525,6 +525,74 @@ Vue 默认按照“就地更新”的策略来更新通过 v-for 渲染的元素
 
 默认模式是高效的，但只适用于列表渲染输出的结果不依赖子组件状态或者临时 DOM 状态 (例如表单输入值) 的情况。
 
+# nextTick 方法
 
+官网描述的是：
+
+- vue3 等待下一次 DOM 更新刷新的工具方法。
+- vue2 将回调延迟到下次 DOM 更新循环之后执行。在修改数据之后立即使用它，然后等待 DOM 更新。它跟全局方法 Vue.nextTick 一样，不同的是回调的 this 自动绑定到调用它的实例上。
+
+因为操作 DOM 的方法都是同步宏任务，所以放要执行的函数放在微任务/宏任务中，必然是要等待 DOM 更新完成之后才能执行。
+
+## vue2 nextTick 实现
+
+```js
+// 优先使用 Promise 生成微任务
+if (typeof Promise !== "undefined" && isNative(Promise)) {
+  const p = Promise.resolve();
+  timerFunc = () => {
+    p.then(flushCallbacks);
+  };
+  isUsingMicroTask = true;
+} else if (
+  !isIE &&
+  typeof MutationObserver !== "undefined" &&
+  (isNative(MutationObserver) ||
+    MutationObserver.toString() === "[object MutationObserverConstructor]")
+) {
+  // MutationObserver 接口提供了监视对 DOM 树所做更改的能力。
+  // MutationObserver 也是一个微任务
+  let counter = 1;
+  const observer = new MutationObserver(flushCallbacks);
+  // 创造监听元素
+  const textNode = document.createTextNode(String(counter));
+  observer.observe(textNode, {
+    characterData: true,
+  });
+  timerFunc = () => {
+    counter = (counter + 1) % 2;
+    // 修改文案，触发监听
+    textNode.data = String(counter);
+  };
+  isUsingMicroTask = true;
+} else if (typeof setImmediate !== "undefined" && isNative(setImmediate)) {
+  timerFunc = () => {
+    // 该方法用来把一些需要长时间运行的操作放在一个回调函数里，在浏览器完成后面的其他语句后，就立刻执行这个回调函数。
+    // 宏任务
+    // 非标准
+    setImmediate(flushCallbacks);
+  };
+} else {
+  // 宏任务
+  timerFunc = () => {
+    setTimeout(flushCallbacks, 0);
+  };
+}
+```
+
+## vue3 nextTick 实现
+```js
+// 由于不兼容 IE 等落后浏览器，所以直接使用 Promise 生成微任务
+const resolvedPromise = /*#__PURE__*/ Promise.resolve() as Promise<any>
+let currentFlushPromise: Promise<void> | null = null
+
+export function nextTick<T = void>(
+  this: T,
+  fn?: (this: T) => void
+): Promise<void> {
+  const p = currentFlushPromise || resolvedPromise
+  return fn ? p.then(this ? fn.bind(this) : fn) : p
+}
+```
 
 
