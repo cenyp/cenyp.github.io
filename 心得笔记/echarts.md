@@ -13,6 +13,8 @@ let yAxisData = [
     'EEEE',
 ]
 let seriesData = [200, 20, 100, 10, 10, 200, 20, 100, 10, 10]
+let start = 0
+let end = 4
 const option = {
     xAxis: {
         type: 'value',
@@ -35,8 +37,8 @@ const option = {
         {
             show: false, // 隐藏滚动控制器
             yAxisIndex: 0, // 适用于第一个 y 轴
-            startValue: 5, // 初始起始位置
-            endValue: 9, // 初始结束位置
+            startValue: start , // 初始起始位置
+            endValue:end, // 初始结束位置
         },
     ],
 }
@@ -59,16 +61,30 @@ onUnmounted(() => {
 function initEcharts() {
     if (!echartsRef.value) return
     echartsDom = echarts.init(echartsRef.value)
-    const newOptions = Object.assign({}, option, props.option) as any
-    echartsDom.setOption(newOptions)
+    echartsDom.setOption(option as any)
 
-    setInterval(function () {
-        let yAxis = yAxisData.pop()
-        let series = seriesData.pop()
-        yAxisData.unshift(yAxis!)
-        seriesData.unshift(series!)
+    clearInterval(setIntervalKey)
+    setIntervalKey = setInterval(function () {
+        yAxisData.push(yAxisData[start])
+        seriesData.push(seriesData[start])
+        start += 1
+        end += 1
+
+        if (start > 1000) {
+            start = 0
+            end = 4
+            yAxisData = yAxisData.slice(0, 10)
+            seriesData = seriesData.slice(0, 10)
+        }
+
         echartsDom.setOption(
             {
+                dataZoom: [
+                    {
+                        startValue: start,
+                        endValue: end,
+                    },
+                ],
                 yAxis: {
                     data: yAxisData,
                 },
@@ -78,9 +94,9 @@ function initEcharts() {
                     },
                 ],
             },
-            false, // 设置合并模式
-            true // 设置动画效果
+            false,
+            true
         )
-    }, 2 * 1000) // 每2秒滚动一次
+    }, 3 * 1000)
 }
 ```
