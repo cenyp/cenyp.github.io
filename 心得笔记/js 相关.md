@@ -164,3 +164,12 @@ function limitedConcurrency(promiseFactories, limit) {
     return Promise.all(promises);
 }
 ```
+
+# object 与 Map
+一般说 object 是无序的，Map 是有序的；但是浏览器一般会做优化，如下
+```js
+let obj = {}
+obj.b = 2
+obj.a = 1
+console.log(Object.keys(obj)) // (2) ['b', 'a']
+```
