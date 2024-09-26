@@ -65,3 +65,7 @@ mdn 对 min-height 的解释是
 
 即：height 设置为 0 时，小于 100%，就会设置 height 为 100%;
 其实设置 height 为 100%/inherit 也能实现效果
+
+# css 3D/2D 转换时有齿痕
+`filter: blur(0.5px);`
+https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter
