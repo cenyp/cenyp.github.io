@@ -285,6 +285,7 @@ class RefImpl<T> {
     this._value = __v_isShallow ? value : toReactive(value)
   }
 
+  // 对 value 分别做 get/set 方法处理，所以使用时要用 .value 访问。
   get value() {
     trackRefValue(this)
     return this._value
