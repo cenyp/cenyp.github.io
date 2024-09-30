@@ -280,3 +280,100 @@ module.exports = {
     ]
   }
 ```
+
+## vite 插件处理自定义文件
+```js
+// vite-plugin-uni-script.js
+const fs = require('fs')
+const path = require('path')
+
+let env_config
+const UNI_PLATFORM = process.env.UNI_PLATFORM // 运行平台
+const ENV_TYPE = process.env.UNI_CUSTOM_DEFINE
+    ? JSON.parse(process.env.UNI_CUSTOM_DEFINE).ENV_TYPE
+    : 'prod' // 环境类型
+const PLATFORM_MAP = {
+    'mp-toutiao': '抖音',
+    'mp-alipay': '支付宝',
+    'mp-weixin': '微信',
+}
+
+// 修改 appid
+function modifyAppId(platform, appId) {
+    const filePath = path.join(__dirname, '../src/manifest.json')
+    try {
+        const fileContent = fs.readFileSync(filePath, 'utf-8')
+        const obj = JSON.parse(fileContent)
+        obj[platform]['appid'] = appId
+        fs.writeFileSync(filePath, JSON.stringify(obj, null, 2)) // 格式化 JSON 输出
+        console.info(
+            `--------------------修改${PLATFORM_MAP[platform]} appid成功--------------------`
+        )
+    } catch (error) {
+        console.error(`修改${PLATFORM_MAP[platform]} appid失败`, error)
+    }
+}
+
+export default function uniScriptPlugin(resolvedConfig) {
+    return {
+        name: 'vite-plugin-uni-script',
+        configResolved(config) {
+            env_config = config.env_config
+        },
+        buildStart() {
+            if (UNI_PLATFORM === 'mp-toutiao') {
+                modifyAppId('mp-toutiao', env_config[ENV_TYPE].ttAppid)
+            } else if (UNI_PLATFORM === 'mp-alipay') {
+                modifyAppId('mp-alipay', env_config[ENV_TYPE].alAppId)
+            }
+        },
+        writeBundle() {
+            if (UNI_PLATFORM === 'mp-toutiao') {
+                const filePath = path.join(__dirname, '../dist/dev/mp-toutiao/package.json')
+                try {
+                    const txt = JSON.stringify(
+                        {
+                            industrySDK: true,
+                            ttPlugins: {
+                                dependencies: {
+                                    'microapp-trade-plugin': {
+                                        version: '1.1.2',
+                                        isDynamic: true,
+                                    },
+                                },
+                            },
+                        },
+                        null,
+                        2
+                    ) // 格式化 JSON 输出
+                    fs.writeFileSync(filePath, txt)
+                    console.info('--------------------生成package.json文件成功--------------------')
+                } catch (error) {
+                    console.error('生成package.json文件失败', error)
+                }
+            } else if (UNI_PLATFORM === 'mp-alipay') {
+                // ...
+            }
+        },
+    }
+}
+
+// vite.config.ts
+import uniScriptPlugin from './vite-plugin-uni-script'
+export default defineConfig(({ mode }) => ({
+	plugins: [uni(),vitePluginUniScript(ENV_CONFIG)],
+	env_config: ENV_CONFIG,
+}));
+
+// ENV_CONFIG 定义
+const ENV_CONFIG = {
+    dev: {
+        ttAppid: 'ttAppid',
+        alUrl: 'alUrl',
+    },
+    prod: {
+        ttAppid: 'ttAppid',
+        alUrl: 'alUrl',
+    }
+}
+```
