@@ -176,3 +176,105 @@ export function h(type: any, propsOrChildren?: any, children?: any): VNode {
 1. v-if 是从解析编译过程中判断显示还是不渲染，v-show 则是判断是否添加`display: none;`做隐藏
 2. v-if 是会重新渲染节点/组件，所以组件的生命周期会触发，在业务开发中要注意使用。比如 a-form-item 用 v-if 会重新渲染，改变默认值，影响重置功能。比如初始值是0，修改v-if判断，设置绑定变量为1，再让组件显示，这个时候重置会为1，因为初始值的存储是在a-form-item中执行的，不是a-form。
 3. 一般在性能场景下会做差异使用
+
+# modal 组件
+## 组件销毁
+elementUI 中是通过修改 key 来让组件重新渲染
+``` js
+if (this.destroyOnClose) {
+  this.$nextTick(() => {
+    this.key++;
+  });
+}
+```
+
+antdv 是通过三目运算符来控制组件的渲染
+``` tsx
+<Transition
+{...transitionProps}
+onBeforeEnter={onPrepare}
+onAfterEnter={() => onVisibleChanged(true)}
+onAfterLeave={() => onVisibleChanged(false)}
+>
+{visible || !destroyOnClose ? (
+  <div
+    {...attrs}
+    ref={dialogRef}
+    v-show={visible}
+    key="dialog-element"
+    role="document"
+    style={[contentStyleRef.value, attrs.style as CSSProperties]}
+    class={[prefixCls, attrs.class]}
+    onMousedown={onMousedown}
+    onMouseup={onMouseup}
+  >
+    <div tabindex={0} ref={sentinelStartRef} style={sentinelStyle} aria-hidden="true" />
+    {modalRender ? modalRender({ originVNode: content }) : content}
+    <div tabindex={0} ref={sentinelEndRef} style={sentinelStyle} aria-hidden="true" />
+  </div>
+) : null}
+</Transition>
+```
+
+补充：在组件销毁/挂载节点不一致时，也会 removeChild 掉 DOM
+``` js
+ const removeCurrentContainer = () => {
+      // Portal will remove from `parentNode`.
+      // Let's handle this again to avoid refactor issue.
+      container.value?.parentNode?.removeChild(container.value);
+    };
+```
+
+## 节点挂载问题/样式影响
+以 antdv3 为例，是使用 vue 的内置组件 Teleport 来实现，支持把节点挂载在 vue 的 DOM 以外，如 body 下面。
+
+当在初始 HTML 结构中使用这个组件时，会有一些潜在的问题：（vue3 官网关于 Teleport 描述）
+
+- position: fixed 能够相对于浏览器窗口放置有一个条件，那就是不能有任何祖先元素设置了 transform、perspective 或者 filter 样式属性。也就是说如果我们想要用 CSS transform 为祖先节点 <div class="outer"> 设置动画，就会不小心破坏模态框的布局！
+- 这个模态框的 z-index 受限于它的容器元素。如果有其他元素与 <div class="outer"> 重叠并有更高的 z-index，则它会覆盖住我们的模态框。
+
+```jsx
+<Portal
+visible={visible}
+forceRender={forceRender}
+getContainer={getContainer}
+v-slots={{
+  default: (childProps: IDialogChildProps) => {
+    dialogProps = {
+      ...dialogProps,
+      ...childProps,
+      afterClose: () => {
+        afterClose?.();
+        animatedVisible.value = false;
+      },
+    };
+    return <Dialog {...dialogProps} v-slots={slots}></Dialog>;
+  },
+}}
+/>
+
+<Teleport to={container} v-slots={slots}></Teleport>
+```
+```
+<Teleport to="body">
+  <div v-if="open" class="modal">
+    <p>Hello from the modal!</p>
+    <button @click="open = false">Close</button>
+  </div>
+</Teleport>
+```
+
+elemnetUI 是直接操作 dom 插入 body 下面的
+```
+if (this.appendToBody) {
+  document.body.appendChild(this.$el);
+}
+
+// 销毁时移除
+destroyed() {
+  // if appendToBody is true, remove DOM node after destroy
+  if (this.appendToBody && this.$el && this.$el.parentNode) {
+    this.$el.parentNode.removeChild(this.$el);
+  }
+}
+```
