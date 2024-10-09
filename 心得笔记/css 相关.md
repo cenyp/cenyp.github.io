@@ -69,3 +69,8 @@ mdn 对 min-height 的解释是
 # css 3D/2D 转换时有齿痕
 `filter: blur(0.5px);`
 https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter
+
+# css 模块化
+- 命名约束，如 card\card__menu\card__menu-item\card__menu-item--active
+- CSS Modules，利用构建库来实现，如 vue 的 data-v-xxxxx
+- CSS-in-JS，把 css 手动写入 style 中，自然没有命名冲突的问题。如：styled-components
