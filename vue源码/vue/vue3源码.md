@@ -328,6 +328,13 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 
 1. ref 和 reactive 都有解构的风险
 
+## 3.5 双向链表
+
+https://juejin.cn/post/7418548134593249289
+https://juejin.cn/post/7419666298940440585
+https://juejin.cn/post/7416908856867078182
+https://juejin.cn/post/7418389059288727604
+
 # scoped 如何实现 css 作用域
 [掉了两根头发后，我悟了！vue3的scoped原来是这样避免样式污染（上）](https://juejin.cn/post/7384633860520083508)
 
