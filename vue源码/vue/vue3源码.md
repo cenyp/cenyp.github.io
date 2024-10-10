@@ -356,6 +356,109 @@ Object.assign(msg2,{a:2}) // { "a": 2, "b": 2 }
 
 ```
 
+## 简易版依赖搜集派发
+v3.2.7 为例
+```js
+let activeEffect; // 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
+
+// 全局依赖管理
+// WeakMap<target, Map<key, Set<effect>>>
+const targetMap = new WeakMap();
+
+class ReactiveEffect {
+  deps = [];
+  /**
+   * 扩展
+   * constructor(
+   *  public fn: () => T
+   * ) { }
+   * 源代码中怎么写赋值是因为，声明的 public 可以自动赋值同名变量
+   */
+  constructor(fn) {
+    this.fn = fn;
+  }
+  run() {
+    this.fn();
+  }
+}
+
+// 收集依赖
+function track(target, key) {
+  let depMap = targetMap.get(target);
+  if (!depMap) {
+    targetMap.set(target, (depMap = new Map()));
+  }
+  let dep = depMap.get(key);
+  if (!dep) {
+    // 这里是用 createDep 生成的 new Set<ReactiveEffect>(effects)
+    depMap.set(key, (dep = new Set()));
+  }
+
+  if (!dep.has(activeEffect)) {
+    dep.add(activeEffect);
+    activeEffect.deps.push(dep);
+  }
+}
+
+// 派发更新
+function trigger(target, key) {
+  const depMap = targetMap.get(target);
+  const dep = depMap.get(key);
+  for (const effect of dep) {
+    effect.run();
+  }
+}
+
+/**
+ *  创建一个响应式对象
+ * @param {Object} obj
+ */
+function reactive(obj) {
+  const proxy = new Proxy(obj, {
+    get(target, key) {
+      // Reflect 是 es6 引入的一个内置的对象，它提供了一系列的方法来操作对象
+      const result = Reflect.get(target, key, proxy);
+      track(target, key);
+      return result;
+    },
+    set(target, key, value) {
+      const result = Reflect.set(target, key, value, proxy);
+      trigger(target, key);
+      return result;
+    },
+  });
+
+  return proxy;
+}
+
+/**
+ * 定义一个 effect 函数，用于收集依赖
+ * @param {function} fn
+ */
+function effect(fn) {
+  activeEffect = new ReactiveEffect(fn);
+  fn();
+}
+
+// 使用示例
+const person = reactive({
+  name: "张三",
+  age: 18,
+});
+effect(() => {
+  console.log(`person -> ${person.name} -> ${person.age}`);
+});
+effect(() => {
+  console.log(`${person.name} -> ${person.age} -> person`);
+});
+setTimeout(() => {
+  person.name = "李四";
+}, 1000);
+setTimeout(() => {
+  person.age = 20;
+}, 2000);
+```
+
 ## 3.5 双向链表
 
 https://juejin.cn/post/7418548134593249289
