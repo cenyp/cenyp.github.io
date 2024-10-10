@@ -326,7 +326,35 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 3. ref定义的变量，需要通过 `.value` 访问，reactive定义的变量直接访问
 4. ref 对普通数据类型做了优化，不用依赖于 proxy
 
-1. ref 和 reactive 都有解构的风险
+1. ref 和 reactive 都有解构的风险，都可以用 const 处理
+
+```vue
+<script setup>
+import { ref,reactive } from 'vue'
+
+const msg = ref({
+  a:1,
+  b:2
+})
+
+msg.value = {a:2}  //  "a": 2 }
+
+const msg2 = reactive({
+  a:1,
+  b:2
+})
+
+// 网上 reactive 派一般是怎么处理对象赋值，但是有明显缺陷
+Object.assign(msg2,{a:2}) // { "a": 2, "b": 2 }
+
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+  <h1>{{ msg2 }}</h1>
+</template>
+
+```
 
 ## 3.5 双向链表
 
