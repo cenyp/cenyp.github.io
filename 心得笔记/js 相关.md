@@ -277,9 +277,33 @@ try {
 ```
 
 为什么Vue3要在Proxy中使用Reflect
-1. 保持正确的 this 绑定
+1. 保持正确的 this 绑定，不是指向 Proxy 而是 target
 ```js
+const person = {
+  name: '张三',
+  get Fullname() {
+    console.log(this); // { name: '李四' }
+    return this.name;
+  },
+}
+let personProxy = new Proxy(person, {
+  get(target, key, receiver) {
+    return Reflect.get(target, key) // 这样子打印的就是张三
+    //相当于 return target[key]
 
+    return Reflect.get(target, key, receiver)
+  },
+  set(target, key, value, receiver) {
+    return Reflect.set(target, key, value, receiver)
+  }
+})
+
+const p1 = {
+  __proto__: personProxy,
+  name: '李四'
+}
+
+console.log(p1.Fullname) // 李四
 ```
 
 2.
