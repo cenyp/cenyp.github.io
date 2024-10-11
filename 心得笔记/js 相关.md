@@ -245,3 +245,57 @@ new Promise((res, rej) => {})
 
 # onfocus 事件
 当标签页面切换/浏览器隐藏显示，会触发 focus 事件
+
+# Reflect 和 object
+1. 现阶段，某些方法同时在 Object 和 Reflect 对象上部署，未来的新方法将只部署在 Reflect 对象上。
+2. 在使用部分方法是，不会报错，会返回 false 
+```js
+const obj = {};
+
+// 定义一个不可写且不可配置的属性
+Object.defineProperty(obj, "name", {
+  value: "Alice",
+  writable: false, // 不可写
+  configurable: false, // 不可配置
+});
+
+// 读取属性值
+console.log(obj.name); // "Alice"
+
+obj.name = "Bob"; // 尝试修改属性值（不会抛出错误，但值不会改变）
+console.log(obj.name); // 仍然是 "Alice"
+
+// Reflect.defineProperty() 方法不会报错
+console.log(Reflect.defineProperty(obj, "name", { value: "Charlie" })); // false
+
+// 尝试修改属性描述符
+try {
+  Object.defineProperty(obj, "name", { value: "Charlie" });
+} catch (error) {
+  console.error(error); // TypeError: Cannot redefine property: name
+}
+```
+
+为什么Vue3要在Proxy中使用Reflect
+1. 保持正确的 this 绑定
+```js
+
+```
+
+2.
+```js
+const handler = {
+  set(target, property, value, receiver) {
+    console.log(`Setting ${property} = ${value}`);
+    return Reflect.set(target, property, value, receiver);
+  },
+};
+
+const array = new Proxy([], handler);
+array.push(1); // 会同时触发对 '0' 和 'length' 的设置
+// Setting 0 = 1
+// Setting length = 1
+```
+
+
+
