@@ -74,3 +74,7 @@ https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter
 - 命名约束，如 card\card__menu\card__menu-item\card__menu-item--active
 - CSS Modules，利用构建库来实现，如 vue 的 data-v-xxxxx
 - CSS-in-JS，把 css 手动写入 style 中，自然没有命名冲突的问题。如：styled-components
+
+# 单选按钮框组边框重叠问题
+1. antdv 是通过在设置 before 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
+2. 通过设置 margin-left: -1px; 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 z-index/position 来增加权重完成覆盖
