@@ -305,21 +305,3 @@ const p1 = {
 
 console.log(p1.Fullname) // 李四
 ```
-
-2. 对数组操作会触发 length 
-```js
-const handler = {
-  set(target, property, value, receiver) {
-    console.log(`Setting ${property} = ${value}`);
-    return Reflect.set(target, property, value, receiver);
-  },
-};
-
-const array = new Proxy([], handler);
-array.push(1); // 会同时触发对 '0' 和 'length' 的设置
-// Setting 0 = 1
-// Setting length = 1
-```
-
-
-
