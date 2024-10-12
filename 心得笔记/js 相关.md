@@ -306,7 +306,7 @@ const p1 = {
 console.log(p1.Fullname) // 李四
 ```
 
-2.
+2. 对数组操作会触发 length 
 ```js
 const handler = {
   set(target, property, value, receiver) {
