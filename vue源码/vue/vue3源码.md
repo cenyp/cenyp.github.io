@@ -357,6 +357,8 @@ Object.assign(msg2,{a:2}) // { "a": 2, "b": 2 }
 ```
 
 ## 简易版依赖搜集派发
+参考链接 https://juejin.cn/post/7352079327117377548
+
 v3.2.7 为例
 ```js
 let activeEffect; // 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
