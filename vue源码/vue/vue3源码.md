@@ -462,6 +462,113 @@ setTimeout(() => {
 ```
 
 ## 3.4 map 替代 set
+简单例子
+``` js
+// 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
+let activeEffect; 
+// 依赖搜集
+const queueEffectSchedulers = [];
+let pauseScheduleStack = 0;
+
+class ReactiveEffect {
+  deps = [];
+  _trackId=0;
+  _depsLength=0;
+  /**
+   * 扩展
+   * constructor(
+   *  public fn: () => T
+   * ) { }
+   * 源代码中怎么写赋值是因为，声明的 public 可以自动赋值同名变量
+   */
+  constructor(fn) {
+    this.fn = fn;
+  }
+  run() {
+    this.fn();
+  }
+}
+
+// 收集依赖
+function trackEffect(effect, dep) {
+  if (dep.get(effect) !== effect._trackId) {
+    dep.set(effect, effect._trackId);
+    const oldDep = effect.deps[effect._depsLength];
+    if (oldDep !== dep) {
+      // 清除旧的依赖
+      // if (oldDep) {
+      //   cleanupDepEffect(oldDep, effect)
+      // }
+      effect.deps[effect._depsLength++] = dep;
+    } else {
+      effect._depsLength++;
+    }
+  }
+}
+
+// 派发更新
+function triggerEffects(dep) {
+  pauseScheduling();
+  for (const effect of dep.keys()) {
+    // scheduler 改成 fn，差不多的
+    queueEffectSchedulers.push(effect.fn);
+  }
+  resetScheduling();
+}
+
+// 依赖统一触发
+function pauseScheduling() {
+  pauseScheduleStack++;
+}
+function resetScheduling() {
+  pauseScheduleStack--;
+   while (!pauseScheduleStack && queueEffectSchedulers.length) {
+    // 3.5 的链式触发也是从未端开始的
+    queueEffectSchedulers.shift()();
+  }
+}
+
+/**
+ *  创建一个响应式对象
+ * @param {Object} obj
+ */
+function ref(obj) {
+  return new RefImpl(obj);
+}
+class RefImpl {
+  constructor(value) {
+    this._value = value;
+  }
+
+  get value() {
+    trackEffect(activeEffect, (this.dep = new Map()));
+    return this._value;
+  }
+
+  set value(newVal) {
+    this._value = newVal;
+     triggerEffects(this.dep);
+  }
+}
+
+/**
+ * 定义一个 effect 函数，用于收集依赖
+ * @param {function} fn
+ */
+function effect(fn) {
+  activeEffect = new ReactiveEffect(fn);
+  fn();
+}
+
+// 使用示例
+const person = ref(1);
+effect(() => {
+  console.log(`person.value -> ${person.value}`);
+});
+setTimeout(() => {
+  person.value = "李四";
+}, 1000);
+```
 
 ## 3.5 双向链表
 
