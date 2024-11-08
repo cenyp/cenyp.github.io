@@ -6,3 +6,8 @@ https://typescript.p6p.net/typescript-tutorial/any.html
 3. 只能进行比较运算（运算符==、===、!=、!==、||、&&、?）、取反运算（运算符!）、typeof运算符和instanceof运算符这几种，其他运算都会报错
 
 # [每个开发人员都应该知道的 20 个 TypeScript 技巧](https://juejin.cn/post/7429384221670735881)
+
+# 组件库 ts ref 类型注解
+type ElUploadType = InstanceType<typeof ElUpload>
+
+[为组件模板引用标注类型](https://cn.vuejs.org/guide/typescript/composition-api.html#typing-component-template-refs)
