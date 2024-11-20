@@ -308,3 +308,87 @@ console.log(p1.Fullname) // 李四
 
 # 文件预览
 https://view.officeapps.live.com/op/view.aspx?src=
+
+# promise
+## promise.all vs promise.race vs promise.allSettled
+
+### promise.all
+all 当有 reject 返回时，all 就是 reject 状态，返回第一个 reject 的值。但是数组中的异步依旧会执行，不管整体状态如何
+```vue
+const promise1 = new Promise((resolve, reject) => {
+    console.log('Promise 1');
+    resolve('Promise 1 resolve')
+})
+const promise2 = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        console.log('Promise 2');
+        reject('Promise 2 reject')
+    })
+})
+
+Promise.all([promise1, promise2]).then((res) => {
+    console.log('then',res)
+}).catch((res) => {
+    console.log('catch',res) 
+})
+/**
+Promise 1
+Promise 2
+catch Promise 2 reject
+ */
+```
+
+## promise.race
+与 all 不同的是，race 是看哪个 promise 先执行完，返回第一个执行完的 promise 的值，不管状态如何。而且数组中的异步依旧会执行
+``` vue
+const promise1 = new Promise((resolve, reject) => {
+    // setTimeout(() => {
+        console.log('Promise 1');
+        resolve('Promise 1 resolve')
+    // })
+})
+const promise2 = new Promise((resolve, reject) => {
+    setTimeout(() => {
+        console.log('Promise 2');
+        reject('Promise 2 reject')
+    })
+})
+
+Promise.race([promise1, promise2]).then((res) => {
+    console.log('then',res)
+}).catch((res) => {
+    console.log('catch',res) 
+})
+/**
+Promise 1
+then Promise 1 resolve
+Promise 2
+ */
+```
+
+### promise.allSettled
+allSettled 是不管 promise 的状态如何，都会返回所有 promise 的结果，并且结果中包含状态和值。
+``` vue
+const promise1 = new Promise((resolve, reject) => {
+    console.log('Promise 1');
+        resolve('Promise 1 resolve')
+ })
+const promise2 = new Promise((resolve, reject) => {
+    console.log('Promise 2');
+    reject('Promise 2 reject')
+ })
+
+Promise.allSettled([promise1, promise2]).then((res) => {
+    console.log('then',res)
+}).catch((res) => {
+    console.log('catch',res) 
+})
+/**
+Promise 1
+Promise 2
+then [
+  { status: 'fulfilled', value: 'Promise 1 resolve' },
+  { status: 'rejected', reason: 'Promise 2 reject' }
+]
+ */
+```
