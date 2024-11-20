@@ -867,3 +867,24 @@ Svelte 将你的代码编译成体积小、不依赖框架的普通 JS 代码，
 简单看了下源码，可以理解成以前key到effect的关联是用Set(3.0版本)或者Map(3.4版本)，由于这两个对象的创建以及更新的性能消耗比较大，所以改成用链表来记录依赖关系。同时version记录是为了减少不必要的effect执行。
 
 > 题外，使用 link 重构依赖搜集派发机制，也在一定程度上降低了内存，避免反复创建 dep 及其容器
+
+# 实现类 listen
+```js
+// 根据组件获取事件
+export function getListen(component: any) {
+    const attrs = useAttrs()
+    return computed(() => {
+        let obj: { [key: string]: any } = {}
+        const emits = (component?.emits as string[]) || []
+        for (const key in attrs) {
+            if (Object.prototype.hasOwnProperty.call(attrs, key)) {
+                const element = attrs[key]
+                if (emits.includes(key)) {
+                    obj[key] = element
+                }
+            }
+        }
+        return obj
+    })
+}
+```
