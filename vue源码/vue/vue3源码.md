@@ -888,3 +888,85 @@ export function getListen(component: any) {
     })
 }
 ```
+
+# keep-alive
+
+```js
+// 存储组件的缓存
+const cache: Cache = new Map();
+// 缓存的组件的key，用于超出缓存数量时，删除最久未使用的组件，即第一个
+const keys: Keys = new Set();
+```
+
+1. 用监听属性，来动态处理缓存的组件
+
+```js
+watch(
+  () => [props.include, props.exclude],
+  ([include, exclude]) => {
+    include && pruneCache((name) => matches(include, name));
+    exclude && pruneCache((name) => !matches(exclude, name));
+  },
+  // prune post-render after `current` has been updated
+  {
+    flush: "post",
+    deep: true,
+  }
+);
+```
+
+2. 在 mounted 和 updated 生命周期中，缓存组件
+
+```js
+const cacheSubtree = () => {
+    if (pendingCacheKey != null) {
+        if (isSuspense(instance.subTree.type)) {
+            queuePostRenderEffect(() => {
+                cache.set(pendingCacheKey!, getInnerChild(instance.subTree))
+            }, instance.subTree.suspense)
+        } else {
+            cache.set(pendingCacheKey, getInnerChild(instance.subTree))
+        }
+    }
+}
+onMounted(cacheSubtree)
+onUpdated(cacheSubtree)
+```
+
+3. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
+
+```js
+const cachedVNode = cache.get(key)
+if (cachedVNode) {
+    vnode.el = cachedVNode.el
+    vnode.component = cachedVNode.component
+    if (vnode.transition) {
+         setTransitionHooks(vnode, vnode.transition!)
+    }
+    vnode.shapeFlag |= ShapeFlags.COMPONENT_KEPT_ALIVE
+    keys.delete(key)
+    keys.add(key)
+} else {
+    keys.add(key)
+    // 判断上限并处理
+    if (max && keys.size > parseInt(max as string, 10)) {
+        pruneCacheEntry(keys.values().next().value!)
+    }
+}
+```
+
+4. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
+
+```js
+function pruneCacheEntry(key: CacheKey) {
+    const cached = cache.get(key) as VNode
+    if (cached && (!current || !isSameVNodeType(cached, current))) {
+        // 卸载组件
+        unmount(cached)
+    }
+    // ...
+    cache.delete(key)
+    keys.delete(key)
+}
+```
+
