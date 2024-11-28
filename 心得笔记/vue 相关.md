@@ -286,3 +286,10 @@ destroyed() {
 # key 设置为 index 问题如何复现
 要用 input 等输入框控件
 
+# vue3 组件再封装，如何把原组件方法暴露
+暴露 组件 ref 即可
+```js
+defineExpose({
+    elRef,
+})
+```
