@@ -419,3 +419,23 @@ new Promise((res, req) => {
     console.log("catch"); // 如果前面两个 then 都设置了第二参数做错误捕捉，catch时不会触发的，当有一个没有设置时，catch会捕捉没有设置的那个错误
   });
 ```
+
+# map 方法使用及 elementui-plus 表格组件选中问题
+```js
+const arr = [{ a: 1 }, { a: 2 }]
+const arr2 = arr.map(item => {
+    item.b = 3
+    return item
+})
+console.log(arr[0] === arr2[0]) // true
+console.log(arr[1] === arr2[1]) // true
+```
+
+```js
+const arr = [{ a: 1 }, { a: 2 }]
+const arr2 = arr.map(item => ({ ...item }))
+console.log(arr[0] === arr2[0])
+console.log(arr[1] === arr2[1])
+```
+
+可以清楚看出，map并没有改变原数组的内存地址。在 el-table 中是用 row 作为行数据标识，当行选中时，改变改行的数据内存地址，会被认为是两个数据，影响选中效果，会有异常
