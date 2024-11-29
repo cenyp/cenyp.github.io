@@ -107,6 +107,8 @@ option.url = process.ENV_CONFIG[process.ENV_TYPE.type].wxUrl + option.url
 ## 为什么不使用 vite 的环境变量来实现
 1. 在 Hbuildx 下通过菜单运行时执行的不是 npm 命令，环境变量无法注入
 2. vite.config.js 文件不支持访问 import.meta.env，但在其余文件可以访问 --commonjs规范问题，不能在es下使用
+3. 通过 HbuilderX 启动获取不到 .env.dev 里面的变量
+
 ```js
 // 可以这么使用
 import { loadEnv } from 'vite'
