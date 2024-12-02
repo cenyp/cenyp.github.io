@@ -891,7 +891,7 @@ export function getListen(component: any) {
 
 # keep-alive
 
-```
+``` ts
 // 存储组件的缓存
 const cache: Cache = new Map();
 // 缓存的组件的key，用于超出缓存数量时，删除最久未使用的组件，即第一个
