@@ -970,3 +970,19 @@ function pruneCacheEntry(key: CacheKey) {
 }
 ```
 
+# 修改数据后，为什么 DOM 没有立即变化
+1. DOM 变化有 patch 方法来处理
+2. patch 方法要在 render 里面调用，即渲染函数（渲染watcher）/更新函数
+3. 渲染/更新函数 会作为依赖副作用（effect）被搜集，执行时是从内部任务队列中执行，是异步执行，所以是最新的
+```ts
+// 可以看出来，componentUpdateFn 更新函数被搜集成 effect，并用 queueJob 做处理，放在 scheduler 中
+instance.scope.on()
+const effect = (instance.effect = new ReactiveEffect(componentUpdateFn))
+instance.scope.off()
+
+const update = (instance.update = effect.run.bind(effect))
+const job: SchedulerJob = (instance.job = effect.runIfDirty.bind(effect))
+job.i = instance
+job.id = instance.uid
+effect.scheduler = () => queueJob(job)
+```
