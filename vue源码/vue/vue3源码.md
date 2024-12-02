@@ -891,7 +891,7 @@ export function getListen(component: any) {
 
 # keep-alive
 
-```js
+```
 // 存储组件的缓存
 const cache: Cache = new Map();
 // 缓存的组件的key，用于超出缓存数量时，删除最久未使用的组件，即第一个
@@ -900,7 +900,7 @@ const keys: Keys = new Set();
 
 1. 用监听属性，来动态处理缓存的组件
 
-```js
+```
 watch(
   () => [props.include, props.exclude],
   ([include, exclude]) => {
@@ -917,7 +917,7 @@ watch(
 
 2. 在 mounted 和 updated 生命周期中，缓存组件
 
-```js
+```
 const cacheSubtree = () => {
     if (pendingCacheKey != null) {
         if (isSuspense(instance.subTree.type)) {
@@ -935,7 +935,7 @@ onUpdated(cacheSubtree)
 
 3. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
 
-```js
+```
 const cachedVNode = cache.get(key)
 if (cachedVNode) {
     vnode.el = cachedVNode.el
@@ -957,7 +957,7 @@ if (cachedVNode) {
 
 4. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
 
-```js
+```
 function pruneCacheEntry(key: CacheKey) {
     const cached = cache.get(key) as VNode
     if (cached && (!current || !isSameVNodeType(cached, current))) {
@@ -976,7 +976,7 @@ function pruneCacheEntry(key: CacheKey) {
 3. 渲染/更新函数 会作为依赖副作用（effect）被搜集，执行时是从内部任务队列中执行，是异步执行，所以是最新的
 4. 即代码是同步执行（宏任务），更新时是异步执行
 
-```ts
+```
 // 可以看出来，componentUpdateFn 更新函数被搜集成 effect，并用 queueJob 做处理，放在 scheduler 中
 instance.scope.on()
 const effect = (instance.effect = new ReactiveEffect(componentUpdateFn))
@@ -993,7 +993,7 @@ effect.scheduler = () => queueJob(job)
 
 如下代码在 `vue3 + elementui-plus` 中，封装的组件 `my-cascader` 是不能生效的，因为组件没有属性 `data-v-xxxxx`，但是 `.my-cascader` 是有的，即 `.my-cascader`[data-v-xxxxx]，导致样式没有生效
 
-```js
+```
 <template>
     <el-cascader
          class="my-cascader"
@@ -1019,7 +1019,7 @@ effect.scheduler = () => queueJob(job)
 
 通过查看代码，问题显而易见
 
-```vue
+```
 <!-- el-cascader -->
 <template>
   <el-tooltip>
