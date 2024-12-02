@@ -988,3 +988,58 @@ job.i = instance
 job.id = instance.uid
 effect.scheduler = () => queueJob(job)
 ```
+
+# 为什么有组件没有属性 data-v-xxxxx
+
+如下代码在 `vue3 + elementui-plus` 中，封装的组件 `my-cascader` 是不能生效的，因为组件没有属性 `data-v-xxxxx`，但是 `.my-cascader` 是有的，即 `.my-cascader`[data-v-xxxxx]，导致样式没有生效
+
+```js
+<template>
+    <el-cascader
+         class="my-cascader"
+      />
+</template>
+<style lang="scss" scoped>
+.my-cascader {
+    width: 100%;
+}
+</style>
+```
+
+> 为什么组件没有属性 data-v-xxxxx
+> 参考[html 上的 data-v-xxxxx](https://vue-compiler.iamouyang.cn/style/scoped-template.html)
+
+`data-v-xxxxx` 是由 `scopeId` 属性生成的，`scopeId` 是 `plugin-vue` 生成的。会在渲染节点时通过 `el.setAttribute(id, "")` 写入到节点上。
+
+> 为什么 `my-cascader` 组件编译有生成 `__scopeId`，但是没有 `data-v-xxxxx`
+
+问题的分歧点在于 patch 方法中，执行了 `processComponent` 方法而非 `processElement`，`processElement` 正是添加 `data-v-xxxxx` 的地方。`processElement` 是处理多节点的，证明组件是多节点组件。
+
+> 为什么 `my-cascader` 是多节点组件
+
+通过查看代码，问题显而易见
+
+```vue
+<!-- el-cascader -->
+<template>
+  <el-tooltip>
+    <el-cascader />
+  </el-tooltip>
+</template>
+
+<!-- el-tooltip -->
+<template>
+  <el-popper>
+    <el-tooltip-trigger />
+    <el-tooltip-content />s
+  </el-popper>
+</template>
+
+<!-- el-popper  -->
+<template>
+  <slot />
+</template>
+```
+
+> 扩展：使用 `teleport` 这类内置组件也是不行的，`processElement` 方法处理的是普通标签，所以 vue3 的对话框组件多半都有这个问题，一般都是用 `teleport` 支持插入 `body` 的
+
