@@ -78,3 +78,6 @@ https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter
 # 单选按钮框组边框重叠问题
 1. antdv 是通过在设置 before 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
 2. 通过设置 margin-left: -1px; 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 z-index/position 来增加权重完成覆盖
+
+# 子节点触发滚动时 padding-right 失效
+1. 设置子节点为 inline-block，inline-flex，inline-grid，inline-table
