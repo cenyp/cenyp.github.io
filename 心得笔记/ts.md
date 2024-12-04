@@ -11,3 +11,55 @@ https://typescript.p6p.net/typescript-tutorial/any.html
 type ElUploadType = InstanceType<typeof ElUpload>
 
 [为组件模板引用标注类型](https://cn.vuejs.org/guide/typescript/composition-api.html#typing-component-template-refs)
+
+# [ts 项目实践](https://juejin.cn/post/6970841540776329224)
+1. 条件类型
+```ts
+type A<T> = T extends string ? number : string
+
+const a1: A<string> = 1
+const a2: A<string> = '1' // error
+const a3: A<number> = '1'
+```
+2. 命名空间(namespace) --可以在实际业务开发中使用
+```ts
+a(1) === '1'
+a(1) === 1 // error
+a('1') === 1
+a(undefined) // error
+
+declare namespace A {
+    type name = string
+}
+namespace A {
+    export type name = string
+}
+const a = ref<A.name>(1) // error
+```
+
+3. 模板字符串类型
+```ts
+declare type HTTP = `http://${string}`
+declare type HTTPS = `https://${string}`
+
+type baseApi = HTTP | HTTPS
+
+const url: baseApi = 'tcp://www.baidu.com' // error
+```
+
+4. 函数重载
+```ts
+function a(data: number): string
+function a(data: string): number
+function a(data: string | number): string | number {
+    if (typeof data === 'number') {
+        return data.toString()
+    } else if (typeof data === 'string') {
+        return Number(data)
+    } else {
+        return data
+    }
+}
+```
+
+
