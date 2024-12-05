@@ -541,7 +541,7 @@ class RefImpl {
   }
 
   get value() {
-    trackEffect(activeEffect, (this.dep = new Map()));
+    trackEffect(activeEffect, (this.dep ??= new Map()));
     return this._value;
   }
 
