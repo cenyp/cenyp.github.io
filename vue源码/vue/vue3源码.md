@@ -577,6 +577,218 @@ https://juejin.cn/post/7419666298940440585
 https://juejin.cn/post/7416908856867078182
 https://juejin.cn/post/7418389059288727604
 
+![输入图片说明](../../image/1574d567063b46d2b5bdb935511250d9~tplv-73owjymdk6-jj-mark-v1_0_0_0_0_5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz_q75.webp)
+
+```js
+// 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
+let activeSub;
+let batchDepth = 0;
+let batchedSub; // 订阅者执行链表表头
+
+class ReactiveEffect {
+  deps; // 头部
+  depsTail; // 尾部
+
+  constructor(fn) {
+    this.fn = fn;
+  }
+  run() {
+    // prepareDeps 把 ink.version = -1
+    const prevEffect = activeSub;
+    activeSub = this;
+
+    try {
+      return this.fn();
+    } finally {
+      // cleanupDeps(this) 清理依赖
+      activeSub = prevEffect; // 恢复到上个订阅者
+    }
+  }
+
+  notify() {
+    batch(this);
+
+    function batch(sub) {
+      sub.next = batchedSub;
+      batchedSub = sub; // 指向当前订阅者，多个时会形成链表
+    }
+  }
+
+  trigger() {
+    this.run();
+  }
+}
+
+/**
+ * 定义一个 effect 函数，用于收集依赖
+ * @param {function} fn
+ */
+function effect(fn) {
+  const e = new ReactiveEffect(fn);
+  e.run();
+}
+
+/**
+ *  创建一个响应式对象
+ * @param {Object} obj
+ */
+function ref(obj) {
+  return new RefImpl(obj);
+}
+class RefImpl {
+  dep = new Dep();
+  constructor(value) {
+    this._value = value;
+  }
+
+  get value() {
+    this.dep.track();
+    return this._value;
+  }
+
+  set value(newValue) {
+    const oldValue = this._value;
+    // 判断两者是否相等 Object.is()与===之间的主要区别在于它们如何处理NaN和-0
+
+    if (!Object.is(oldValue, newValue)) {
+      this._value = newValue;
+      this.dep.trigger();
+    }
+  }
+}
+
+class Link {
+  nextDep; // x轴订阅者依赖链表下一个 link
+  prevDep; // x轴订阅者依赖链表上一个 link
+  nextSub; // y轴依赖链表下一个 link
+  prevSub; // y轴依赖链表上一个 link
+
+  constructor(sub, dep) {
+    this.sub = sub;
+    this.dep = dep;
+
+    this.version = dep.version;
+    this.nextDep =
+      this.prevDep =
+      this.nextSub =
+      this.prevSub =
+      this.prevActiveLink =
+        undefined;
+  }
+}
+
+class Dep {
+  activeLink = undefined; // 当前 link
+  version = 0;
+  subs; // 链表尾部指向
+  // 依赖搜集
+  track() {
+    if (!activeSub) return;
+    let link = this.activeLink;
+    if (link === undefined || link.sub !== activeSub) {
+      link = this.activeLink = new Link(activeSub, this);
+
+      if (!activeSub.deps) {
+        activeSub.deps = activeSub.depsTail = link;
+      } else {
+        // 订阅者 link 编织
+        // 与订阅者的链表最后一个 link 编织，形成新链表
+        link.prevDep = activeSub.depsTail;
+        activeSub.depsTail.nextDep = link;
+        activeSub.depsTail = link;
+      }
+
+      // 依赖 link 编织
+      addSub(link);
+      function addSub(link) {
+        const currentTail = link.dep.subs; // 链表尾部指向
+
+        // 更新链表尾部指向当前 link
+        if (currentTail !== link) {
+          link.prevSub = currentTail;
+          if (currentTail) currentTail.nextSub = link;
+        }
+        link.dep.subs = link; // 更新依赖的链表尾部指向
+      }
+    } else if (link.version === -1) {
+      // 简易版可以忽略下面的逻辑
+      // -1 代表link已经失效，会被清理
+      link.version = this.version;
+
+      if (link.nextDep) {
+        // 把 link 从原订阅者的链表中移除
+        const next = link.nextDep;
+        next.prevDep = link.prevDep;
+        if (link.prevDep) {
+          link.prevDep.nextDep = next;
+        }
+
+        // 把 link 放到新订阅者的链表尾部
+        link.prevDep = activeSub.depsTail;
+        link.nextDep = undefined;
+        activeSub.depsTail.nextDep = link;
+        activeSub.depsTail = link;
+
+        // 指向新的link链表头部
+        if (activeSub.deps === link) {
+          activeSub.deps = next;
+        }
+      }
+    }
+
+    return link;
+  }
+  // 依赖触发
+  trigger() {
+    this.version++;
+    this.notify();
+  }
+  // 通知订阅者
+  notify() {
+    startBatch();
+    try {
+      // 从尾部开始，遍历依赖的 link
+      for (let link = this.subs; link; link = link.prevSub) {
+        // 触发 effect.notify
+        link.sub.notify();
+      }
+    } finally {
+      endBatch();
+    }
+  }
+}
+
+function startBatch() {
+  batchDepth++;
+}
+
+function endBatch() {
+  if (--batchDepth > 0) {
+    return;
+  }
+
+  while (batchedSub) {
+    let e = batchedSub;
+    batchedSub = undefined;
+    while (e) {
+      const next = e.next;
+      e.next = undefined;
+      e.trigger();
+      e = next;
+    }
+  }
+}
+
+// 使用示例
+const person = ref(1);
+effect(() => {
+  console.log(`person.value -> ${person.value}`);
+});
+setTimeout(() => {
+  person.value = "李四";
+}, 1000);
+```
+
 # scoped 如何实现 css 作用域
 [掉了两根头发后，我悟了！vue3的scoped原来是这样避免样式污染（上）](https://juejin.cn/post/7384633860520083508)
 
