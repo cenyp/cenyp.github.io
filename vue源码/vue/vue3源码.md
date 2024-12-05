@@ -572,10 +572,10 @@ setTimeout(() => {
 
 ## 3.5 双向链表
 
-https://juejin.cn/post/7418548134593249289
-https://juejin.cn/post/7419666298940440585
-https://juejin.cn/post/7416908856867078182
-https://juejin.cn/post/7418389059288727604
+- https://juejin.cn/post/7418548134593249289
+- https://juejin.cn/post/7419666298940440585
+- https://juejin.cn/post/7416908856867078182
+- https://juejin.cn/post/7418389059288727604
 
 ![输入图片说明](../../image/1574d567063b46d2b5bdb935511250d9~tplv-73owjymdk6-jj-mark-v1_0_0_0_0_5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz_q75.webp)
 
