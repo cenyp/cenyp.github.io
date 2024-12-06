@@ -230,8 +230,8 @@ onAfterLeave={() => onVisibleChanged(false)}
 
 当在初始 HTML 结构中使用这个组件时，会有一些潜在的问题：（vue3 官网关于 Teleport 描述）
 
-- position: fixed 能够相对于浏览器窗口放置有一个条件，那就是不能有任何祖先元素设置了 transform、perspective 或者 filter 样式属性。也就是说如果我们想要用 CSS transform 为祖先节点 <div class="outer"> 设置动画，就会不小心破坏模态框的布局！
-- 这个模态框的 z-index 受限于它的容器元素。如果有其他元素与 <div class="outer"> 重叠并有更高的 z-index，则它会覆盖住我们的模态框。
+- position: fixed 能够相对于浏览器窗口放置有一个条件，那就是不能有任何祖先元素设置了 transform、perspective 或者 filter 样式属性。也就是说如果我们想要用 CSS transform 为祖先节点 `<div class="outer">` 设置动画，就会不小心破坏模态框的布局！
+- 这个模态框的 z-index 受限于它的容器元素。如果有其他元素与 `<div class="outer">` 重叠并有更高的 z-index，则它会覆盖住我们的模态框。
 
 ```jsx
 <Portal
@@ -256,6 +256,7 @@ v-slots={{
 <Teleport to={container} v-slots={slots}></Teleport>
 ```
 ```
+```
 <Teleport to="body">
   <div v-if="open" class="modal">
     <p>Hello from the modal!</p>
@@ -265,7 +266,7 @@ v-slots={{
 ```
 
 elemnetUI 是直接操作 dom 插入 body 下面的
-```
+```js
 if (this.appendToBody) {
   document.body.appendChild(this.$el);
 }

@@ -157,7 +157,7 @@ function genIfConditions(conditions: ASTIfConditions): string {
   // v-if with v-once should generate code like (a)?_m(0):_m(1)
   /*v-if与v-once同时存在的时候应该使用三元运算符，譬如说(a)?_m(0):_m(1)*/
   function genTernaryExp(el) {
-    return el.once ? genOnce(el) : genElement(el); // genElement处理节点
+    return el.once ? genOnce(el) : genElement(el); //genElement处理节点
   }
 }
 ```
@@ -200,7 +200,7 @@ function patchVShow(oldVnode, vnode) {
 
 在 patch 函数中，当更新时发现某个元素的 v-show 值发生了变化时，会根据新的值来修改元素的 style.display 属性，从而实现元素的显示或隐藏。
 
-注意，v-show 不支持 <template> 元素。因为不能通过修改元素的 display 属性来控制 <template> 元素的显示或隐藏。
+注意，v-show 不支持 `<template>` 元素。因为不能通过修改元素的 display 属性来控制 `<template>` 元素的显示或隐藏。
 
 ## v-for
 
