@@ -22,7 +22,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://gitee.com/longway__comeon' }
+      { icon: 'gitee', link: 'https://gitee.com/longway__comeon' }
     ]
   }
 })
