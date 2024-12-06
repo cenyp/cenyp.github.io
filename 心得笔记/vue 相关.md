@@ -293,3 +293,54 @@ defineExpose({
     elRef,
 })
 ```
+
+# 业务组件变量子组件双向绑定
+例如详情页面分模块组件抽离，form 变量如何和子组件就行双向绑定
+```js
+// vue3
+const props = defineProps({  // 直接使用 form 即可隐形改变对象
+    form: {
+        type: Object,
+        required: true,
+    },
+})
+const formModal = defineModel({ required: true }) // 使用 defineModel 更佳
+
+// vue2
+const props = defineProps({
+    value: {
+        type: Object,
+        default: () => ({})
+    },
+})
+const keys = ['radio'] // 控制劫持范围
+const formModal = computed(() => {
+    const data = { ...props.value }
+    for (const key of keys) {
+        let val = data[key]
+        Object.defineProperty(data, key, {
+            set: newVal => {
+                if (!Object.is(newVal, val)) { // 避免不必要的修改
+                    val = newVal
+                    emit('input', {
+                        ...data,
+                        [key]: val
+                    })
+                }
+            },
+            get: () => val
+        })
+    }
+    return data
+})
+
+// 普通类型可以这么写
+const modelVal = computed({
+    get() {
+        return props.value
+    },
+    set(val) {
+        emit('input', val)
+    }
+})
+```
