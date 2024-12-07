@@ -1,9 +1,12 @@
-# 为什么每个组件都可以通过$store来获取全局实例实现
-对2.0版本是利用 mixin 在 beforeCreate 钩子上执行函数，如果是根节点，直接获取 store，对于非根组件，则从parant上获取。
+# vuex 源码
 
-由于vue的父子组件声明周期加载流程是一定先从父组件开始的，所以子组件一定可以通过 .parent 属性获取 store
+## 为什么每个组件都可以通过$store来获取全局实例实现
 
-```js 
+对 2.0 版本是利用 `mixin` 在 `beforeCreate` 钩子上执行函数，如果是根节点，直接获取 `store`，对于非根组件，则从 `parent` 上获取。
+
+由于 `vue` 的父子组件声明周期加载流程是一定先从父组件开始的，所以子组件一定可以通过 `.parent` 属性获取 `store`
+
+```js
 Vue.mixin({ beforeCreate: vuexInit })
   function vuexInit () {
     const options = this.$options
@@ -20,13 +23,15 @@ Vue.mixin({ beforeCreate: vuexInit })
   }
 ```
 
-# 初始化做了什么事情
-除了一些内边变量的初始化，关键的就是installModule（初始化module）以及resetStoreVM（通过VM使store“响应式”）
+## 初始化做了什么事情
 
-## installModule
-installModule 的作用主要是为 module 加上 namespace 名字空间（如果有）后，注册 mutation、action以及getter，同时递归安装所有子 module。
+除了一些内边变量的初始化，关键的就是 `installModule`（初始化 `module` ）以及 `resetStoreVM`（通过 `VM` 使 `store` “响应式”）
 
-具体如上所述。
+### installModule
+
+`installModule` 的作用主要是为 `module` 加上 `namespace` 名字空间（如果有）后，注册 `mutation`、`action` 以及 `getter`，同时递归安装所有子 `module`
+
+具体如上所述
 
 ```js
 /*初始化module*/
@@ -74,7 +79,7 @@ function installModule (store, rootState, path, module, hot) {
     registerGetter(store, namespacedType, getter, local)
   })
 
-  /* 递归安装mudule */
+  /* 递归安装 module */
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
@@ -98,8 +103,9 @@ getNamespace (path) {
 }
 ```
 
-## resetStoreVM
-resetStoreVM首先会遍历wrappedGetters，使用Object.defineProperty方法为每一个getter绑定上get方法，这样我们就可以在组件里访问this.$store.getters.test就等同于访问store._vm.test。
+### resetStoreVM
+
+`resetStoreVM` 首先会遍历 `wrappedGetters`，使用 `Object.defineProperty` 方法为每一个 `getter` 绑定上 `get` 方法，这样我们就可以在组件里访问`this.$store.getters.test` 就等同于访问 `store._vm.test`  
 
 ```js
 forEachValue(wrappedGetters, (fn, key) => {
@@ -112,7 +118,7 @@ forEachValue(wrappedGetters, (fn, key) => {
 })
 ```
 
-之后Vuex采用了new一个Vue对象来实现数据的“响应式化”，运用Vue.js内部提供的数据双向绑定功能来实现store的数据与视图的同步更新。
+之后 `Vuex` 采用了 `new` 一个 `Vue` 对象来实现数据的“响应式化”，运用 `Vue.js` 内部提供的数据双向绑定功能来实现 `store` 的数据与视图的同步更新。
 
 ```js
 store._vm = new Vue({
@@ -123,14 +129,15 @@ store._vm = new Vue({
 })
 ```
 
-这时候我们访问store._vm.test也就访问了Vue实例中的属性。
+这时候我们访问 `store._vm.test` 也就访问了 `Vue` 实例中的属性。
 
-这两步执行完以后，我们就可以通过this.$store.getter.test访问vm中的test属性了。
+这两步执行完以后，我们就可以通过 `this.$store.getter.test` 访问 `vm` 中的 `test` 属性了。
 
-# mutation 实现
-在 installModule 中根据名称（有无命名空间会不同）进行批量注册；
+## mutation 实现
 
-使用时通过 commit 方法根据名称调用，注意这里会有同名问题
+在 `installModule` 中根据名称（有无命名空间会不同）进行批量注册；
+
+使用时通过 `commit` 方法根据名称调用，注意这里会有同名问题
 
 ```js
   /* 调用mutation的commit方法 */
@@ -161,10 +168,11 @@ store._vm = new Vue({
 }
 ```
 
-## 同名问题
-默认情况下，模块内部的 action 和 mutation 仍然是注册在全局命名空间的——这样使得多个模块能够对同一个 action 或 mutation 作出响应。
+### 同名问题
 
-如果希望你的模块具有更高的封装度和复用性，你可以通过添加 namespaced: true 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 getter、action 及 mutation 都会自动根据模块注册的路径调整命名。
+默认情况下，模块内部的 `action` 和 `mutation` 仍然是注册在全局命名空间的——这样使得多个模块能够对同一个 `action` 或 `mutation` 作出响应。
+
+如果希望你的模块具有更高的封装度和复用性，你可以通过添加 `namespaced: true` 的方式使其成为带命名空间的模块。当模块被注册后，它的所有 `getter、action` 及 `mutation` 都会自动根据模块注册的路径调整命名。
 
 ```js
 const store = createStore({
@@ -210,7 +218,7 @@ const store = createStore({
 
 ```
 
-那么针对是否使用 namespaced 会有不同效果吗
+那么针对是否使用 `namespaced` 会有不同效果吗
 
 ```js
 const store = new Vuex.Store({
@@ -247,9 +255,9 @@ this.$store.commit('test/add'); // 报错
 
 ```
 
-源码的mutation是这样子注册的，type如上所属，没有namespaced，为同名，即会存储在一个数组里面批量触发；
+源码的 `mutation` 是这样子注册的，`type` 如上所属，没有 `namespaced`，为同名，即会存储在一个数组里面批量触发；
 
-action也差不多
+`action` 也差不多
 
 ```js
 /* 遍历注册mutation */
@@ -262,12 +270,13 @@ function registerMutation (store, type, handler, local) {
 }
 ```
 
-# getter 实现
-如上所属，getter时不允许同名的。源码中也做了校验，那么为什么？
+## getter 实现
 
-因为getter是全局注册的，利用vue的计算属性做缓存，故不能同名；
+如上所属，`getter` 时不允许同名的。源码中也做了校验，那么为什么？
 
-如下所示，先在 installModule 中对 getter 进行注册收集，然后在 resetStoreVM 中通过Object.defineProperty为每一个getter方法设置get方法，比如获取this.$store.getters.test的时候获取的是store._vm.test，也就是Vue对象的computed属性
+因为 `getter` 是全局注册的，利用 `vue` 的计算属性做缓存，故不能同名；
+
+如下所示，先在 `installModule` 中对 `getter` 进行注册收集，然后在 `resetStoreVM` 中通过 `Object.defineProperty` 为每一个 `getter` 方法设置 `get` 方法，比如获取 `this.$store.getters.test` 的时候获取的是 `store._vm.test`，也就是 `Vue` 对象的 `computed` 属性
 
 ```js
 /* 遍历注册getter */
@@ -321,10 +330,11 @@ function resetStoreVM (store, state, hot) {
 }
 ```
 
-# state 实现
-对于 state 是通过 vue.data 实现数据劫持效果的
+## state 实现
 
-首先，在 installModule 中通过 vue.set 方法在父级中进入该子 module 的 state，所以在使用中会是 this.$store.state.xxxxx.aaa
+对于 `state` 是通过 `vue.data` 实现数据劫持效果的
+
+首先，在 `installModule` 中通过 `vue.set` 方法在父级中进入该子 `module` 的 `state`，所以在使用中会是 `this.$store.state.xxxxx.aaa`
 
 ```js
 if (!isRoot && !hot) {
@@ -339,7 +349,7 @@ if (!isRoot && !hot) {
 }
 ```
 
-然后，在 resetStoreVM 中，存入  $$state 中
+然后，在 `resetStoreVM` 中，存入 `$$state` 中
 
 ```js
 function resetStoreVM (store, state, hot) {
@@ -375,13 +385,15 @@ get state () {
   }
 ```
 
-# module实现
-像 state、getter 等等都在上面说明了，这里总结一下
-+ state，是通过 vue.set 方法注册到父级数据中是
-+ getter，是全局注册存储的，故不能同名
-+ mutation 和action，也是全局存储的，所以在使用上可以跨module调用，但要注意同名问题
+## module实现
 
-对于多个 module 及嵌套的情况，是在 installModule 中进行循环遍历处理的
+像 `state`、`getter` 等等都在上面说明了，这里总结一下
+
++ `state` 是通过 `vue.set` 方法注册到父级数据中是
++ `getter` 是全局注册存储的，故不能同名
++ `mutation` 和 `action`，也是全局存储的，所以在使用上可以跨 `module` 调用，但要注意同名问题
+
+对于多个 `module` 及嵌套的情况，是在 `installModule` 中进行循环遍历处理的
 
 ```js
 /*初始化module*/
@@ -393,17 +405,18 @@ function installModule (store, rootState, path, module, hot) {
 
   const local = module.context = makeLocalContext(store, namespace, path)
 
-  /* 递归安装mudule */
+  /* 递归安装module */
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
 }
 ```
 
-# 严格模式
-Vuex的Store构造类的option有一个strict的参数，可以控制Vuex执行严格模式，严格模式下，所有修改state的操作必须通过mutation实现，否则会抛出错误。
+## 严格模式
 
-首先，在严格模式下，Vuex会利用vm的$watch方法来观察$$state，也就是Store的state，在它被修改的时候进入回调。我们发现，回调中只有一句话，用assert断言来检测store._committing，当store._committing为false的时候会触发断言，抛出异常。
+`Vuex` 的 `Store` 构造类的 `option` 有一个 `strict` 的参数，可以控制 `Vuex` 执行严格模式，严格模式下，所有修改 `state` 的操作必须通过 `mutation` 实现，否则会抛出错误。
+
+首先，在严格模式下，`Vuex` 会利用 `vm` 的 `$watch` 方法来观察 `$$state`，也就是 `Store` 的 `state`，在它被修改的时候进入回调。我们发现，回调中只有一句话，用 `assert` 断言来检测 `store._committing`，当 `store._committing` 为 `false` 的时候会触发断言，抛出异常。
 
 ```js
 /* 使能严格模式 */
@@ -417,7 +430,7 @@ function enableStrictMode (store) {
 }
 ```
 
-我们发现，Store的commit方法中，执行mutation的语句是这样的。
+我们发现，`Store` 的 `commit` 方法中，执行 `mutation` 的语句是这样的。
 
 ```js
 this._withCommit(() => {
@@ -435,11 +448,12 @@ _withCommit (fn) {
 }
 ```
 
-我们发现，通过commit（mutation）修改state数据的时候，会在调用mutation方法之前将committing置为true，接下来再通过mutation函数修改state中的数据，这时候触发$watch中的回调断言committing是不会抛出异常的（此时committing为true）。
+我们发现，通过 `commit`（`mutation`）修改 `state` 数据的时候，会在调用 `mutation` 方法之前将 `committing` 置为`true`，接下来再通过 `mutation` 函数修改 `state` 中的数据，这时候触发 `$watch` 中的回调断言 `committing` 是不会抛出异常的（此时 `committing` 为 `true`）。
 
-而当我们直接修改state的数据时，触发$watch的回调执行断言，这时committing为false，则会抛出异常。这就是Vuex的严格模式的实现。
+而当我们直接修改 `state` 的数据时，触发 `$watch` 的回调执行断言，这时 `committing` 为 `false`，则会抛出异常。这就是 `Vuex` 的严格模式的实现。
 
-# commit方法
+## commit方法
+
 ```js
 /* 调用mutation的commit方法 */
 commit (_type, _payload, _options) {
@@ -481,9 +495,9 @@ commit (_type, _payload, _options) {
 }
 ```
 
-commit方法会根据type找到并调用_mutations中的所有type对应的mutation方法，所以当没有namespace的时候，commit方法会触发所有module中的mutation方法。再执行完所有的mutation之后会执行_subscribers中的所有订阅者。我们来看一下_subscribers是什么。
+`commit` 方法会根据 `type` 找到并调用 `_mutations` 中的所有 `type` 对应的 `mutation` 方法，所以当没有 `namespace` 的时候，`commit` 方法会触发所有module中的 `mutation` 方法。再执行完所有的 `mutation` 之后会执行 `_subscribers` 中的所有订阅者。我们来看一下 `_subscribers` 是什么。
 
-Store给外部提供了一个subscribe方法，用以注册一个订阅函数，会push到Store实例的_subscribers中，同时返回一个从_subscribers中注销该订阅者的方法。
+`Store` 给外部提供了一个 `subscribe` 方法，用以注册一个订阅函数，会 `push` 到 `Store` 实例的 `_subscribers` 中，同时返回一个从 `_subscribers` 中注销该订阅者的方法。
 
 ```js
 /* 注册一个订阅函数，返回取消订阅的函数 */
@@ -501,10 +515,11 @@ subscribe (fn) {
 }
 ```
 
-在commit结束以后则会调用这些_subscribers中的订阅者，这个订阅者模式提供给外部一个监视state变化的可能。state通过mutation改变时，可以有效补获这些变化。
+在 `commit` 结束以后则会调用这些 `_subscribers` 中的订阅者，这个订阅者模式提供给外部一个监视 `state` 变化的可能。`state` 通过 `mutation` 改变时，可以有效补获这些变化。
 
-# dispatch
-来看一下dispatch的实现。
+## dispatch
+
+来看一下 `dispatch` 的实现。
 
 ```js
 /* 调用action的dispatch方法 */
@@ -531,7 +546,7 @@ dispatch (_type, _payload) {
 }
 ```
 
-以及 registerAction 时候做的事情。
+以及 `registerAction` 时候做的事情。
 
 ```js
 /* 遍历注册action */
@@ -565,10 +580,10 @@ function registerAction (store, type, handler, local) {
 }
 ```
 
-因为 registerAction 的时候将 push 进 _actions 的 action 进行了一层封装（wrappedActionHandler）
+因为 `registerAction` 的时候将 `push` 进 `_actions` 的 `action` 进行了一层封装 `wrappedActionHandler`
 
-所以我们在进行dispatch的第一个参数中获取state、commit等方法。
+所以我们在进行 `dispatch` 的第一个参数中获取 `state`、`commit` 等方法。
 
-之后，执行结果res会被进行判断是否是 Promise，不是则会进行一层封装，将其转化成Promise对象（不然执行时返回的就不是Promise了）
+之后，执行结果 `res` 会被进行判断是否是 `Promise`，不是则会进行一层封装，将其转化成 `Promise` 对象（不然执行时返回的就不是 `Promise` 了）
 
-dispatch 时则从 _actions 中取出，只有一个的时候直接返回，否则用Promise.all处理再返回。
+`dispatch` 时则从 `_actions` 中取出，只有一个的时候直接返回，否则用 `Promise.all`处理再返回。

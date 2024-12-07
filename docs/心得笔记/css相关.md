@@ -1,24 +1,32 @@
-# white-space 妙用
-1. 在处理后端返回的 \n 上，可以保持换行
+# CSS 相关
 
-# 格式化导致文本换行
-如 prettier 
+## white-space 妙用
+
+1. 在处理后端返回的 `\n` 上，可以保持换行
+
+## 格式化导致文本换行
+
+如 `prettier`
+
 ```html
 <!-- prettier -->
 xxxxxxxxx
 <!-- prettier -->
 ```
 
-# 页面提示框方案
-1. getBoundingClientRect+父节点scrollTop
-2. offsetTop 替代 getBoundingClientRect 计算父子节点位置差
+## 页面提示框方案
+
+1. `getBoundingClientRect` + 父节点 `scrollTop`
+2. `offsetTop` 替代 `getBoundingClientRect` 计算父子节点位置差
 
 问题：如果提示是在复杂组件内部或者是要依赖数据异步渲染的，要加延时以获取最终的定位（注意电脑性能影响）
 
-# flex相关
-flex可以作用于::after和::before
+## flex相关
 
-gap属性可以快速完成flex子项的间隔设置
+`flex` 可以作用于 `::after` 和 `::before`
+
+`gap` 属性可以快速完成 `flex` 子项的间隔设置
+
 ```css
 .flexLine {
     display: flex;
@@ -26,8 +34,10 @@ gap属性可以快速完成flex子项的间隔设置
 }
 ```
 
-# h5弹窗固定标题和底部按钮
-可以使用sticky定位，分别设置
+## h5弹窗固定标题和底部按钮
+
+可以使用 `sticky` 定位，分别设置
+
 ```css
 .title {
     position: sticky;
@@ -39,7 +49,8 @@ gap属性可以快速完成flex子项的间隔设置
 }
 ```
 
-# 父元素高度为 auto 时子元素无法继承 min-height 的解决方案
+## 父元素高度为 auto 时子元素无法继承 min-height 的解决方案
+
 ```css
 .fa {
     height: auto;
@@ -49,6 +60,7 @@ gap属性可以快速完成flex子项的间隔设置
     height: 50%; // 算不出值
 }
 ```
+
 ```css
 .fa {
     height: 0; // 改成0就可以了
@@ -59,47 +71,55 @@ gap属性可以快速完成flex子项的间隔设置
 }
 ```
 
-mdn 对 min-height 的解释是 
-1. CSS 属性 min-height 能够设置元素的最小高度。这样能够防止 height 属性的应用值小于 min-height 的值。
-2. 当 min-height 大于 max-height 或 height 时，元素的高度会设置为 min-height 的值。
+`mdn` 对 `min-height` 的解释是
 
-即：height 设置为 0 时，小于 100%，就会设置 height 为 100%;
-其实设置 height 为 100%/inherit 也能实现效果
+1. `CSS` 属性 `min-height` 能够设置元素的最小高度。这样能够防止 `height` 属性的应用值小于 `min-height` 的值。
+2. 当 `min-height` 大于 `max-height` 或 `height` 时，元素的高度会设置为 `min-height` 的值。
 
-# css 3D/2D 转换时有齿痕
+`即：height` 设置为 0 时，小于 100%，就会设置 `height` 为 100%;
+其实设置 `height` 为 100%/`inherit` 也能实现效果
+
+## css 3D/2D 转换时有齿痕
+
 `filter: blur(0.5px);`
-https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter
 
-# css 模块化
-- 命名约束，如 card\card__menu\card__menu-item\card__menu-item--active
-- CSS Modules，利用构建库来实现，如 vue 的 data-v-xxxxx
-- CSS-in-JS，把 css 手动写入 style 中，自然没有命名冲突的问题。如：styled-components
+参考：[MDN filter](https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter)
 
-# 单选按钮框组边框重叠问题
-1. antdv 是通过在设置 before 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
-2. 通过设置 margin-left: -1px; 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 z-index/position 来增加权重完成覆盖
+## css 模块化
 
-# 子节点触发滚动时 padding-right 失效
-1. 设置子节点为 inline-block，inline-flex，inline-grid，inline-table
+- 命名约束，如 `card\card__menu\card__menu-item\card__menu-item--active`
+- `CSS Modules`，利用构建库来实现，如 `vue` 的 `data-v-xxxxx`
+- `CSS-in-JS`，把 `css` 手动写入 `style` 中，自然没有命名冲突的问题。如：`styled-components`
 
-# flex: 1
-- flex-grow: 1：这个属性控制元素在容器中可用空间分配的比例。当容器有多余的空间时，flex-grow 指定元素应该如何“生长”来填充这些空间。值为 1 表示该元素会平分多余空间。
-- flex-shrink: 1：这个属性控制元素在容器空间不足时是否会缩小，以及缩小的比例。值为 1 表示当空间不足时，元素会根据需要缩小。
-- flex-basis: 0：这个属性设置元素的初始大小，通常指元素的“基础”宽度或高度。设置为 0 表示元素的初始尺寸为 0，所有可用空间将由 flex-grow 决定。
-```
-flex: 1 1 0;
-```
-即让每个元素自行决定大小
+## 单选按钮框组边框重叠问题
 
-# 项目全局重置样式
+1. antDv 是通过在设置 `before` 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
+2. 通过设置 `margin-left: -1px` 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 `z-index`/`position` 来增加权重完成覆盖
+
+## 子节点触发滚动时 padding-right 失效
+
+1. 设置子节点为 `inline-block`，`inline-flex`，`inline-grid`，`inline-table`
+
+## flex: 1
+
+可分为一下三个属性，等同于 `flex: 1 1 0`，即让每个元素自行决定大小
+
+- `flex-grow: 1`：这个属性控制元素在容器中可用空间分配的比例。当容器有多余的空间时，`flex-grow` 指定元素应该如何“生长”来填充这些空间。值为 1 表示该元素会平分多余空间。
+- `flex-shrink: 1`：这个属性控制元素在容器空间不足时是否会缩小，以及缩小的比例。值为 1 表示当空间不足时，元素会根据需要缩小。
+- `flex-basis: 0`：这个属性设置元素的初始大小，通常指元素的“基础”宽度或高度。设置为 0 表示元素的初始尺寸为 0，所有可用空间将由 `flex-grow` 决定。
+
+## 项目全局重置样式
+
 ```css
 * {
-    box-sizing: border-box; // 统一宽度计算规则
-    margin: 0; // 避免浏览器差异
+    /* 统一宽度计算规则 */
+    box-sizing: border-box;  
+    /* 避免浏览器差异 */
+    margin: 0; 
     padding: 0;
     word-break: break-all;
 
-    // 全局修改滚动条，不然后续在单独组件修改可能会引起组件库组件异常，如 el-table 会计算滚动条宽度来适配样式
+    /* 全局修改滚动条，不然后续在单独组件修改可能会引起组件库组件异常，如 el-table 会计算滚动条宽度来适配样式 */
     &::-webkit-scrollbar-track {
         border-radius: 6px;
         background: transparent;
@@ -134,6 +154,3 @@ body,
     font-size: 14px;
 }
 ```
-
-
-

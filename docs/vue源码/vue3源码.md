@@ -1,15 +1,15 @@
-本文 vue3 版本为 3.2.41，会对源码做简化，方便阅读
+# vue3 源码
 
-# 以 reactive 为切入点探讨响应式及依赖搜集
+## 以 reactive 为切入点探讨响应式及依赖搜集
 
 预备知识：
 
-1. vue2 的响应式是通过发布订阅模式完成的，在 get 里面搜集依赖，在 set 里面触发依赖；vue3 的大体模式也差不多
-2. vue2 的依赖搜集是 dep + watcher 作双向依赖搜集完成的；vue3 是建立全局的 WeakMap 结构完成，以劫持监听的 obj 为 key，value 是一个 Map 类型，以属性名为 key，value 是一个 Set 类型，Set 里面存放的是 effect 函数，effect 就是副作用函数，用来更新
+1. `vue2` 的响应式是通过发布订阅模式完成的，在 `get` 里面搜集依赖，在 `set` 里面触发依赖；`vue3` 的大体模式也差不多
+2. `vue2` 的依赖搜集是 `dep` + `watcher` 作双向依赖搜集完成的；`vue3` 是建立全局的 `WeakMap` 结构完成，以劫持监听的 `obj` 为 `key`，`value` 是一个 `Map` 类型，以属性名为 `key`，`value` 是一个 `Set` 类型，`Set` 里面存放的是 `effect` 函数，`effect` 就是副作用函数，用来更新
 
 ![输入图片说明](../../image/flowchart.png)
 
-## reactive
+### reactive
 
 ```ts
 // packages\reactivity\src\reactive.ts
@@ -134,7 +134,7 @@ export function trackEffects(
 }
 ```
 
-讲回 set 方法处理
+回到 `set` 方法处理
 
 ```ts
 // packages\reactivity\src\baseHandlers.ts
@@ -256,7 +256,8 @@ function triggerEffect(
 
 ```
 
-## ref
+### ref
+
 ```ts
 // packages\reactivity\src\ref.ts
 export function ref(value?: unknown) {
@@ -320,13 +321,14 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 }
 ```
 
-## reactive 与 ref 区别
-1. 处理的数据类型不同
-2. ref定义的变量可以做直接赋值全部替换，本周是多套了一层 `{_value:xxx}`
-3. ref定义的变量，需要通过 `.value` 访问，reactive定义的变量直接访问
-4. ref 对普通数据类型做了优化，不用依赖于 proxy
+### reactive 与 ref 区别
 
-1. ref 和 reactive 都有解构的风险，都可以用 const 处理
+1. 处理的数据类型不同
+2. `ref` 定义的变量可以做直接赋值全部替换，本周是多套了一层 `{_value:xxx}`
+3. `ref` 定义的变量，需要通过 `.value` 访问，`reactive` 定义的变量直接访问
+4. `ref` 对普通数据类型做了优化，不用依赖于 `proxy`
+
+`ref` 和 `reactive` 都有解构的风险，都可以用 `const` 处理
 
 ```vue
 <script setup>
@@ -356,10 +358,12 @@ Object.assign(msg2,{a:2}) // { "a": 2, "b": 2 }
 
 ```
 
-## 简易版依赖搜集派发
-参考链接 https://juejin.cn/post/7352079327117377548
+### 简易版依赖搜集派发
+
+参考链接：[简单的依赖收集和派发更新](https://juejin.cn/post/7352079327117377548)
 
 v3.2.7 为例
+
 ```js
 let activeEffect; // 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
 
@@ -461,8 +465,10 @@ setTimeout(() => {
 }, 2000);
 ```
 
-## 3.4 map 替代 set
+### 3.4 map 替代 set
+
 简单例子
+
 ``` js
 // 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
 let activeEffect; 
@@ -570,12 +576,14 @@ setTimeout(() => {
 }, 1000);
 ```
 
-## 3.5 双向链表
+### 3.5 双向链表
 
-- https://juejin.cn/post/7418548134593249289
-- https://juejin.cn/post/7419666298940440585
-- https://juejin.cn/post/7416908856867078182
-- https://juejin.cn/post/7418389059288727604
+参考链接
+
+- [Vue 3.5 双向链表如何实现依赖收集](https://juejin.cn/post/7418548134593249289)
+- [Vue 3.5 双向链表 Computed 篇](https://juejin.cn/post/7419666298940440585)
+- [Vue3: computed都懒更新了，version计数你还不知道？](https://juejin.cn/post/7416908856867078182)
+- [Vue3: 什么是computed的懒更新？不就一个问题的事！](https://juejin.cn/post/7418389059288727604)
 
 ![输入图片说明](../../image/1574d567063b46d2b5bdb935511250d9~tplv-73owjymdk6-jj-mark-v1_0_0_0_0_5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz_q75.webp)
 
@@ -789,20 +797,21 @@ setTimeout(() => {
 }, 1000);
 ```
 
-# scoped 如何实现 css 作用域
+## scoped 如何实现 css 作用域
+
 [掉了两根头发后，我悟了！vue3的scoped原来是这样避免样式污染（上）](https://juejin.cn/post/7384633860520083508)
 
 [掉了两根头发后，我悟了！vue3的scoped原来是这样避免样式污染（下）](https://juejin.cn/post/7386875278423982115)
 
-通过增加自定义属性 data-v-x 配合 css 的属性选择器完成作用域处理，data-v-x 会生成唯一 id
+通过增加自定义属性 `data-v-x` 配合 `css` 的属性选择器完成作用域处理，`data-v-x` 会生成唯一 `id`
 
-- html 增加自定义属性 data-v-x
-  + 编译时：根据 vue 文件路径和文件 code，利用 node 的 createHash 函数生成唯一 id，即 data-v-x 里面的 x；给编译后的vue组件对象增加一个属性__scopeId，属性值就是data-v-x。`const kt=Me(rt,[["__scopeId","data-v-ab97a25e"]]);export{kt as default};`
-  + 运行时：在 mountElement 函数生成 DOM 时，调用 setAttribute 方法给标签设置自定义属性 data-v-x，即传入的 __scopeId
-- CSS 选择器添加对应的属性选择器 [data-v-x]
-  + 编译时：同样生成唯一 id，然后替换掉原来的选择器。
+- `html` 增加自定义属性 `data-v-x`
+  - 编译时：根据 `vue` 文件路径和文件 `code`，利用 `node` 的 `createHash` 函数生成唯一 `id`，即 `data-v-x` 里面的 `x`；给编译后的 `vue` 组件对象增加一个属性 `__scopeId`，属性值就是`data-v-x`。`const kt=Me(rt,[["__scopeId","data-v-ab97a25e"]]);export{kt as default};`
+  - 运行时：在 `mountElement` 函数生成 `DOM` 时，调用 `setAttribute` 方法给标签设置自定义属性 `data-v-x`，即传入的 `__scopeId`
+- `CSS` 选择器添加对应的属性选择器 `[data-v-x]`
+  - 编译时：同样生成唯一 `id`，然后替换掉原来的选择器。
 
-> 题外：css 的 v-bind 原理就是 css 的自定义变量，生成自定义变量，在使用 v-bind 的地方用 var() 处理
+> 题外：`css` 的 `v-bind` 原理就是 `css` 的自定义变量，生成自定义变量，在使用 `v-bind` 的地方用 `var()` 处理
 
 ```css
 :root {
@@ -814,12 +823,13 @@ p {
 }
 ```
 
-# diff 算法
+## diff 算法
 
-## vue3 diff 算法
+### vue3 diff 算法
 
 前置知识
-用 JavaScript 实现寻找最长严格递增子序列长度的代码
+用 `JavaScript` 实现寻找最长严格递增子序列长度的代码
+
 ```js
 function lengthOfLIS(nums) {
     if (nums.length === 0) return 0;
@@ -857,22 +867,22 @@ const output = lengthOfLIS(nums);
 console.log(output); // 输出 4
 ```
 
-不同于 vue2 的双端 diff 算法，vue3 使用的是快速 diff 算法（部分/全部有key的情况下生效），性能时优于双端 diff 算法的，借鉴了纯文本Diff算法的思路，步骤如下
+不同于 `vue2` 的双端 `diff` 算法，`vue3` 使用的是快速 `diff` 算法（部分/全部有 `key` 的情况下生效），性能时优于双端 `diff` 算法的，借鉴了纯文本 `Diff` 算法的思路，步骤如下
+
 - 对比头部节点，相同则复用
 - 对比尾部节点，相同则复用
 - 对比剩余节点
-  + 只有新节点：创建新节点
-  + 只有老节点：删除老节点
-  + 都有：
+  - 只有新节点：创建新节点
+  - 只有老节点：删除老节点
+  - 都有：
     - 获取新节点和老节点的最长递增子序列
     - 更新那些能找到对应新子节点的旧子节点
     - 卸载那些找不到对应新子节点的旧子节点
     - 从后往前遍历新子节点
 
+#### 静态提升
 
-
-### 静态提升
-jsx 写法时没有的，所以官方是提倡使用 template 写法
+`jsx` 写法时没有的，所以官方是提倡使用 `template` 写法
 
 ``` html
 <div>
@@ -882,7 +892,7 @@ jsx 写法时没有的，所以官方是提倡使用 template 写法
 </div>
 ```
 
-像上面的前两个节点是不需要更新的，是可以不经历 diff 比较的，可以把对应的节点移出渲染函数外。
+像上面的前两个节点是不需要更新的，是可以不经历 `diff` 比较的，可以把对应的节点移出渲染函数外。
 
 参考链接：
 
@@ -890,8 +900,9 @@ jsx 写法时没有的，所以官方是提倡使用 template 写法
 
 [编译优化之“静态提升”](https://vue-compiler.iamouyang.cn/template/hoistStatic.html)
 
-### 靶向更新（更新类型标记）
-```
+#### 靶向更新（更新类型标记）
+
+```html
 <!-- 仅含 class 绑定 -->
 <div :class="{ active }"></div>
 
@@ -901,10 +912,11 @@ jsx 写法时没有的，所以官方是提倡使用 template 写法
 <!-- 仅含文本子节点 -->
 <div>{{ dynamic }}</div>
 ```
-- 编译阶段：如上面的示例，需要对比更新的地方只是节点的部分，会生成对应的标记。如节点1的标记是`PatchFlags.CLASS`。
+
+- 编译阶段：如上面的示例，需要对比更新的地方只是节点的部分，会生成对应的标记。如节点1的标记是 `PatchFlags.CLASS`。
 - 运行阶段：
-  + 会把所有的动态节点放在 block 节点的 dynamicChildren 属性里面，block 节点在根节点和 v-if、v-for 下都会生成
-  + 然后在渲染时会把所有动态节点进行 diff，最终会通过 patchElement 函数根据 PatchFlags 来判断是什么类型的节点，执行对应的处理方法。比如 class 和 style 的处理是不一样的
+  - 会把所有的动态节点放在 `block` 节点的 `dynamicChildren` 属性里面，`block` 节点在根节点和 `v-if`、`v-for` 下都会生成
+  - 然后在渲染时会把所有动态节点进行 `diff`，最终会通过 `patchElement` 函数根据 `PatchFlags` 来判断是什么类型的节点，执行对应的处理方法。比如 `class` 和 `style` 的处理是不一样的
 
 参考链接：
 
@@ -912,17 +924,21 @@ jsx 写法时没有的，所以官方是提倡使用 template 写法
 
 [靶向更新](https://vue-compiler.iamouyang.cn/template/patchFlag.html)
 
-### 树结构打平
-就是上面说的block 节点，会包含所有动态节点
+#### 树结构打平
+
+就是上面说的 `block` 节点，会包含所有动态节点
 
 [树结构打平](https://cn.vuejs.org/guide/extras/rendering-mechanism#tree-flattening)
 
-## 与 vue2/react 对比
-vue2 使用的是双端 diff 算法，通过新旧的头头尾尾对比，向中间靠拢
-react18 的 Fiber 是一个单向链表结构，简单来说，就是只能从左往右处理。eact18 没有使用双端 diff 算法，官方解释是 fiber 节点上都没有反向指针，认为对于列表反转和需要进行双端搜索的场景是少见的
+### 与 vue2/react 对比
 
-## key 作用
-在 vue 中是用来辅助节点唯一性判断，但是不是完全根据 key 来判断的，比如下面是 vue2 的判断逻辑，可以看出来，key 是其中一个判断条件，但是不是唯一的判断条件。
+`vue2` 使用的是双端 `diff` 算法，通过新旧的头头尾尾对比，向中间靠拢
+`react18` 的 `Fiber` 是一个单向链表结构，简单来说，就是只能从左往右处理。`react18` 没有使用双端 `diff` 算法，官方解释是 `fiber` 节点上都没有反向指针，认为对于列表反转和需要进行双端搜索的场景是少见的
+
+### key 作用
+
+在 `vue` 中是用来辅助节点唯一性判断，但是不是完全根据 `key` 来判断的，比如下面是 `vue2` 的判断逻辑，可以看出来，`key` 是其中一个判断条件，但是不是唯一的判断条件。
+
 ```js
 function sameVnode(a, b) {
   return (
@@ -936,6 +952,7 @@ function sameVnode(a, b) {
   )
 }
 ```
+
 ```js
 // vue3
 export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
@@ -943,8 +960,10 @@ export function isSameVNodeType(n1: VNode, n2: VNode): boolean {
 }
 ```
 
-以 index 为 key 会导致的问题：
-1. 不必要的性能消耗，因为不能通过 key 来判断节点是否相同，所以每次都会重新渲染。以下为例，点击 ADD 按钮时，会重新渲染所有节点，而不是只渲染新增的节点。可以通过 f12 观察（手动修改节点内容也可以）
+以 `index` 为 `key` 会导致的问题：
+
+1.不必要的性能消耗，因为不能通过 `key` 来判断节点是否相同，所以每次都会重新渲染。以下为例，点击 `ADD` 按钮时，会重新渲染所有节点，而不是只渲染新增的节点。可以通过 `f12` 观察（手动修改节点内容也可以）
+
 ```vue
 <template>
   <div>
@@ -961,7 +980,8 @@ const arr = ref(["a", "b", "c"]);
 </script>
 ```
 
-2. 可能会导致渲染错误，比如列表顺序改变，但是没有使用 key，会导致渲染错误。如下所示，在输入框有值的情况下，新增节点会导致错位
+2.可能会导致渲染错误，比如列表顺序改变，但是没有使用 `key`，会导致渲染错误。如下所示，在输入框有值的情况下，新增节点会导致错位
+
 ```vue
 <template>
   <div>
@@ -979,24 +999,24 @@ const arr = ref(["a", "b", "c"]);
 </script>
 ```
 
-此外，如上文所述，在缺乏 key 的情况下，vue3 无法使用快速 diff 算法，对于节点会采用就地更新，性能会下降。
+此外，如上文所述，在缺乏 `key` 的情况下，`vue3` 无法使用快速 `diff` 算法，对于节点会采用就地更新，性能会下降。
 
-> vue 官网描述
+> `vue` 官网描述
 
-Vue 默认按照“就地更新”的策略来更新通过 v-for 渲染的元素列表。当数据项的顺序改变时，Vue 不会随之移动 DOM 元素的顺序，而是就地更新每个元素，确保它们在原本指定的索引位置上渲染。
+`Vue` 默认按照“就地更新”的策略来更新通过 `v-for` 渲染的元素列表。当数据项的顺序改变时，`Vue` 不会随之移动 `DOM` 元素的顺序，而是就地更新每个元素，确保它们在原本指定的索引位置上渲染。
 
-默认模式是高效的，但只适用于列表渲染输出的结果不依赖子组件状态或者临时 DOM 状态 (例如表单输入值) 的情况。
+默认模式是高效的，但只适用于列表渲染输出的结果不依赖子组件状态或者临时 `DOM` 状态 (例如表单输入值) 的情况。
 
-# nextTick 方法
+## nextTick 方法
 
 官网描述的是：
 
-- vue3 等待下一次 DOM 更新刷新的工具方法。
-- vue2 将回调延迟到下次 DOM 更新循环之后执行。在修改数据之后立即使用它，然后等待 DOM 更新。它跟全局方法 Vue.nextTick 一样，不同的是回调的 this 自动绑定到调用它的实例上。
+- `vue3` 等待下一次 `DOM` 更新刷新的工具方法。
+- `vue2` 将回调延迟到下次 `DOM` 更新循环之后执行。在修改数据之后立即使用它，然后等待 `DOM` 更新。它跟全局方法 `Vue.nextTick` 一样，不同的是回调的 `this` 自动绑定到调用它的实例上。
 
-因为操作 DOM 的方法都是同步宏任务，所以放要执行的函数放在微任务/宏任务中，必然是要等待 DOM 更新完成之后才能执行。
+因为操作 `DOM` 的方法都是同步宏任务，所以放要执行的函数放在微任务/宏任务中，必然是要等待 `DOM` 更新完成之后才能执行。
 
-## vue2 nextTick 实现
+### vue2 nextTick 实现
 
 ```js
 // 优先使用 Promise 生成微任务
@@ -1042,7 +1062,8 @@ if (typeof Promise !== "undefined" && isNative(Promise)) {
 }
 ```
 
-## vue3 nextTick 实现
+### vue3 nextTick 实现
+
 ```js
 // 由于不兼容 IE 等落后浏览器，所以直接使用 Promise 生成微任务
 const resolvedPromise = /*#__PURE__*/ Promise.resolve() as Promise<any>
@@ -1057,30 +1078,35 @@ export function nextTick<T = void>(
 }
 ```
 
-# 虚拟 DOM
-vue react 使用的是虚拟 DOM
+## 虚拟 DOM
 
-svelte 是直接操作真实 DOM
+`vue` `react` 使用的是虚拟 `DOM`
 
-## 虚拟 DOM 的优势
-1. 跨平台：uniapp/React Native/weex，通过抽离操作 DOM 的能力，实现跨平台
-2. 性能优化：对比直接操作 dom提高了上限，降低了下限（虽然可以通过静态编译，v-one订单来做优化，但终究还是要经过函数处理）
-3. 简化开发：抽离 dom 的处理，向 MVVM 模式靠拢，降低开发者心智负担
+`svelte` 是直接操作真实 `DOM`
 
-## 去虚拟 DOM
-Svelte 将你的代码编译成体积小、不依赖框架的普通 JS 代码，让你的应用程序无论启动还是运行都变得迅速。
+### 虚拟 DOM 的优势
+
+1. 跨平台：`uniApp`/`React Native`/`weex`，通过抽离操作 `DOM` 的能力，实现跨平台
+2. 性能优化：对比直接操作 `dom` 提高了上限，降低了下限（虽然可以通过静态编译，`v-one` 订单来做优化，但终究还是要经过函数处理）
+3. 简化开发：抽离 `dom` 的处理，向 `MVVM` 模式靠拢，降低开发者心智负担
+
+### 去虚拟 DOM
+
+`Svelte` 将你的代码编译成体积小、不依赖框架的普通 `JS` 代码，让你的应用程序无论启动还是运行都变得迅速。
 （但只适合小项目，组件数量到一定地步时，没有优势）
 
-理论上，也可以跨平台，从编译后的产物可以看起来，对原生的 DOM 操作方法做了封装，所以可以从这里下手，兼容跨端的能力
+理论上，也可以跨平台，从编译后的产物可以看起来，对原生的 `DOM` 操作方法做了封装，所以可以从这里下手，兼容跨端的能力
 
-## v3.5 在内存上 -35% 如何实现
-参考 [#10407](https://github.com/vuejs/core/pull/10407) 提交，优化了 vue 的 scheduler 任务调度器，运用位运算替代原本的基本类型的布尔值计算主要的代码就是替换了 SchedulerJobFlags 中的一个数字类型和几个布尔类型，换成了四位的二进制表示，通过左移、位或运算实现相同的任务调度器逻辑功能
+### v3.5 在内存上 -35% 如何实现
 
-简单看了下源码，可以理解成以前key到effect的关联是用Set(3.0版本)或者Map(3.4版本)，由于这两个对象的创建以及更新的性能消耗比较大，所以改成用链表来记录依赖关系。同时version记录是为了减少不必要的effect执行。
+参考 [#10407](https://github.com/vuejs/core/pull/10407) 提交，优化了 `vue` 的 `scheduler` 任务调度器，运用位运算替代原本的基本类型的布尔值计算主要的代码就是替换了 `SchedulerJobFlags` 中的一个数字类型和几个布尔类型，换成了四位的二进制表示，通过左移、位或运算实现相同的任务调度器逻辑功能
 
-> 题外，使用 link 重构依赖搜集派发机制，也在一定程度上降低了内存，避免反复创建 dep 及其容器
+简单看了下源码，可以理解成以前 `key` 到 `effect` 的关联是用 `Set` (3.0版本)或者 `Map` (3.4版本)，由于这两个对象的创建以及更新的性能消耗比较大，所以改成用链表来记录依赖关系。同时version记录是为了减少不必要的 `effect` 执行。
 
-# 实现类 listen
+> 题外，使用 `link` 重构依赖搜集派发机制，也在一定程度上降低了内存，避免反复创建 `dep` 及其容器
+
+## 实现类 listen
+
 ```js
 // 根据组件获取事件
 export function getListen(component: any) {
@@ -1101,7 +1127,7 @@ export function getListen(component: any) {
 }
 ```
 
-# keep-alive
+## keep-alive
 
 ``` ts
 // 存储组件的缓存
@@ -1110,9 +1136,9 @@ const cache: Cache = new Map();
 const keys: Keys = new Set();
 ```
 
-1. 用监听属性，来动态处理缓存的组件
+1.用监听属性，来动态处理缓存的组件
 
-```
+```js
 watch(
   () => [props.include, props.exclude],
   ([include, exclude]) => {
@@ -1127,9 +1153,9 @@ watch(
 );
 ```
 
-2. 在 mounted 和 updated 生命周期中，缓存组件
+2.在 mounted 和 updated 生命周期中，缓存组件
 
-```
+```js
 const cacheSubtree = () => {
     if (pendingCacheKey != null) {
         if (isSuspense(instance.subTree.type)) {
@@ -1145,9 +1171,9 @@ onMounted(cacheSubtree)
 onUpdated(cacheSubtree)
 ```
 
-3. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
+3.渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
 
-```
+```js
 const cachedVNode = cache.get(key)
 if (cachedVNode) {
     vnode.el = cachedVNode.el
@@ -1167,9 +1193,9 @@ if (cachedVNode) {
 }
 ```
 
-4. 渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
+4.渲染时判断组件是否已经缓存，如果缓存了，则直接使用缓存的组件
 
-```
+```js
 function pruneCacheEntry(key: CacheKey) {
     const cached = cache.get(key) as VNode
     if (cached && (!current || !isSameVNodeType(cached, current))) {
@@ -1182,13 +1208,14 @@ function pruneCacheEntry(key: CacheKey) {
 }
 ```
 
-# 修改数据后，为什么 DOM 没有立即变化
-1. DOM 变化有 patch 方法来处理
-2. patch 方法要在 render 里面调用，即渲染函数（渲染watcher）/更新函数
-3. 渲染/更新函数 会作为依赖副作用（effect）被搜集，执行时是从内部任务队列中执行，是异步执行，所以是最新的
+## 修改数据后，DOM 不会立即变化
+
+1. `DOM` 变化有 `patch` 方法来处理
+2. `patch` 方法要在 `render` 里面调用，即渲染函数（渲染 `watcher`）/更新函数
+3. 渲染/更新函数 会作为依赖副作用 `effect` 被搜集，执行时是从内部任务队列中执行，是异步执行，所以是最新的
 4. 即代码是同步执行（宏任务），更新时是异步执行
 
-```
+```ts
 // 可以看出来，componentUpdateFn 更新函数被搜集成 effect，并用 queueJob 做处理，放在 scheduler 中
 instance.scope.on()
 const effect = (instance.effect = new ReactiveEffect(componentUpdateFn))
@@ -1201,11 +1228,11 @@ job.id = instance.uid
 effect.scheduler = () => queueJob(job)
 ```
 
-# 为什么有组件没有属性 data-v-xxxxx
+## 组件 data-v-xxxxx 属性消失
 
-如下代码在 `vue3 + elementui-plus` 中，封装的组件 `my-cascader` 是不能生效的，因为组件没有属性 `data-v-xxxxx`，但是 `.my-cascader` 是有的，即 `.my-cascader`[data-v-xxxxx]，导致样式没有生效
+如下代码在 `vue3 + elementUi-plus` 中，封装的组件 `my-cascader` 是不能生效的，因为组件没有属性 `data-v-xxxxx`，但是 `.my-cascader` 是有的，即 `.my-cascader`[data-v-xxxxx]，导致样式没有生效
 
-```
+```vue
 <template>
     <el-cascader
          class="my-cascader"
@@ -1218,20 +1245,20 @@ effect.scheduler = () => queueJob(job)
 </style>
 ```
 
-> 为什么组件没有属性 data-v-xxxxx
+> 为什么组件没有属性 `data-v-xxxxx`
 > 参考[html 上的 data-v-xxxxx](https://vue-compiler.iamouyang.cn/style/scoped-template.html)
 
 `data-v-xxxxx` 是由 `scopeId` 属性生成的，`scopeId` 是 `plugin-vue` 生成的。会在渲染节点时通过 `el.setAttribute(id, "")` 写入到节点上。
 
 > 为什么 `my-cascader` 组件编译有生成 `__scopeId`，但是没有 `data-v-xxxxx`
 
-问题的分歧点在于 patch 方法中，执行了 `processComponent` 方法而非 `processElement`，`processElement` 正是添加 `data-v-xxxxx` 的地方。`processElement` 是处理多节点的，证明组件是多节点组件。
+问题的分歧点在于 `patch` 方法中，执行了 `processComponent` 方法而非 `processElement`，`processElement` 正是添加 `data-v-xxxxx` 的地方。`processElement` 是处理多节点的，证明组件是多节点组件。
 
 > 为什么 `my-cascader` 是多节点组件
 
 通过查看代码，问题显而易见
 
-```
+```vue
 <!-- el-cascader -->
 <template>
   <el-tooltip>
@@ -1253,5 +1280,4 @@ effect.scheduler = () => queueJob(job)
 </template>
 ```
 
-> 扩展：使用 `teleport` 这类内置组件也是不行的，`processElement` 方法处理的是普通标签，所以 vue3 的对话框组件多半都有这个问题，一般都是用 `teleport` 支持插入 `body` 的
-
+> 扩展：使用 `teleport` 这类内置组件也是不行的，`processElement` 方法处理的是普通标签，所以 `vue3` 的对话框组件多半都有这个问题，一般都是用 `teleport` 支持插入 `body` 的

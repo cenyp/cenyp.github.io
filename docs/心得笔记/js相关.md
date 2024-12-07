@@ -1,58 +1,71 @@
-# DocumentFragment
-它被作为一个轻量版的 Document 使用，就像标准的 document 一样，存储由节点（nodes）组成的文档结构。与 document 相比，最大的区别是它不是真实 DOM 树的一部分，它的变化不会触发 DOM 树的重新渲染，且不会对性能产生影响。
+# JavaScript
 
-https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment
+## DocumentFragment
 
-# IntersectionObserver
-创建一个新的 IntersectionObserver 对象，当其监听到目标元素的可见部分（的比例）超过了一个或多个阈值（threshold）时，会执行指定的回调函数。
+它被作为一个轻量版的 `Document` 使用，就像标准的 `document` 一样，存储由节点 `nodes` 组成的文档结构。与 `document` 相比，最大的区别是它不是真实 `DOM` 树的一部分，它的变化不会触发 `DOM` 树的重新渲染，且不会对性能产生影响。
 
-https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver
+参考链接：[MDN DocumentFragment](https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment)
 
-# 跨标签页/窗口通讯
-1. 缓存：localstorage等等
-2. serviceWorkers 利用 Service Workers，各个标签页可以通过 clients.matchAll() 方法找到所有其他客户端（如打开的标签页），然后使用 postMessage 发送消息
-3. BroadcastChannel 是一种在相同源的不同浏览器上下文之间实现简单高效通信的方法。之前很火的【跨窗口量子纠缠粒子效果】就是这个原理
-4. SharedWorker 提供了一种更传统的跨文档通信机制，在不同文档间共享状态和数据。你需要创建一个 SharedWorker 对象，并在所有的文档里监听来自该 worker 的消息。
-5. window.postMessage 是Web API中的一个方法，它允许来自不同源的文档安全地相互通信，通过调用 postMessage() 方法并指定目标窗口的origin，可以将消息发送到其他标签页，并通过监听message事件来接收消息。
+## IntersectionObserver
 
-window.open 也能跨窗口传递参数、声明 window[xxx] = xxx 或者是 url 上处理
+创建一个新的 `IntersectionObserver` 对象，当其监听到目标元素的可见部分（的比例）超过了一个或多个阈值 `threshold` 时，会执行指定的回调函数。
 
-# 执行环境
-JavaScript中主要存在三种执行环境：
+参考链接：[MDN IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
+
+## 跨标签页/窗口通讯
+
+1. 缓存：`localstorage` 等等
+2. `serviceWorkers` 利用 `Service Workers`，各个标签页可以通过 `clients.matchAll()` 方法找到所有其他客户端（如打开的标签页），然后使用 `postMessage` 发送消息
+3. `BroadcastChannel` 是一种在相同源的不同浏览器上下文之间实现简单高效通信的方法。之前很火的【跨窗口量子纠缠粒子效果】就是这个原理
+4. `SharedWorker` 提供了一种更传统的跨文档通信机制，在不同文档间共享状态和数据。你需要创建一个 `SharedWorker` 对象，并在所有的文档里监听来自该 worker 的消息。
+5. `window.postMessage` 是 `Web API` 中的一个方法，它允许来自不同源的文档安全地相互通信，通过调用 `postMessage()` 方法并指定目标窗口的 `origin`，可以将消息发送到其他标签页，并通过监听 `message` 事件来接收消息。
+
+`window.open` 也能跨窗口传递参数、声明 window[xxx] = xxx 或者是 url 上处理
+
+## 执行环境
+
+`JavaScript` 中主要存在三种执行环境：
+
 1. 全局执行环境
 2. 函数执行环境
 3. eval执行环境（可以看看下面不可控的例子）
 
-# eval函数
-计算 JavaScript 字符串，并把它作为脚本代码来执行。
+## eval函数
+
+计算 `JavaScript` 字符串，并把它作为脚本代码来执行。
+
 ```js
-    eval('1+1') // 2
+  eval('1+1') // 2
 ```
-这个eval非常危险，常用于攻击、侵入网站；可以通过设置一下头部来限制；意思是限制各种 src 资源的加载必须通过 https
+
+这个 `eval` 非常危险，常用于攻击、侵入网站；可以通过设置一下头部来限制；意思是限制各种 `src` 资源的加载必须通过 `https`
+
 ```html
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*; img-src https://*; child-src 'none';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*; img-src https://*; child-src 'none';">
 ```
 
 不建议使用，会导致代码不可控
+
 ```js
-var geval=eval;                //使用别名调用evla将是全局eval
+var gEval = eval;                //使用别名调用 eval 将是全局eval
 var x="global",y="global";    //两个全局变量
 function f(){                //函数内执行的是局部eval
     var x="local";            //定义局部变量
-    eval("x += ' chenged';");//直接使用eval改变的局部变量的值
+    eval("x += ' changed';");//直接使用eval改变的局部变量的值
     return x;                //返回更改后的局部变量
 }
 function g(){                //这个函数内执行了全局eval
     var y="local";
-    geval("y += ' changed';"); //直接调用改变了全局变量的值
+    gEval("y += ' changed';"); //直接调用改变了全局变量的值
     return y;
 }
 console.log(f(),x);            //改变了布局变了，输出 “local changed global”
 console.log(g(),y);            //改变了全局变量，输出  “local global changed”
 ```
 
-# 事件循环进阶
-```js 
+## 事件循环进阶
+
+```js
 async function async1() {
   await async2();
   console.log("async1");
@@ -85,18 +98,21 @@ new Promise((resolve) => {
     console.log("promise-5");
   });
 ```
-执行结果为：
-async2
-promise      
-async2-return
-async1
-promise-1
-promise-2
-promise-3
-promise-4
-promise-5
 
-# js 类型判断
+执行结果为：
+
+- async2
+- promise
+- async2-return
+- async1
+- promise-1
+- promise-2
+- promise-3
+- promise-4
+- promise-5
+
+## js 类型判断
+
 ```ts
 export const isArray = Array.isArray
 export const isMap = (val: unknown): val is Map<any, any> =>
@@ -122,7 +138,8 @@ export const toTypeString = (value: unknown): string =>
   objectToString.call(value)
 ```
 
-# 异步并发控制
+## 异步并发控制
+
 ```js
 /**
  * 执行顺序：
@@ -165,8 +182,10 @@ function limitedConcurrency(promiseFactories, limit) {
 }
 ```
 
-# object 与 Map
-一般说 object 是无序的，Map 是有序的；但是浏览器一般会做优化，如下
+## object 与 Map
+
+一般说 `object` 是无序的，`Map` 是有序的；但是浏览器一般会做优化，如下
+
 ```js
 let obj = {}
 obj.b = 2
@@ -174,53 +193,65 @@ obj.a = 1
 console.log(Object.keys(obj)) // (2) ['b', 'a']
 ```
 
-# 轮播动画/循环动画
-如轮播图，可以抽象成三个图片做循环动画，如：初始为 [1,2,3]
-1. 方案一：动画实现。如向右滚动，1=>2，2=>3，3=>1，改变 css 定位，利用 transition 属性/vue transition 组件，分别执行对应的过渡动画，做 translateX 偏移。*不适合拖拽移动，要自动播放*
-2. 方案二：图片重置。扩充原数组（为了增加流畅性）为 [3,1,2,3,1]，在滚动到 第一个 3 /最后一个 1 时，重置数组。如 currentIndex 为 第一个 ，则重置 currentIndex 指向到最后一个 3，可以让用户感觉是循环滚动。*适合拖拽移动，要有停顿时间来重置 current *
+## 轮播动画/循环动画
 
-场景：30 个数据循环播放，只显示 10 个数据。对于单个数据来说，是从下到上的循环移动（位置 11 到 0 的移动），设置 12 个 DOM，用定时器让她们实现向上移动效果，当到达 0 位置时，重置到 11 位置，实现循环效果。
+如轮播图，可以抽象成三个图片做循环动画，如：初始为 `[1,2,3]`
 
-# var 作用域
-var 的作用域是函数作用域或全局作用域（扩展：js 作用域：全局/局部【函数/块（let/const）】/模块【es6模块/commonjs】）
+1. 方案一：动画实现。如向右滚动，`1=>2`，`2=>3`，`3=>1`，改变 `css` 定位，利用 `transition` 属性，或者是 `vue transition` 组件，分别执行对应的过渡动画，做 `translateX` 偏移。*不适合拖拽移动，要自动播放*
+2. 方案二：图片重置。扩充原数组（为了增加流畅性）为 `[3,1,2,3,1]`，在滚动到 第一个 3 或者最后一个 1 时，重置数组。如 `currentIndex` 为 第一个 ，则重置 `currentIndex` 指向到最后一个 3，可以让用户感觉是循环滚动。*适合拖拽移动，要有停顿时间来重置 `current`*
 
-如果不同文件同时用 var 声明同一变量，在使用时会冲突，避免方法如下：
-1. 使用 ES6 模块（import/export）或 CommonJS 模块（require/module.exports）来避免使用全局变量。这样每个模块都有自己的作用域
-2.使用 IIFE (立即调用函数表达式)
+场景：30 个数据循环播放，只显示 10 个数据。对于单个数据来说，是从下到上的循环移动（位置 11 到 0 的移动），设置 12 个 `DOM`，用定时器让她们实现向上移动效果，当到达 0 位置时，重置到 11 位置，实现循环效果。
+
+## var 作用域
+
+`var` 的作用域是函数作用域或全局作用域（扩展：`js` 作用域：`全局`/`局部(函数/块(let/const))`/`模块(es6模块/commonjs)`）
+
+如果不同文件同时用 `var` 声明同一变量，在使用时会冲突，避免方法如下：
+
+1. 使用 `ES6` 模块 `import/export` 或 `CommonJS` 模块 `require/module.exports` 来避免使用全局变量。这样每个模块都有自己的作用域
+2.使用 `IIFE` (立即调用函数表达式)
+
 ```js
 (function() {
     var privateVar = 'I am private';
 })();
 ```
 
-# 组件和模块
-模块 (Module)
+## 组件和模块
+
+模块 `Module`
+
 - 模块是将代码组织成独立单位的方式。每个模块可以导出特定的变量、函数或类，并在其他模块中导入使用。
 - 特点：
-  + 作用域：模块具有自己的作用域，避免了全局命名冲突。
-  + 导入导出：通过 export 和 import 语法来共享功能。
-  + 重用性：模块使得代码更易于重用和维护。
+  - 作用域：模块具有自己的作用域，避免了全局命名冲突。
+  - 导入导出：通过 `export` 和 `import` 语法来共享功能。
+  - 重用性：模块使得代码更易于重用和维护。
 
-组件 (Component)
-- 组件通常用于构建用户界面的独立单元，尤其是在现代框架（如 React、Vue、Angular）中。组件可以包含模板、样式和逻辑。
+组件 `Component`
+
+- 组件通常用于构建用户界面的独立单元，尤其是在现代框架（如 `React、Vue、Angular`）中。组件可以包含模板、样式和逻辑。
 - 特点：
-  + 单一性：组件通常包含自己的状态和行为，使得 UI 的每个部分都可以独立管理。各个组件相对独立
-  + 复用性：组件可以在不同的地方被复用，增强了代码的可维护性
-  + 可扩展性：如 vue 的插槽，或者是通过参数传递
-  + 可读性/可维护性：做好文档/注释工作，避免不可读/复杂代码
+  - 单一性：组件通常包含自己的状态和行为，使得 UI 的每个部分都可以独立管理。各个组件相对独立
+  - 复用性：组件可以在不同的地方被复用，增强了代码的可维护性
+  - 可扩展性：如 `vue` 的插槽，或者是通过参数传递
+  - 可读性/可维护性：做好文档/注释工作，避免不可读/复杂代码
 
-# 监听 localStorage 数据变化
+## 监听 localStorage 数据变化
+
 ```js
 // 这种方法只适用于跨页签的 LocalStorage 修改，在同一页签下无法触发该事件
 window.addEventListener("storage", (event) => {      
   ...
 });
 ```
+
 解决方案：
+
 1. 轮询存储数据
 2. 封装方法，建立发布订阅模式监听数据
 
-# 错误捕捉
+## 错误捕捉
+
 ```js
 // 监听同步代码。无法处理异步代码
 try {
@@ -243,12 +274,15 @@ new Promise((res, rej) => {})
     })
 ```
 
-# onfocus 事件
-当标签页面切换/浏览器隐藏显示，会触发 focus 事件
+## onfocus 事件
 
-# Reflect 和 object
-1. 现阶段，某些方法同时在 Object 和 Reflect 对象上部署，未来的新方法将只部署在 Reflect 对象上。
-2. 在使用部分方法是，不会报错，会返回 false 
+当标签页面切换/浏览器隐藏显示，会触发 `focus` 事件
+
+## Reflect 和 object
+
+1. 现阶段，某些方法同时在 `Object` 和 `Reflect` 对象上部署，未来的新方法将只部署在 `Reflect` 对象上。
+2. 在使用部分方法是，不会报错，会返回 `false`
+
 ```js
 const obj = {};
 
@@ -276,8 +310,10 @@ try {
 }
 ```
 
-为什么Vue3要在Proxy中使用Reflect
-1. 保持正确的 this 绑定，不是指向 Proxy 而是 target
+为什么 `Vue3` 要在 `Proxy` 中使用 `Reflect`
+
+1. 保持正确的 `this` 绑定，不是指向 `Proxy` 而是 `target`
+
 ```js
 const person = {
   name: '张三',
@@ -306,15 +342,19 @@ const p1 = {
 console.log(p1.Fullname) // 李四
 ```
 
-# 文件预览
-https://view.officeapps.live.com/op/view.aspx?src=
+## 文件预览
 
-# promise
-## promise.all vs promise.race vs promise.allSettled
+`https://view.officeapps.live.com/op/view.aspx?src=`
 
-### promise.all
-all 当有 reject 返回时，all 就是 reject 状态，返回第一个 reject 的值。但是数组中的异步依旧会执行，不管整体状态如何
-```vue
+## promise
+
+### promise.all vs promise.race vs promise.allSettled
+
+#### promise.all
+
+`all` 当有 `reject` 返回时，`all` 就是 `reject` 状态，返回第一个 `reject` 的值。但是数组中的异步依旧会执行，不管整体状态如何
+
+```js
 const promise1 = new Promise((resolve, reject) => {
     console.log('Promise 1');
     resolve('Promise 1 resolve')
@@ -338,9 +378,11 @@ catch Promise 2 reject
  */
 ```
 
-## promise.race
-与 all 不同的是，race 是看哪个 promise 先执行完，返回第一个执行完的 promise 的值，不管状态如何。而且数组中的异步依旧会执行
-``` vue
+#### promise.race
+
+与 `all` 不同的是，`race` 是看哪个 `promise` 先执行完，返回第一个执行完的 `promise` 的值，不管状态如何。而且数组中的异步依旧会执行
+
+``` js
 const promise1 = new Promise((resolve, reject) => {
     // setTimeout(() => {
         console.log('Promise 1');
@@ -366,9 +408,11 @@ Promise 2
  */
 ```
 
-### promise.allSettled
-allSettled 是不管 promise 的状态如何，都会返回所有 promise 的结果，并且结果中包含状态和值。
-``` vue
+#### promise.allSettled
+
+`allSettled` 是不管 `promise` 的状态如何，都会返回所有 `promise` 的结果，并且结果中包含状态和值。
+
+``` js
 const promise1 = new Promise((resolve, reject) => {
     console.log('Promise 1');
         resolve('Promise 1 resolve')
@@ -393,10 +437,11 @@ then [
  */
 ```
 
-### Promise.catch 与 Promise.then 的第二个参数
-Promise.catch 的错误捕捉是全局的，针对整个 Promise，在有多个 then 下，都能触发 catch 
+#### Promise.catch 与 Promise.then 的第二个参数
 
-Promise.then 的第二个参数优先级高于 Promise.catch，设置了就不会触发 Promise.catch
+`Promise.catch` 的错误捕捉是全局的，针对整个 `Promise`，在有多个 `then` 下，都能触发 `catch`
+
+`Promise.then` 的第二个参数优先级高于 `Promise.catch`，设置了就不会触发 `Promise.catch`
 
 ```js
 new Promise((res, req) => {
@@ -420,7 +465,8 @@ new Promise((res, req) => {
   });
 ```
 
-# map 方法使用及 elementui-plus 表格组件选中问题
+## map 方法使用及 elementUI-plus 表格组件选中问题
+
 ```js
 const arr = [{ a: 1 }, { a: 2 }]
 const arr2 = arr.map(item => {
@@ -438,4 +484,4 @@ console.log(arr[0] === arr2[0])
 console.log(arr[1] === arr2[1])
 ```
 
-可以清楚看出，map并没有改变原数组的内存地址。在 el-table 中是用 row 作为行数据标识，当行选中时，改变改行的数据内存地址，会被认为是两个数据，影响选中效果，会有异常
+可以清楚看出，`map` 并没有改变原数组的内存地址。在 `el-table` 中是用 `row` 作为行数据标识，当行选中时，改变改行的数据内存地址，会被认为是两个数据，影响选中效果，会有异常

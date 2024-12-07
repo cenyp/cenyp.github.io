@@ -1,13 +1,16 @@
-参考文章链接
-https://juejin.cn/post/6880529850159874062#heading-11
+# vue-router 源码
 
-https://juejin.cn/post/6901047675227996167
+参考链接:
 
-https://juejin.cn/post/6902992939115855880
+[vue-router源码解析上](https://juejin.cn/post/6880529850159874062)
 
-# push 如何实现路由切换
+[vue-router源码解析中](https://juejin.cn/post/6901047675227996167)
 
-以 history 模式为例，源码大概实现如下；可以看到是调用了 transitionTo 方法来做路由页面的切换，pushState 方法处理页面栈，handleScroll 方法处理页面滚动
+[vue-router源码解析下](https://juejin.cn/post/6902992939115855880)
+
+## push 如何实现路由切换
+
+以 `history` 模式为例，源码大概实现如下；可以看到是调用了 `transitionTo` 方法来做路由页面的切换，`pushState` 方法处理页面栈，`handleScroll` 方法处理页面滚动
 
 ```js
 push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
@@ -20,7 +23,7 @@ push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
   }
 ```
 
-其中 pushState 实现如下，主要时利用 replaceState、pushState 方法来处理路由栈。
+其中 `pushState` 实现如下，主要时利用 `replaceState`、`pushState` 方法来处理路由栈。
 
 ```js
 if (replace) {
@@ -49,7 +52,7 @@ function replaceHash(path) {
 }
 ```
 
-supportsPushState 判断浏览器是否支持 pushState，不支持则使用 hash 模式
+`supportsPushState` 判断浏览器是否支持 `pushState`，不支持则使用 `hash` 模式
 
 ```js
 export const supportsPushState =
@@ -70,9 +73,9 @@ export const supportsPushState =
     })()
 ```
 
-回到 transitionTo，主要是做了路由组件的切换，和路由数据的更新，以及路由守卫的触发。
+回到 `transitionTo`，主要是做了路由组件的切换，和路由数据的更新，以及路由守卫的触发。
 
-confirmTransition，主要根据 url 变化，处理所有要触发的路由守卫，可以参考 https://juejin.cn/post/6901047675227996167#heading-12，不细说
+`confirmTransition`，主要根据 `url` 变化，处理所有要触发的路由守卫，可以参考[路由守卫](https://juejin.cn/post/6901047675227996167#heading-12)，不细说
 
 ```js
   transitionTo (location: RawLocation, onComplete?: Function, onAbort?: Function) {
@@ -102,17 +105,17 @@ confirmTransition，主要根据 url 变化，处理所有要触发的路由守�
   }
 ```
 
-# 用户后退前进行为监听
+## 用户后退前进行为监听
 
-像 history 是用 popstate 进行监听，而 hash 也是优先使用 popstate，在不支持的浏览器才使用 hashchange
+像 `history` 是用 `popsState` 进行监听，而 hash 也是优先使用 `popsState`，在不支持的浏览器才使用 `hashChange`
 
-对于 replaceState、pushState 是不会触发二者的监听行为的
+对于 `replaceState`、`pushState` 是不会触发二者的监听行为的
 
-而 window.location.hash 和 window.location.replace 会触发上述的监听导致路由切换
+而 `window.location.hash` 和 `window.location.replace` 会触发上述的监听导致路由切换
 
-所以，hash 和 history 模式在使用上有不同，但底层往往是一致的，除了在不支持 popstate 浏览器上
+所以，`hash` 和 `history` 模式在使用上有不同，但底层往往是一致的，除了在不支持 `popsState` 浏览器上
 
-# router-view 如何渲染对应组件
+## router-view 如何渲染对应组件
 
 在导航解析的章节，我们提过，导航解析成功后,会调用 updateRoute 方法，重新为全局的\_routerRoot.\_route 即$route 赋值
 
@@ -128,7 +131,7 @@ updateRoute (route: Route) {
 }
 ```
 
-在 view 组件中，会使用$parent.$route 即全局的\_routerRoot.\_route
+在 `view` 组件中，会使用 `$parent.$route` 即全局的 `_routerRoot._route`
 
 ```js
 render (/* h*/_, /* context*/{ props, children, parent, data }) {
@@ -138,9 +141,9 @@ render (/* h*/_, /* context*/{ props, children, parent, data }) {
 }
 ```
 
-而在 install.js 的全局混入中，将\_route 定义为响应式的，依赖了\_route 的地方，在\_route 发生变化时，都会重新渲染
+而在 `install.js` 的全局混入中，将 `_route` 定义为响应式的，依赖了 `_route` 的地方，在 `_route` 发生变化时，都会重新渲染
 
-defineReactive 方法就是 vue/core 里面劫持对象的方法，当 \_route 发生变化时，所有依赖 \_route 的地方都会重新渲染
+`defineReactive` 方法就是 `vue/core` 里面劫持对象的方法，当 `_route` 发生变化时，所有依赖 `_route` 的地方都会重新渲染
 
 ```js
 // 注册全局混入
