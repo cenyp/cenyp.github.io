@@ -31,6 +31,7 @@ export default defineConfig({
           { text: "vue源码", link: "/vue源码/vue2源码" },
           { text: "心得笔记", link: "/心得笔记/js相关" },
           { text: "文章收录", link: "/文章收录/文章链接大全" },
+          { text: "八股文", link: "/八股文/CSS" },
           // { text: "算法", link: "/心得笔记/js相关" },
         ],
       },
@@ -74,9 +75,32 @@ export default defineConfig({
           items: [
             { text: "文章链接大全", link: "/文章收录/文章链接大全" },
             { text: "多项目多仓库理念", link: "/文章收录/多项目多仓库理念" },
-            { text: "CSS 实现多行文本“展开收起”", link: "/文章收录/CSS 实现多行文本“展开收起”" },
-            { text: "css实现文本中间省略号", link: "/文章收录/css实现文本中间省略号" },
-            { text: "localhost和127.0.0.1的区别", link: "/文章收录/localhost和127.0.0.1的区别" },
+            {
+              text: "CSS 实现多行文本“展开收起”",
+              link: "/文章收录/CSS 实现多行文本“展开收起”",
+            },
+            {
+              text: "css实现文本中间省略号",
+              link: "/文章收录/css实现文本中间省略号",
+            },
+            {
+              text: "localhost和127.0.0.1的区别",
+              link: "/文章收录/localhost和127.0.0.1的区别",
+            },
+          ],
+        },
+      ],
+      "/八股文/": [
+        {
+          text: "八股文",
+          items: [
+            { text: "HTML", link: "/八股文/HTML" },
+            { text: "CSS", link: "/八股文/CSS" },
+            { text: "HTTP", link: "/八股文/HTTP" },
+            { text: "算法", link: "/八股文/算法" },
+            { text: "设计模式", link: "/八股文/设计模式" },
+            { text: "构建工具", link: "/八股文/构建工具" },
+            { text: "浏览器", link: "/八股文/浏览器" },
           ],
         },
       ],

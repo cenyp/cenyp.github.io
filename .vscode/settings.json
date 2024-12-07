@@ -1,10 +1,12 @@
 {
     "cSpell.customDictionaries": {},
     "cSpell.ignoreWords": [
+        "CSSOM",
         "Inrn",
         "MVVM",
         "Snipaste",
         "Vnode",
+        "alfha",
         "cascader",
         "cenyp",
         "excalidraw",
@@ -21,13 +23,28 @@
         "toutiao",
         "unhandledrejection",
         "unshift",
+        "w3cschool",
         "weex",
         "weixin"
     ],
     "cSpell.words": [
+        "autoplay",
+        "CSMA",
+        "dragend",
+        "dragenter",
+        "dragleave",
+        "dragover",
+        "dragstart",
+        "maxage",
+        "mediatype",
         "miniprogram",
+        "progid",
         "qrcode",
+        "Referer",
+        "SNMP",
         "WXML",
-        "WXSS"
+        "WXSS",
+        "Xlmage",
+        "οnerrοr"
     ]
 }
