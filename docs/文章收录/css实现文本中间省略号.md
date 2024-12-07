@@ -1,3 +1,7 @@
+# css实现文本中间省略号
+
+参考链接：
+
 [源代码](https://codepen.io/xboxyan/pen/VwpPNbm)
 
 [CSS 文本超出提示效果](https://juejin.cn/post/6966042926853914654)
@@ -23,6 +27,7 @@
     </li>
 </ul>
 
+<style>
 .con {
     font-size: 14px;
     color: #666;
@@ -73,29 +78,30 @@
     text-overflow: ellipsis;
     direction: rtl; // 控制文字方向，省略号显示在左边
 }
-
+</style>
 ```
 
-实现原理
+## 实现原理
 
 首先是空间足够的情况下，没有发生省略
 
-显示的是 .txt 标签，.title 标签由于设置 top: -4em 是在 .txt 标签上面（y轴上方），
+显示的是 `.txt` 标签，`.title` 标签由于设置 `top: -4em` 是在 `.txt` 标签上面（y轴上方），
 
-注意：.txt 和 .title 标签高度是 2em (正常状态下)
+注意：`.txt` 和 `.title` 标签高度是 `2em` (正常状态下)
 
 发生省略时
 
-.txt 标签会触发换行，但最大高度是 4em，刚好让 .title 标签覆盖上面（wrap 限制了 2em 所以还是只会展示一行）
+`.txt` 标签会触发换行，但最大高度是 `4em`，刚好让 `.title` 标签覆盖上面（`wrap` 限制了 `2em` 所以还是只会展示一行）
 
-::before 是右浮动，所以会和 .title 标签在同一行
+`::before` 是右浮动，所以会和 `.title` 标签在同一行
 
-direction 设置为 rtl 实现左省略，利用 width 控制宽度即可让 省略在中间
+`direction` 设置为 `rtl` 实现左省略，利用 `width` 控制宽度即可让 省略在中间
 
- **注：** 
-原文里面关于滚动为什么设置 translateX(-50%) 是因为有有本身和 ::after 两个文本，所以 50% 刚好是一个文本的宽度
+>tips
+原文里面关于滚动为什么设置 `translateX(-50%)` 是因为有有本身和 `::after` 两个文本，所以 `50%` 刚好是一个文本的宽度
 
-**扩展 多行更多按钮**
+## 扩展 多行更多按钮
+
 ```vue
 <template>
     <div

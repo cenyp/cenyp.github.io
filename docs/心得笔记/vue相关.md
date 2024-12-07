@@ -79,7 +79,9 @@ p {
 </style>
 ```
 
-## vue 写官网seo优化 vite-plugin-seo-prerender
+## vue 官网 seo 优化
+
+使用 `vite-plugin-seo-prerender` 插件
 
 原理是用 `puppeteer` 生成静态页面，但是在访问时会带上 / 后缀，
 如 `/home/`，后续在切换路径时，会变成 `/home/xxxx`，导致路由无法解析，
@@ -270,7 +272,7 @@ destroyed() {
 
 要用 `input` 等输入框控件
 
-## vue3 组件再封装，如何把原组件方法暴露
+## vue3 组件再封装，暴露原方法
 
 暴露 组件 `ref` 即可
 

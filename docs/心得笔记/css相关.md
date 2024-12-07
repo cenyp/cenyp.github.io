@@ -49,7 +49,9 @@ xxxxxxxxx
 }
 ```
 
-## 父元素高度为 auto 时子元素无法继承 min-height 的解决方案
+## 子元素获取父元素高度
+
+父元素高度为 auto 时子元素无法继承 min-height 的解决方案
 
 ```css
 .fa {
@@ -96,7 +98,9 @@ xxxxxxxxx
 1. antDv 是通过在设置 `before` 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
 2. 通过设置 `margin-left: -1px` 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 `z-index`/`position` 来增加权重完成覆盖
 
-## 子节点触发滚动时 padding-right 失效
+## 滚动时 padding-right 失效
+
+子节点触发滚动时 `padding-right` 失效
 
 1. 设置子节点为 `inline-block`，`inline-flex`，`inline-grid`，`inline-table`
 
@@ -154,3 +158,63 @@ body,
     font-size: 14px;
 }
 ```
+
+## 伪类元素
+
+如果在某个元素下设置伪类，实际上是相当于创建了一个新元素，是受 `flex`、`float` 等等的影响
+
+在实现 `title` 前面有光亮颜色块时，可以利用伪类实现，并使用 `flex` 布局实现上下居中
+
+```css
+.title {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: normal;
+    color: #222835;
+
+    &::before {
+        content: ' ';
+        display: inline-block;
+        width: 3px;
+        height: 13px;
+        margin-right: 8px;
+        background: #04b78c;
+    }
+}
+```
+
+注意 `css` 语法糖的写法
+
+```scss
+.div{
+    // 是在div>子元素>::after
+    ::after{
+        content:' ',
+    }
+    // 是在div>::after
+    &::after{
+        content:' ',
+    }
+}
+```
+
+>tips:实现标题前面的色块除了用 `::before` 还可以通过设置左边框的方法
+
+## scss css 属性快速插入
+
+>todo
+
+## 文本鼠标移入放大
+
+```css
+:hover {
+    transform: scale(1.2);
+    transition: all 0.3s;
+}
+```
+
+但是 `scale` 会在 `display: line` 下失效
+
+同时 `display: flex` 会把子元素变成 `display: block`

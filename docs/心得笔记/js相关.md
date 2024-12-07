@@ -184,6 +184,11 @@ function limitedConcurrency(promiseFactories, limit) {
 
 ## object 与 Map
 
+网上很多观点obj的插入是会自动排序的；其实这个是分情况的：
+
+- key是数字/伪数字时，是会自动排序的
+- key是字符串时，是不会自动排序的
+
 一般说 `object` 是无序的，`Map` 是有序的；但是浏览器一般会做优化，如下
 
 ```js
@@ -348,7 +353,7 @@ console.log(p1.Fullname) // 李四
 
 ## promise
 
-### promise.all vs promise.race vs promise.allSettled
+### all vs race vs allSettled
 
 #### promise.all
 
@@ -437,7 +442,7 @@ then [
  */
 ```
 
-#### Promise.catch 与 Promise.then 的第二个参数
+#### catch、then 第二参数
 
 `Promise.catch` 的错误捕捉是全局的，针对整个 `Promise`，在有多个 `then` 下，都能触发 `catch`
 
@@ -465,7 +470,7 @@ new Promise((res, req) => {
   });
 ```
 
-## map 方法使用及 elementUI-plus 表格组件选中问题
+## map 和 el-table 的二三事
 
 ```js
 const arr = [{ a: 1 }, { a: 2 }]
@@ -485,3 +490,232 @@ console.log(arr[1] === arr2[1])
 ```
 
 可以清楚看出，`map` 并没有改变原数组的内存地址。在 `el-table` 中是用 `row` 作为行数据标识，当行选中时，改变改行的数据内存地址，会被认为是两个数据，影响选中效果，会有异常
+
+## 复制方法兼容mac
+
+```ts
+/**复制到剪贴板 */
+export function copy(txt: string) {
+  return new Promise<void>(resolve => {
+    const textString = txt.toString()
+    const textarea = document.createElement('textarea')
+    textarea.readOnly = true // 防止ios聚焦触发键盘事件
+    textarea.style.opacity = '0'
+    document.body.appendChild(textarea)
+
+    textarea.value = textString
+    // ios必须先选中文字且不支持 input.select();
+    selectText(textarea, 0, textString.length)
+    if (document.execCommand('copy')) {
+      document.execCommand('copy')
+      message.success('复制成功')
+    }
+    document.body.removeChild(textarea)
+    resolve()
+
+    // 选中文本
+    function selectText(textbox: HTMLTextAreaElement, startIndex: number, stopIndex: number) {
+      // @ts-ignore
+      if (textbox.createTextRange) {
+        //ie
+        // @ts-ignore
+        const range = textbox.createTextRange()
+        range.collapse(true)
+        range.moveStart('character', startIndex) //起始光标
+        range.moveEnd('character', stopIndex - startIndex) //结束光标
+        range.select() //不兼容苹果
+      } else {
+        //firefox/chrome
+        textbox.setSelectionRange(startIndex, stopIndex)
+        textbox.focus()
+      }
+    }
+  })
+}
+```
+
+## IndexDB 实践
+
+```ts
+import { message } from "ant-design-vue";
+
+const path = "https://xxxxx?" + new Date().getTime();
+
+function init() {
+  // 判断是否支持 indexedDB
+  if (window.indexedDB) {
+    fetch(path)
+      .then((response) => response.json())
+      .then((data) => {
+        saveData(data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        message.error("地区数据加载失败");
+      });
+  }
+}
+
+// 获取数据
+async function getData(key: string, fn: Function) {
+  console.log("get data");
+  // 判断是否支持 indexedDB，否则增加请求数据并返回
+  if (window.indexedDB) {
+    readData(key, (data: any) => {
+      fn(data);
+    });
+  } else {
+    fn(await fetchData(key));
+  }
+}
+
+// 数据请求
+async function fetchData(key: string) {
+  const data = await fetch(path)
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error("Error:", error);
+      message.error("地区数据加载失败");
+    });
+  if (window.indexedDB) {
+    saveData(data);
+  }
+  return data[key];
+}
+
+// 数据存储
+function saveData(data: any) {
+  // 打开或创建数据库
+  const dbRequest = indexedDB.open("basicData", 1);
+
+  dbRequest.onerror = function (event) {
+    console.error("数据库打开失败");
+  };
+
+  // 成功回调
+  dbRequest.onsuccess = function (event) {
+    const db = (event.target as IDBOpenDBRequest).result;
+
+    if (db.objectStoreNames.contains("regionData")) {
+      // 该方法用于创建一个数据库事务，返回一个 IDBTransaction 对象。向数据库添加数据之前，必须先创建数据库事务。
+      // 第一个参数是一个数组，里面是所涉及的对象仓库，通常是只有一个；第二个参数是一个表示操作类型的字符串。目前，操作类型只有两种：readonly（只读）和readwrite（读写）
+      // IDBDatabase 对象的transaction()返回一个事务对象，该对象的objectStore()方法返回 IDBObjectStore 对象
+      const objectStore = db
+        .transaction(["regionData"], "readwrite")
+        .objectStore("regionData");
+      // 获取一个指针对象
+      const cursorRequest = objectStore.openCursor();
+
+      // 遍历游标
+      cursorRequest.onsuccess = function (event) {
+        const cursor = (event.target as IDBRequest).result;
+
+        if (cursor) {
+          // 更新
+          for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+              objectStore.put({ type: key, data: data[key] });
+            }
+          }
+        } else {
+          // 新增
+          for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+              objectStore.add({ type: key, data: data[key] });
+            }
+          }
+        }
+      };
+    }
+  };
+
+  // onupgradeneeded事件在数据库第一次创建或版本号发生变化时触发。在这个事件处理程序中，可以创建对象存储和索引
+  dbRequest.onupgradeneeded = function (event) {
+    const db = (event.target as IDBOpenDBRequest).result;
+
+    // 判断是否已经存在对象存储空间，如果存在则不创建，否则创建对象存储空间
+    if (!db.objectStoreNames.contains("regionData")) {
+      // 创建对象存储空间，keyPath设置（主键）为type
+      const objectStore = db.createObjectStore("regionData", {
+        keyPath: "type",
+      });
+      // 创建索引
+      // objectStore.createIndex('type', 'type', { unique: true })
+    }
+  };
+}
+
+// 读数据库数据
+function readData(key: string, fn: Function) {
+  const dbRequest = indexedDB.open("basicData", 1);
+  dbRequest.onsuccess = async function (event) {
+    const db = (event.target as IDBOpenDBRequest).result;
+    if (db.objectStoreNames.contains("regionData")) {
+      const objectStore = db
+        .transaction(["regionData"])
+        .objectStore("regionData");
+      const request = objectStore.get(key);
+
+      request.onerror = async function (event) {
+        fn(await fetchData(key));
+        console.log("事务失败");
+      };
+
+      request.onsuccess = async function (event) {
+        if (request.result) {
+          //  console.log('data: ' + request.result.data)
+          fn(request.result.data);
+        } else {
+          fn(await fetchData(key));
+          console.log("未获得数据记录");
+        }
+      };
+    } else {
+      fn(await fetchData(key));
+    }
+  };
+
+  dbRequest.onupgradeneeded = function (event) {
+    const db = (event.target as IDBOpenDBRequest).result;
+
+    if (!db.objectStoreNames.contains("regionData")) {
+      // 创建对象存储空间
+      const objectStore = db.createObjectStore("regionData", {
+        keyPath: "type",
+      });
+      // // 创建索引
+      // objectStore.createIndex('type', 'type', { unique: true })
+    }
+  };
+}
+
+export { init, getData };
+```
+
+## sessionStorage 标签页共享数据
+
+`sessionStorage` 不能在多个窗口或标签页之间共享数据，但是当通过 `window.open` 或链接打开新页面时(不能是新窗口)，新页面会复制前一页的 `sessionStorage`
+
+## toFixed 不是四舍五入
+
+`toFixed` 使用的是银行家算法
+
+其实质是一种【四舍六入五取偶】的方法。
+
+规则是：
+
+- 当舍去位的数值<5时，直接舍去
+- 当舍去位的数值>=6时，在舍去的同时向前进一位
+- 当舍去位的数值=5时：
+  - 5后不为空且不全为0，在舍去的同时向前进一位
+  - 5后为空或全为0：
+    - 5前数值为奇数，则在舍去的同时向前进一位
+    - 5前数值为偶数，则直接舍去
+
+可以使用 `round` 方法替换
+
+```js
+666.665.toFixed(2) // '666.66'
+666.6651.toFixed(2) // '666.67'
+Math.round(666.665*100)/100 // 666.67
+```

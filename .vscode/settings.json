@@ -1,16 +1,33 @@
 {
     "cSpell.customDictionaries": {},
     "cSpell.ignoreWords": [
+        "Inrn",
         "MVVM",
+        "Snipaste",
         "Vnode",
         "cascader",
         "cenyp",
+        "excalidraw",
         "exprOrfn",
+        "fanyi",
         "gitee",
+        "microapp",
+        "nowrap",
         "nums",
+        "nuxt",
+        "pinia",
         "prerender",
         "rgba",
+        "toutiao",
+        "unhandledrejection",
         "unshift",
-        "weex"
+        "weex",
+        "weixin"
+    ],
+    "cSpell.words": [
+        "miniprogram",
+        "qrcode",
+        "WXML",
+        "WXSS"
     ]
 }

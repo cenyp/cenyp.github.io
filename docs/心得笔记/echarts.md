@@ -1,4 +1,7 @@
-# 循环滚动的柱状图
+# Echarts
+
+## 循环滚动的柱状图
+
 ```ts
 let yAxisData = [
     'AA',
@@ -101,8 +104,10 @@ function initEcharts() {
 }
 ```
 
-# 多柱图点击显示单个数据
-https://www.cnblogs.com/sugartang/p/15331542.html
+## 多柱图点击显示单个数据
+
+参考链接：[多柱图点击显示单个数据](https://www.cnblogs.com/sugartang/p/15331542.html)
+
 ```js
 myChart.getZr().off(); // 这个代码很重要，必须要加上，要不然的话你可以试试看
     myChart.getZr().on('click', params => {
