@@ -719,4 +719,4 @@ function genElement(el: ASTElement): string {
 ## 计算属性依赖收集过程
 
 参考链接：[洋葱模型](https://juejin.cn/post/7220020535299539002#heading-4)
-![输入图片说明](../../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17246681805021.png)
+![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17246681805021.png)

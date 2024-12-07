@@ -7,7 +7,7 @@
 1. `vue2` 的响应式是通过发布订阅模式完成的，在 `get` 里面搜集依赖，在 `set` 里面触发依赖；`vue3` 的大体模式也差不多
 2. `vue2` 的依赖搜集是 `dep` + `watcher` 作双向依赖搜集完成的；`vue3` 是建立全局的 `WeakMap` 结构完成，以劫持监听的 `obj` 为 `key`，`value` 是一个 `Map` 类型，以属性名为 `key`，`value` 是一个 `Set` 类型，`Set` 里面存放的是 `effect` 函数，`effect` 就是副作用函数，用来更新
 
-![输入图片说明](../../image/flowchart.png)
+![输入图片说明](../image/flowchart.png)
 
 ### reactive
 
@@ -585,7 +585,7 @@ setTimeout(() => {
 - [Vue3: computed都懒更新了，version计数你还不知道？](https://juejin.cn/post/7416908856867078182)
 - [Vue3: 什么是computed的懒更新？不就一个问题的事！](https://juejin.cn/post/7418389059288727604)
 
-![输入图片说明](../../image/1574d567063b46d2b5bdb935511250d9~tplv-73owjymdk6-jj-mark-v1_0_0_0_0_5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz_q75.webp)
+![输入图片说明](../image/1574d567063b46d2b5bdb935511250d9~tplv-73owjymdk6-jj-mark-v1_0_0_0_0_5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5YmN56uv5qyn6Ziz_q75.webp)
 
 ```js
 // 建一个全局变量，用于存储当前正在收集依赖的 effect 函数
