@@ -1,12 +1,11 @@
 import { defineConfig } from "vitepress";
-import { generateSidebar } from "../../utils/navSidebarUtil";
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
-  // base: '/blog/',
+  head: [["link", { rel: "icon", href: "/logo.jpg" }]],
   title: "cenyp_blog",
   description: "记点东西",
   themeConfig: {
+    logo: "/logo.jpg",
     outline: {
       level: "deep",
       label: "目录",
@@ -18,15 +17,13 @@ export default defineConfig({
       prev: "上一页",
       next: "下一页",
     },
-    // todo
     lastUpdated: {
       text: "上次更新时间",
-      format: "YYYY-MM-DD HH:mm:ss",
     },
     nav: [
       { text: "首页", link: "/" },
       {
-        text: "分类",
+        text: "文章分类",
         items: [
           { text: "vue源码", link: "/vue源码/vue2源码" },
           { text: "心得笔记", link: "/心得笔记/js相关" },
