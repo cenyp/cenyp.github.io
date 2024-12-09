@@ -4,7 +4,7 @@
 
 ### 1.1 什么是BFC？
 
-> `W3C` 对 `BFC` 的定义如下： 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 `inline-blocks`, `table-cells`, 和 `table-captions`），以及 overflow 值不为 `visitable` 的块级盒子，都会为他们的内容创建新的 `BFC`（`Block Formatting Context`， 即块级格式上下文）。
+> `W3C` 对 `BFC` 的定义如下： 浮动元素和绝对定位元素，非块级盒子的块级容器（例如 `inline-blocks`, `table-cells`, 和 `table-captions`），以及 `overflow` 值不为 `visitable` 的块级盒子，都会为他们的内容创建新的 `BFC`（`Block Formatting Context`， 即块级格式上下文）。
 
 ### 1.2 触发条件
 
