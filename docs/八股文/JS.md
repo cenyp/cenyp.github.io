@@ -1340,6 +1340,8 @@ function helloAsync(){
 
 ## 7. this
 
+参考链接：[先看这个](https://juejin.cn/post/7445090940279423027)
+
 **在使用箭头函数的情况下：**
 
 ```js
@@ -1387,7 +1389,7 @@ let a = {
 - 在`函数定义时（=> + fun )、fun.prototype.方法=function(){}、Fun.方法==function(){}`中使用 `this`，`New` 出来后 `this` 是指向实例化对象的。
 - `fun.prototype.方法=()=>{}、Fun.方法==()=>{}`这个时候是 window
 
-**记：**箭头函数除了`fun.prototype.方法=()=>{}、Fun.方法==()=>{}`    这个时候是 `window`，否则直接当它不存在。`function`内部的 `function`自执行函数是不可以 `call()` 的。在方法中且不是使用箭头函数，`this` 表示该方法所属的对象，否则是 `window`。要改变箭头函数 `this` ，要在外面套一层 `fun()` 。
+**记：** 箭头函数除了 `fun.prototype.方法=()=>{}、Fun.方法==()=>{}` 这个时候是 `window`，否则直接当它不存在。`function`内部的 `function`自执行函数是不可以 `call()` 的。在方法中且不是使用箭头函数，`this` 表示该方法所属的对象，否则是 `window`。要改变箭头函数 `this` ，要在外面套一层 `fun()` 。
 
 ## 8. 深拷贝
 
