@@ -1033,3 +1033,93 @@ span{
 **结论**
 就结论而言，强烈建议使用 `link` 标签，慎用 `@import` 方式。
 这样可以避免考虑 `@import` 的语法规则和注意事项，避免产生资源文件下载顺序混乱和 `http` 请求过多的烦恼。
+
+## 子容器宽度只有高度一半
+
+**css 实现一个父容器，子容器宽度只有高度一半：**
+
+### padding 百分比取值
+
+知识点：padding 百分比取值是相对于父容器的宽度，margin 也是
+
+```css
+.parent {
+  width: 200px;
+  height: 200px;
+  background-color: red;
+}
+
+/* .child {
+  width: 50%;
+  height: 50%;
+  background-color: blue;
+  padding-top: 50%;
+} */
+.child {
+  height: 100%;
+  width: 0;
+  padding-left: 50%;
+  background-color: blue;
+}
+```
+
+### aspect-ratio 属性
+
+参考链接：[mdn](https://developer.mozilla.org/zh-CN/docs/Web/CSS/aspect-ratio)
+
+通过设置 aspect-ratio 的值为 1 / 2（表示宽度与高度的比例为 1 : 2，即高度是宽度的两倍）
+
+```css
+.parent {
+  width: 300px;
+  height: 300px;
+  background-color: lightgray;
+  margin: 0 auto;
+}
+
+.child {
+  height: 100%;
+  aspect-ratio: 1 / 2;
+  background-color: lightblue;
+}
+```
+
+### flex 布局
+
+```css
+.parent {
+  display: flex;
+  width: 300px;
+  height: 300px;
+  background-color: lightgray;
+  margin: 0 auto;
+}
+
+.child {
+  flex-basis: 50%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  background-color: lightblue;
+}
+```
+
+### Grid 布局
+
+```css
+.parent {
+  display: grid;
+  width: 300px;
+  height: 300px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  background-color: lightgray;
+  margin: 0 auto;
+}
+
+.child {
+  flex-basis: 50%;
+  grid-column: 1 / 2;
+  grid-row: 1 / 2;
+  background-color: lightblue;
+}
+```
