@@ -10,7 +10,68 @@
 
 创建一个新的 `IntersectionObserver` 对象，当其监听到目标元素的可见部分（的比例）超过了一个或多个阈值 `threshold` 时，会执行指定的回调函数。
 
-参考链接：[MDN IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
+参考链接：
+
+[阮一峰](https://ruanyifeng.com/blog/2016/11/intersectionobserver_api.html)
+
+[掘金 IntersectionObserver](https://juejin.cn/post/7148038337318617125)
+
+[MDN IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
+
+### 目录滚动追随
+
+```js
+// 滚动监听
+function listenScroll() {
+    // 停止监听滚动事件
+    if (listenScrollTimer) listenScrollTimer.disconnect()
+
+    // 存储所有监听元素，方便在 DOM 消失时判断选中状态
+    // 大数据情况下，可以用别的方式处理
+    let doms = [] 
+
+    const observer = new IntersectionObserver(
+        entries => {
+            if (!doms?.length) { // 初始化会先触发一次，返回全部监听元素
+                doms = entries
+            } else {
+                // 更新监听元素
+                for (const entry of entries) {
+                    doms.splice(
+                        doms.findIndex(item => item.target?.dataset?.parentid === entry.target?.dataset?.parentid),
+                        1,
+                        entry
+                    )
+                }
+            }
+
+            // 获取第一个可见元素
+            const dom = doms.find(item => item.intersectionRatio > 0.1)
+            if (dom) activeCategory.value = Number(dom.target?.dataset?.parentid?.split('-')[0])
+        },
+        {
+            // warn 要设置 >0 不然 intersectionRatio 会存在为 0 的情况，不好处理，同时避免频繁触发
+            threshold: 0.1, 
+        }
+    )
+
+    // 监听 DOM 
+    document.querySelectorAll('div[data-parentid]')?.forEach(item => {
+        observer.observe(item)
+    })
+
+    // 暴露方法，方便取消监听
+    return observer
+}
+
+// 点击左边目录滚动
+document.querySelector(`div[data-parentid^="${category.id}"]`)?.scrollIntoView({
+    // smooth 滚动时，会存在部分 dom 显示隐藏不会触发事件，同时事件频繁触发，存在闪烁，加之无法控制滚动动画时间
+    // 可以使用 js 控制滚动动画时间来限制监听事件的触发，同时可以控制滚动到指定位置
+    // behavior: 'smooth',
+})
+```
+
 
 ## 跨标签页/窗口通讯
 
