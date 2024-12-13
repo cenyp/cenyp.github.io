@@ -278,7 +278,7 @@ destroyed() {
 
 ```js
 defineExpose({
-    elRef,
+    elRef, // 要 ref.value.elRef.xxxx 访问
 })
 ```
 
