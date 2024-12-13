@@ -1281,3 +1281,6 @@ effect.scheduler = () => queueJob(job)
 ```
 
 > 扩展：使用 `teleport` 这类内置组件也是不行的，`processElement` 方法处理的是普通标签，所以 `vue3` 的对话框组件多半都有这个问题，一般都是用 `teleport` 支持插入 `body` 的
+
+- 开发环境下会根据文件相对路径生成唯一 ID，比如 vite 中 src/App.vue 固定生成 7a7a37b1
+- 生产环境下会根据文件相对路径+文件内容共同生成唯一 ID
