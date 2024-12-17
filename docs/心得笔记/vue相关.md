@@ -334,3 +334,50 @@ const modelVal = computed({
     }
 })
 ```
+
+## vue3 判断父组件是否监听某个事件
+
+你可以参考 `v-model` 的原理在结合一下 `jsx` 中的写法推导出 `@change =>onChange`
+
+但小程序不适用
+
+```vue
+<!-- 父组件 -->
+<script setup>
+import { ref } from "vue";
+import Comp from "./Comp.vue";
+
+const msg = ref("Hello World!");
+const cc = (val) => {
+  console.log(val);
+};
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+  <input v-model="msg" />
+  <Comp :msg="123" @change="cc" />
+</template>
+```
+
+```vue
+<!-- 子组件 -->
+<template>
+  <div @click="handleClick">
+    {{ msg }}
+  </div>
+</template>
+<script setup>
+import { defineEmits, defineProps } from "vue";
+const props = defineProps({
+  onChange: { type: Function },
+  msg: { type: String },
+});
+const emit = defineEmits(["change"]);
+const handleClick = () => {
+  console.log(props.onChange);
+  emit("change", 666);
+};
+console.log(props);
+</script>
+```
