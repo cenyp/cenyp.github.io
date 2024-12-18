@@ -381,3 +381,18 @@ const handleClick = () => {
 console.log(props);
 </script>
 ```
+
+## mounted 钩子获得不到 dom
+
+参考链接：[onMounted()](https://cn.vuejs.org/api/composition-api-lifecycle.html#onmounted)
+
+组件在以下情况下被视为已挂载：
+
+- 其所有同步子组件都已经被挂载 (不包含异步组件或 `<Suspense>` 树内的组件)。
+- 其自身的 `DOM` 树已经创建完成并插入了父容器中。注意仅当根容器在文档中时，才可以保证组件 `DOM` 树也在文档中。
+
+可以看出来，并不能保证所有子组件都加载完成。即使生命周期触发顺序为：子 `mounted` -> 父 `mounted`。
+
+但是在受 `v-if` `v-for` 影响或者是直接操作 `DOM` 的情况下，子组件的加载相对来说不是同步的，比如在组件库的 `el-table` `el-dialog` 中。
+
+所以，获取 `DOM` 时建议要做判断
