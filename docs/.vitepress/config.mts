@@ -60,7 +60,7 @@ export default defineConfig({
             { text: "浏览器相关", link: "/心得笔记/浏览器相关" },
             { text: "问题排查心得", link: "/心得笔记/问题排查心得" },
             { text: "组件库相关", link: "/心得笔记/组件库相关" },
-            { text: "Echarts", link: "/心得笔记/Echarts" },
+            { text: "echarts", link: "/心得笔记/echarts" },
             { text: "nginx相关", link: "/心得笔记/nginx相关" },
             { text: "开发提效相关", link: "/心得笔记/开发提效相关" },
           ],
