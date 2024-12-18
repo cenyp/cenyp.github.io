@@ -18,7 +18,7 @@
 
 [MDN IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
 
-### 目录滚动追随
+### 目录滚动跟随
 
 ```js
 // 滚动监听
@@ -55,7 +55,7 @@ function listenScroll() {
         }
     )
 
-    // 监听 DOM 
+    // 监听 DOM，parentid 写在目录对应的整个 DOM 上
     document.querySelectorAll('div[data-parentid]')?.forEach(item => {
         observer.observe(item)
     })
