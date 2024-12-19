@@ -780,3 +780,146 @@ export { init, getData };
 666.6651.toFixed(2) // '666.67'
 Math.round(666.665*100)/100 // 666.67
 ```
+
+## jsdoc
+对于没有 `ts` 的项目，可以使用 `jsdoc` 来做类型提示，配合 `@ts-check`，或者是开启设置 `checkJs` 来做类型检查
+
+建议在使用复杂类型的数据结构时，使用 `jsdoc`
+
+参考链接：
+
+[jsdoc 使用](https://juejin.cn/post/7319312761074090047)
+
+[jsdoc 文档](https://www.jsdoc.com.cn/)
+
+### 普通类型
+```js
+// @ts-check
+
+/**
+ * @type {number}
+ */
+const name = 'name'; // 不能将类型“string”分配给类型“number”
+
+// 字面量类型及联合类型
+/**
+ * @type {'age'|'name'}
+ */
+ const type = 'age'
+
+```
+
+### 复杂类型
+```js
+// @ts-check
+
+// 数组
+/**
+ * @type {number[][]}
+ */
+ const arr = [[1, 2], [3, 4]]
+
+/**
+ * @type [number,string]
+ */
+const arr = [1, '2']
+
+
+// 对象
+/**
+ * @type {{ a : number }}
+ */
+const obj = {
+    a: '1', // 不能将类型“string”分配给类型“number”。
+}
+
+/** 
+ * @typedef {object} User
+ * @property {string} name 
+ * @property {number} age 
+ */
+// /** @typedef {{ name: string; age: number }} User */ 简洁版
+/** @type {User} */
+const user = { name: 'John Doe', age: 25 };
+
+
+/** @typedef {number} Age */ // 类型别名
+/** 
+ * @typedef {object} User
+ * @property {number} [Age] // 可选
+ */
+/** @type {User} */
+const user = { };
+
+// 函数
+/**
+ * @param {number} a
+ * @param {number} b
+ * @returns {number}
+ */
+ function sum(a, b) {
+  return a + b;
+}
+```
+
+### 实用类型
+```ts
+interface User {
+  name: string;
+  age: number;
+}
+
+// Partial：使User中的所有属性变为可选
+type PartialUser = Partial<User>;
+// {
+//   name?: string | undefined;
+//   age?: number | undefined;
+// }
+
+// Readonly：使User中的所有属性变为只读
+type ReadonlyUser = Readonly<User>;
+// {
+//   readonly name: string;
+//   readonly age: number;
+// }
+
+// Record：使用联合的键和特定类型的值创建新类型
+type UserRole = 'admin' | 'user';
+type Roles = Record<UserRole, boolean>;
+// {
+//   admin: boolean;
+//   user: boolean;
+// }
+
+// Pick：从另一个类型中选择特定属性创建新类型
+type UserWithoutAge = Pick<User, 'name'>;
+// {
+//   name: string;
+// }
+
+// Omit：从另一个类型中省略特定属性创建新类型
+type UserWithoutName = Omit<User, 'name'>;
+// {
+//   age: number;
+// }
+```
+```js
+/** @typedef {{ name: string; age: number }} User */
+/** @typedef {Partial<User>} PartialUser */
+/** @typedef {Readonly<User>} ReadonlyUser */
+/** @typedef {Record<'admin' | 'user', boolean>} Roles */
+/** @typedef {Pick<User, 'name'>} UserWithoutAge */
+/** @typedef {Omit<User, 'name'>} UserWithoutName */
+```
+
+### 泛型
+```js
+/**
+ * @template T
+ * @param {T} val - 传入的值，可以是任何类型
+ * @returns {T} 返回传入的值
+ */
+function a(val) {
+    return val
+}
+```
