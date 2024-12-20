@@ -1284,3 +1284,129 @@ effect.scheduler = () => queueJob(job)
 
 - 开发环境下会根据文件相对路径生成唯一 ID，比如 vite 中 src/App.vue 固定生成 7a7a37b1
 - 生产环境下会根据文件相对路径+文件内容共同生成唯一 ID
+
+## inject 为什么要在 setup 使用
+
+参考链接：[面试官：来谈谈 Vue3 的 provide 和 inject 实现多级传递的原理](https://juejin.cn/post/7443736271645376562)
+
+> 扩展
+> getCurrentInstance 也要在 setup 使用，原因是一样的
+
+### provide
+
+简单了解一下原理，可以看出来 `currentInstance` 是发出警告的关键
+
+```ts
+export function provide<T, K = InjectionKey<T> | string | number>(
+  key: K,
+  value: K extends InjectionKey<infer V> ? V : T
+): void {
+  if (!currentInstance) {
+    if (__DEV__) {
+      warn(`provide() can only be used inside setup().`);
+    }
+  } else {
+    // ...
+  }
+}
+```
+
+下面开始逐级推导
+
+```ts
+// 1.
+// packages\runtime-core\src\component.ts
+let internalSetCurrentInstance: (
+  instance: ComponentInternalInstance | null
+) => void;
+
+internalSetCurrentInstance = (i) => {
+  currentInstance = i;
+};
+
+export const setCurrentInstance = (instance: ComponentInternalInstance) => {
+  const prev = currentInstance;
+  internalSetCurrentInstance(instance);
+  instance.scope.on();
+  return (): void => {
+    instance.scope.off();
+    internalSetCurrentInstance(prev); // 恢复父组件的 currentInstance，或者是初始值
+  };
+};
+
+function setupStatefulComponent(
+  instance: ComponentInternalInstance,
+  isSSR: boolean
+) {
+  const Component = instance.type as ComponentOptions;
+
+  const { setup } = Component;
+  // 判断是否是 setup 风格
+  if (setup) {
+    const reset = setCurrentInstance(instance);
+    reset(); // 恢复父组件的 currentInstance，最终会恢复到 null，即初始值，所以等初次渲染完成后，currentInstance 就是 null 了
+  } else {
+    finishComponentSetup(instance, isSSR);
+  }
+}
+
+export function setupComponent(
+  instance: ComponentInternalInstance,
+  isSSR = false,
+  optimized = false
+): Promise<void> | undefined {
+  const setupResult = isStateful
+    ? setupStatefulComponent(instance, isSSR)
+    : undefined;
+
+  return setupResult;
+}
+
+// 2. 这里就不往上推导了，明显看出来这是在 patch 里面使用的，即渲染阶段
+// packages\runtime-core\src\renderer.ts
+const mountComponent: MountComponentFn = (
+  initialVNode,
+  container,
+  anchor,
+  parentComponent,
+  parentSuspense,
+  namespace: ElementNamespace,
+  optimized
+) => {
+  // resolve props and slots for setup context
+  if (!(__COMPAT__ && compatMountInstance)) {
+    setupComponent(instance, false, optimized);
+  }
+};
+```
+
+> 扩展
+
+```ts
+// 这里还有一个方法是在异步 setup 的 then 里面执行的，currentInstance 赋值为 null
+export const unsetCurrentInstance = (): void => {
+  currentInstance && currentInstance.scope.off();
+  internalSetCurrentInstance(null);
+};
+```
+
+### inject
+
+同理，`currentInstance` 是发出警告的关键
+
+```ts
+// packages\runtime-core\src\apiInject.ts
+export function inject(
+  key: InjectionKey<any> | string,
+  defaultValue?: unknown,
+  treatDefaultAsFactory = false
+) {
+  const instance = currentInstance || currentRenderingInstance;
+
+  if (instance || currentApp) {
+    // ...
+  } else if (__DEV__) {
+    warn(`inject() can only be used inside setup() or functional components.`);
+  }
+}
+```
