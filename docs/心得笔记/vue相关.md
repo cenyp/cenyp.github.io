@@ -407,9 +407,9 @@ console.log(props);
 
 这里备注一下，开启 `Vue.js devtools` 插件的性能监控，会影响页面性能
 
-![alt text](./image/Snipaste_2024-12-24_20-09-51.png)
+![alt text](../image/Snipaste_2024-12-24_20-09-51.png)
 
-![alt text](./image/Snipaste_2024-12-24_20-11-15.png)
+![alt text](../image/Snipaste_2024-12-24_20-11-15.png)
 
 ### 页面加载优化
 
