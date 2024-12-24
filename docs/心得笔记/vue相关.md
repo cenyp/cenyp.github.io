@@ -396,3 +396,172 @@ console.log(props);
 但是在受 `v-if` `v-for` 影响或者是直接操作 `DOM` 的情况下，子组件的加载相对来说不是同步的，比如在组件库的 `el-table` `el-dialog` 中。
 
 所以，获取 `DOM` 时建议要做判断
+
+## vue 性能优化指南
+
+参考链接：[性能优化](https://cn.vuejs.org/guide/best-practices/performance)
+
+补充及扩展官网原文
+
+### 分析选项
+
+这里备注一下，开启 `Vue.js devtools` 插件的性能监控，会影响页面性能
+
+![alt text](./image/Snipaste_2024-12-24_20-09-51.png)
+
+![alt text](./image/Snipaste_2024-12-24_20-11-15.png)
+
+### 页面加载优化
+
+**代码分割**
+
+使用 `import()` 语法实现代码分割
+
+```js
+// lazy.js 及其依赖会被拆分到一个单独的文件中
+// 并只在 `loadLazy()` 调用时才加载
+function loadLazy() {
+  return import("./lazy.js");
+}
+```
+
+配合 `defineAsyncComponent` 使用，可以异步加载组件，`js` 文件会异步加载
+
+```js
+import { defineAsyncComponent } from "vue";
+
+// 会为 Foo.vue 及其依赖创建单独的一个块
+// 它只会按需加载
+//（即该异步组件在页面中被渲染时）
+const Foo = defineAsyncComponent(() => import("./Foo.vue"));
+```
+
+还有 `vue-router` [路由懒加载](https://router.vuejs.org/zh/guide/advanced/lazy-loading.html)
+
+```js
+// 将
+// import UserDetails from './views/UserDetails.vue'
+// 替换成
+const UserDetails = () => import('./views/UserDetails.vue')
+
+const router = createRouter({
+  // ...
+  routes: [
+    { path: '/users/:id', component: UserDetails }
+    // 或在路由定义里直接使用它
+    { path: '/users/:id', component: () => import('./views/UserDetails.vue') },
+  ],
+})
+```
+
+以上方法都可以降低首屏加载时间，提高用户体验
+
+### 更新优化
+
+- Props 稳定性。尽量维持 `props` 的稳定性，避免不必要的更新。这里涉及到 `diff` 算法节点比较
+- 善用指令降低更新渲染消耗：
+  - [v-once](https://cn.vuejs.org/api/built-in-directives#v-once) 指令，只渲染一次
+  - [v-memo](https://cn.vuejs.org/api/built-in-directives#v-memo) 指令，缓存计算结果，只有在接受的数组发生变化时才会重新计算。`<div v-memo="[valueA, valueB]"> ... </div>`
+  - [v-pre](https://cn.vuejs.org/api/built-in-directives#v-pre) 指令，跳过该元素及其所有子元素的编译。可以用于原始双大括号标签及内容。`<span v-pre>{{ this will not be compiled }}</span>`
+  - [v-if](https://cn.vuejs.org/api/built-in-directives#v-if) 指令，可以避免一些不常用的逻辑初始化
+  - [v-for](https://cn.vuejs.org/guide/essentials/list#maintaining-state-with-key) 指令，虽然 `vue3` 有默认 `key` 来避免更新异常（“就地更新”的策略）。但指定唯一 `key` 可以享受 `快速 diff 算法`
+- 计算属性稳定性。
+
+  ```js
+  const count = ref(0);
+  const isEven = computed(() => count.value % 2 === 0);
+
+  watchEffect(() => console.log(isEven.value)); // true
+
+  // 这将不会触发新的输出，因为计算属性的值依然为 `true`
+  count.value = 2;
+  count.value = 4;
+  ```
+
+### 通用优化
+
+- 虚拟列表
+- 减少大型不可变数据的响应性开销。`shallowRef()` 和 `shallowReactive()`，绕开深度响应，避免频繁更新
+- 避免不必要的组件抽象。组件实例比普通 `DOM` 节点要昂贵得多，而且为了逻辑抽象创建太多组件实例将会导致性能损失
+
+  - 对于小组件复用，可以不做组件抽离，降低组件实例插件
+  - 对于更新消耗大的组件，要做组件抽离，避免其余地方更新触发整体更新渲染。`vue` 更新是以组件为单位的，把复杂逻辑单独抽离，可以在 `diff` 过程避免更新，可以避免被不相关更新波及。如下，在输入框输入时，`log` 函数会不停打印
+
+> 演示，复杂组件抽离的必要性
+
+```vue
+<script setup>
+import { ref } from "vue";
+
+const msg = ref("Hello World!");
+const log = () => console.log("11");
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+  <input v-model="msg" />
+  <div>{{ log() }}</div>
+</template>
+```
+
+把组件抽离，输入框输入就不会触发事件
+
+```vue
+<script setup>
+import { ref } from 'vue'
+import comp from './Comp.vue'
+
+const msg = ref('Hello World!')
+
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+  <input v-model="msg" />
+  <comp/>
+</template>
+
+<!-- Comp.vue -->
+<script setup>
+const log = ()=>console.log('11')
+
+</script>
+
+<template>
+  <div>
+    {{log()}}
+  </div>
+</template>
+
+```
+
+输入框抽离，更新只触发子组件，打印时间不会触发
+
+```vue
+<script setup>
+import comp from './Comp.vue'
+
+const log = ()=>console.log('11')
+</script>
+
+<template>
+  <div>
+    {{log()}}
+  </div>
+  <comp/>
+</template>
+
+<!-- Comp.vue -->
+<script setup>
+import { ref } from 'vue'
+const msg = ref('Hello World!')
+
+</script>
+
+<template>
+  <div>
+    <h1>{{ msg }}</h1>
+    <input v-model="msg" />
+  </div>
+</template>
+```
