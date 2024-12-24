@@ -5,7 +5,7 @@
 `Vue` 组件之间没有做到样式隔离，`Vue` 中的样式隔离，是通过 `scoped` 属性来实现的。当在 `<style>` 标签上使用 `scoped` 属性时。
 基本原理概括为以下几个步骤：
 
-1. 为当前组件模板的所有DOM节点添加相同的 `attribute`，添加的属性与其他的 `scope` 不重复，`data` 属性(形如：`data-v-123`)来表示他的唯一性。
+1. 为当前组件模板的所有 DOM 节点添加相同的 `attribute`，添加的属性与其他的 `scope` 不重复，`data` 属性(形如：`data-v-123`)来表示他的唯一性。
 2. 在每句 `css` 选择器的末尾（编译后的生成的 `css` 语句）加一个当前组件的 `data` 属性选择器（如`.box input[data-v-123]`）来私有化样式
 3. 如果组件内部包含有其他组件，只会给其他组件的最外层标签加上当前组件的 `data` 属性
 
@@ -48,8 +48,8 @@
 
 ```vue
 <script setup>
-import { ref } from 'vue'
-const color = ref('red')
+import { ref } from "vue";
+const color = ref("red");
 </script>
 
 <template>
@@ -57,15 +57,14 @@ const color = ref('red')
 </template>
 ```
 
-2.修改绑定的 class
-3.使用 v-bind
+2.修改绑定的 class 3.使用 v-bind
 
 ```vue
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 const theme = ref({
-    color: 'red',
-})
+  color: "red",
+});
 </script>
 
 <template>
@@ -74,7 +73,7 @@ const theme = ref({
 
 <style scoped>
 p {
-  color: v-bind('theme.color');
+  color: v-bind("theme.color");
 }
 </style>
 ```
@@ -125,26 +124,26 @@ router.beforeEach((to, from, next) => {
 ```ts
 // Actual implementation
 export function h(type: any, propsOrChildren?: any, children?: any): VNode {
-  const l = arguments.length
+  const l = arguments.length;
   if (l === 2) {
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
       // single vnode without props
       if (isVNode(propsOrChildren)) {
-        return createVNode(type, null, [propsOrChildren])
+        return createVNode(type, null, [propsOrChildren]);
       }
       // props without children
-      return createVNode(type, propsOrChildren)
+      return createVNode(type, propsOrChildren);
     } else {
       // omit props
-      return createVNode(type, null, propsOrChildren)
+      return createVNode(type, null, propsOrChildren);
     }
   } else {
     if (l > 3) {
-      children = Array.prototype.slice.call(arguments, 2)
+      children = Array.prototype.slice.call(arguments, 2);
     } else if (l === 3 && isVNode(children)) {
-      children = [children]
+      children = [children];
     }
-    return createVNode(type, propsOrChildren, children)
+    return createVNode(type, propsOrChildren, children);
   }
 }
 ```
@@ -152,14 +151,14 @@ export function h(type: any, propsOrChildren?: any, children?: any): VNode {
 ## v-if 和 v-show
 
 1. `v-if` 是从解析编译过程中判断显示还是不渲染，`v-show` 则是判断是否添加 `display: none;` 做隐藏
-2. `v-if` 是会重新渲染节点/组件，所以组件的生命周期会触发，在业务开发中要注意使用。比如 `a-form-item` 用 `v-if` 会重新渲染，改变默认值，影响重置功能。比如初始值是0，修改 `v-if` 判断，设置绑定变量为1，再让组件显示，这个时候重置会为1，因为初始值的存储是在 `a-form-item` 中执行的，不是`a-form`。
+2. `v-if` 是会重新渲染节点/组件，所以组件的生命周期会触发，在业务开发中要注意使用。比如 `a-form-item` 用 `v-if` 会重新渲染，改变默认值，影响重置功能。比如初始值是 0，修改 `v-if` 判断，设置绑定变量为 1，再让组件显示，这个时候重置会为 1，因为初始值的存储是在 `a-form-item` 中执行的，不是`a-form`。
 3. 一般在性能场景下会做差异使用
 
 ## 组件销毁
 
 `elementUI` 中是通过修改 `key` 来让组件重新渲染
 
-``` js
+```js
 if (this.destroyOnClose) {
   this.$nextTick(() => {
     this.key++;
@@ -169,36 +168,46 @@ if (this.destroyOnClose) {
 
 `a-modal` 是通过三目运算符来控制组件的渲染
 
-``` tsx
+```tsx
 <Transition
-{...transitionProps}
-onBeforeEnter={onPrepare}
-onAfterEnter={() => onVisibleChanged(true)}
-onAfterLeave={() => onVisibleChanged(false)}
+  {...transitionProps}
+  onBeforeEnter={onPrepare}
+  onAfterEnter={() => onVisibleChanged(true)}
+  onAfterLeave={() => onVisibleChanged(false)}
 >
-{visible || !destroyOnClose ? (
-  <div
-    {...attrs}
-    ref={dialogRef}
-    v-show={visible}
-    key="dialog-element"
-    role="document"
-    style={[contentStyleRef.value, attrs.style as CSSProperties]}
-    class={[prefixCls, attrs.class]}
-    onMousedown={onMousedown}
-    onMouseup={onMouseup}
-  >
-    <div tabindex={0} ref={sentinelStartRef} style={sentinelStyle} aria-hidden="true" />
-    {modalRender ? modalRender({ originVNode: content }) : content}
-    <div tabindex={0} ref={sentinelEndRef} style={sentinelStyle} aria-hidden="true" />
-  </div>
-) : null}
+  {visible || !destroyOnClose ? (
+    <div
+      {...attrs}
+      ref={dialogRef}
+      v-show={visible}
+      key="dialog-element"
+      role="document"
+      style={[contentStyleRef.value, attrs.style as CSSProperties]}
+      class={[prefixCls, attrs.class]}
+      onMousedown={onMousedown}
+      onMouseup={onMouseup}
+    >
+      <div
+        tabindex={0}
+        ref={sentinelStartRef}
+        style={sentinelStyle}
+        aria-hidden="true"
+      />
+      {modalRender ? modalRender({ originVNode: content }) : content}
+      <div
+        tabindex={0}
+        ref={sentinelEndRef}
+        style={sentinelStyle}
+        aria-hidden="true"
+      />
+    </div>
+  ) : null}
 </Transition>
 ```
 
 补充：在组件销毁/挂载节点不一致时，也会 `removeChild` 掉 `DOM`
 
-``` js
+```js
 const removeCurrentContainer = () => {
   // Portal will remove from `parentNode`.
   // Let's handle this again to avoid refactor issue.
@@ -238,7 +247,7 @@ v-slots={{
 <Teleport to={container} v-slots={slots}></Teleport>
 ```
 
-``` vue
+```vue
 <Teleport to="body">
   <div v-if="open" class="modal">
     <p>Hello from the modal!</p>
@@ -278,8 +287,8 @@ destroyed() {
 
 ```js
 defineExpose({
-    elRef, // 要 ref.value.elRef.xxxx 访问
-})
+  elRef, // 要 ref.value.elRef.xxxx 访问
+});
 ```
 
 ## 业务组件变量子组件双向绑定
@@ -288,51 +297,53 @@ defineExpose({
 
 ```js
 // vue3
-const props = defineProps({  // 直接使用 form 即可隐形改变对象
-    form: {
-        type: Object,
-        required: true,
-    },
-})
-const formModal = defineModel({ required: true }) // 使用 defineModel 更佳
+const props = defineProps({
+  // 直接使用 form 即可隐形改变对象
+  form: {
+    type: Object,
+    required: true,
+  },
+});
+const formModal = defineModel({ required: true }); // 使用 defineModel 更佳
 
 // vue2
 const props = defineProps({
-    value: {
-        type: Object,
-        default: () => ({})
-    },
-})
-const keys = ['radio'] // 控制劫持范围
+  value: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+const keys = ["radio"]; // 控制劫持范围
 const formModal = computed(() => {
-    const data = { ...props.value }
-    for (const key of keys) {
-        let val = data[key]
-        Object.defineProperty(data, key, {
-            set: newVal => {
-                if (!Object.is(newVal, val)) { // 避免不必要的修改
-                    val = newVal
-                    emit('input', {
-                        ...data,
-                        [key]: val
-                    })
-                }
-            },
-            get: () => val
-        })
-    }
-    return data
-})
+  const data = { ...props.value };
+  for (const key of keys) {
+    let val = data[key];
+    Object.defineProperty(data, key, {
+      set: (newVal) => {
+        if (!Object.is(newVal, val)) {
+          // 避免不必要的修改
+          val = newVal;
+          emit("input", {
+            ...data,
+            [key]: val,
+          });
+        }
+      },
+      get: () => val,
+    });
+  }
+  return data;
+});
 
 // 普通类型可以这么写
 const modelVal = computed({
-    get() {
-        return props.value
-    },
-    set(val) {
-        emit('input', val)
-    }
-})
+  get() {
+    return props.value;
+  },
+  set(val) {
+    emit("input", val);
+  },
+});
 ```
 
 ## vue3 判断父组件是否监听某个事件
@@ -461,8 +472,8 @@ const router = createRouter({
 - Props 稳定性。尽量维持 `props` 的稳定性，避免不必要的更新。这里涉及到 `diff` 算法节点比较
 - 善用指令降低更新渲染消耗：
   - [v-once](https://cn.vuejs.org/api/built-in-directives#v-once) 指令，只渲染一次
-  - [v-memo](https://cn.vuejs.org/api/built-in-directives#v-memo) 指令，缓存计算结果，只有在接受的数组发生变化时才会重新计算。`<div v-memo="[valueA, valueB]"> ... </div>`
-  - [v-pre](https://cn.vuejs.org/api/built-in-directives#v-pre) 指令，跳过该元素及其所有子元素的编译。可以用于原始双大括号标签及内容。`<span v-pre>{{ this will not be compiled }}</span>`
+  - [v-memo](https://cn.vuejs.org/api/built-in-directives#v-memo) 指令，缓存计算结果，只有在接受的数组发生变化时才会重新计算。
+  - [v-pre](https://cn.vuejs.org/api/built-in-directives#v-pre) 指令，跳过该元素及其所有子元素的编译。可以用于原始双大括号标签及内容。
   - [v-if](https://cn.vuejs.org/api/built-in-directives#v-if) 指令，可以避免一些不常用的逻辑初始化
   - [v-for](https://cn.vuejs.org/guide/essentials/list#maintaining-state-with-key) 指令，虽然 `vue3` 有默认 `key` 来避免更新异常（“就地更新”的策略）。但指定唯一 `key` 可以享受 `快速 diff 算法`
 - 计算属性稳定性。
@@ -508,54 +519,50 @@ const log = () => console.log("11");
 
 ```vue
 <script setup>
-import { ref } from 'vue'
-import comp from './Comp.vue'
+import { ref } from "vue";
+import comp from "./Comp.vue";
 
-const msg = ref('Hello World!')
-
+const msg = ref("Hello World!");
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
   <input v-model="msg" />
-  <comp/>
+  <comp />
 </template>
 
 <!-- Comp.vue -->
 <script setup>
-const log = ()=>console.log('11')
-
+const log = () => console.log("11");
 </script>
 
 <template>
   <div>
-    {{log()}}
+    {{ log() }}
   </div>
 </template>
-
 ```
 
 输入框抽离，更新只触发子组件，打印时间不会触发
 
 ```vue
 <script setup>
-import comp from './Comp.vue'
+import comp from "./Comp.vue";
 
-const log = ()=>console.log('11')
+const log = () => console.log("11");
 </script>
 
 <template>
   <div>
-    {{log()}}
+    {{ log() }}
   </div>
-  <comp/>
+  <comp />
 </template>
 
 <!-- Comp.vue -->
 <script setup>
-import { ref } from 'vue'
-const msg = ref('Hello World!')
-
+import { ref } from "vue";
+const msg = ref("Hello World!");
 </script>
 
 <template>
