@@ -572,3 +572,43 @@ const msg = ref("Hello World!");
   </div>
 </template>
 ```
+
+## vue 动态创建组件
+
+vue2 是可以使用 extends 动态创建组件的，但是 vue3 不行了，需要使用 defineComponent
+
+```js
+const msg = defineComponent({
+  data() {
+    return {
+      message: "Hello, Vue 3!",
+    };
+  },
+  template: "<div>{{ message }}</div>",
+});
+```
+
+> 报错 [Vue warn]: Failed to resolve component: msg If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomElement.
+
+要配置如下
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  resolve: {
+    alias: {
+      vue: "vue/dist/vue.esm-bundler.js",
+    },
+  },
+});
+```
+
+> 扩展：加载远程组件
+
+参考链接：
+
+[浅谈低代码平台远程组件加载方案](https://juejin.cn/post/7127440050937151525)
+
+[给我5分钟，保证教会你在vue3中动态加载远程组件](https://juejin.cn/post/7399986979729424418)
+
+`defineAsyncComponent` 接受的是编译后的代码，并不能直接解析 `vue` 文件，可以加载项目本身构建成的组件 `js` 文件
