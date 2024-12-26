@@ -1237,6 +1237,21 @@ Promise.prototype.then = function (onResolved) {
 };
 ```
 
+#### 4.6.7 链式调用
+
+```js
+Promise.resolve().then(()=>{
+  console.log('then 1')
+}).finally(()=>{
+  console.log('finally')
+  throw new Error('error')
+}).catch(()=>{
+  console.log('catch')
+}).then(()=>{
+  console.log('then 2')
+})
+```
+
 ## 5. Common.JS、cmd、amd
 
 ### commonjs
