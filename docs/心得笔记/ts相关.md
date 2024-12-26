@@ -14,11 +14,15 @@
 
 ## 组件库 ts ref 类型注解
 
-`type ElUploadType = InstanceType<typeof ElUpload>`
+```ts
+type ElUploadType = InstanceType<typeof ElUpload>
+
+const elUploadRef = useTemplateRef<InstanceType<typeof ElUpload>>('lUploadRef')
+```
 
 参考链接：[为组件模板引用标注类型](https://cn.vuejs.org/guide/typescript/composition-api.html#typing-component-template-refs)
 
-### ts 项目实践
+## ts 项目实践
 
 参考链接：[ts 项目实践](https://juejin.cn/post/6970841540776329224)
 
