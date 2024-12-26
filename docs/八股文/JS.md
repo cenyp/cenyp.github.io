@@ -1250,6 +1250,11 @@ Promise.resolve().then(()=>{
 }).then(()=>{
   console.log('then 2')
 })
+
+// then 1
+// finally
+// catch
+// then 2
 ```
 
 ## 5. Common.JS、cmd、amd
