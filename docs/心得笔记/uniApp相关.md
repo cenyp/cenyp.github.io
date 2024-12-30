@@ -548,3 +548,18 @@ const ENV_CONFIG = {
   }
 }
 ```
+
+## uniApp 样式穿透没有效果
+
+微信小程序对于组件有样式保护，不允许外部修改组件的样式，用 `:deep()` 也没有效果
+
+要配置 `styleIsolation` 属性
+
+```js
+defineOptions({
+  options: {
+    styleIsolation: "shared",
+  },
+});
+```
+
