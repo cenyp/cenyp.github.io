@@ -214,3 +214,43 @@ body,
 但是 `scale` 会在 `display: line` 下失效
 
 同时 `display: flex` 会把子元素变成 `display: block`
+
+## overflow hidden 不能隐藏子节点
+
+1. 父元素没有设置固定的高度或宽度
+2. 子元素使用了 `position: absolute` 或 `position: fixed`，定位到祖先样式上了
+
+```vue
+<template>
+  <div class="pre">
+    <div class="out">
+      <div class="inner">1</div>
+    </div>
+  </div>
+</template>
+
+<style>
+.pre {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+}
+.out {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  border: 1px solid saddlebrown;
+  position: absolute; /* 如果去掉这个属性，定位到 pre，inner 就不会被隐藏；反之，定位到 out，则隐藏 */
+}
+
+.inner {
+  width: 50px;
+  height: 50px;
+  background-color: blueviolet;
+  position: absolute;
+  right: -30px;
+}
+</style>
+```
+
+> tips 反之同样可以这样子避免被父样式隐藏。还可以把子元素层级改变到父元素之上，这样子父元素就不会被隐藏了；如弹窗组件一般在 `body` 下
