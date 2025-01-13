@@ -1291,6 +1291,7 @@ effect.scheduler = () => queueJob(job)
 
 > 扩展
 > getCurrentInstance 也要在 setup 使用，原因是一样的
+> vue/vue-router 的一些方法也是如此，如 `useRouter/useRoute`
 
 ### provide
 
