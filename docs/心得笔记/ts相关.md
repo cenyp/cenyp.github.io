@@ -17,7 +17,9 @@
 ```ts
 type ElUploadType = InstanceType<typeof ElUpload>
 
-const elUploadRef = useTemplateRef<InstanceType<typeof ElUpload>>('lUploadRef')
+const elUploadRef = useTemplateRef<InstanceType<typeof ElUpload>>('elUploadRef') // 无法自动推断下，可以添加
+
+const elUploadRef = useTemplateRef('elUploadRef') // 不用填写类型也可以
 ```
 
 参考链接：[为组件模板引用标注类型](https://cn.vuejs.org/guide/typescript/composition-api.html#typing-component-template-refs)
