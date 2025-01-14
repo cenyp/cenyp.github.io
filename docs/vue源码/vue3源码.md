@@ -1252,11 +1252,11 @@ effect.scheduler = () => queueJob(job)
 
 > 为什么 `my-cascader` 组件编译有生成 `__scopeId`，但是没有 `data-v-xxxxx`
 
-问题的分歧点在于 `patch` 方法中，执行了 `processComponent` 方法而非 `processElement`，`processElement` 正是添加 `data-v-xxxxx` 的地方。`processElement` 是处理多节点的，证明组件是多节点组件。
+问题的分歧点在于 `vue` 源码中 `patch` 方法中，执行了 `processComponent` 方法而非 `processElement`，`processElement` 正是添加 `data-v-xxxxx` 的地方。`processComponent` 是处理多节点的，证明组件是多节点组件；`processElement` 是处理普通节点的。
 
 > 为什么 `my-cascader` 是多节点组件
 
-通过查看代码，问题显而易见
+通过查看组件库源码，问题显而易见
 
 ```vue
 <!-- el-cascader -->
