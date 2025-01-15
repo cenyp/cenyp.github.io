@@ -612,3 +612,218 @@ export default defineConfig({
 [给我5分钟，保证教会你在vue3中动态加载远程组件](https://juejin.cn/post/7399986979729424418)
 
 `defineAsyncComponent` 接受的是编译后的代码，并不能直接解析 `vue` 文件，可以加载项目本身构建成的组件 `js` 文件
+
+## 泛型组件和 defineSlots 使用
+
+### 泛型组件
+
+```vue
+<!-- aa.vue -->
+<template>
+  <div></div>
+</template>
+
+<script lang="ts" setup generic="T extends string">
+import { PropType } from "vue";
+
+defineProps({
+  list: {
+    type: Array as PropType<T[]>,
+    required: true,
+  },
+});
+</script>
+```
+
+可以看到， `list` 的类型是在 `setup` 上声明的类型来定义的
+
+```vue
+<!-- bb.vue -->
+<template>
+  <div>
+    <!-- ts 报错 -->
+    <!-- 
+        不能将类型“{ msg: string; }[]”分配给类型“string[]”。
+    不能将类型“{ msg: string; }”分配给类型“string”。 
+    -->
+    <aa :list="list"></aa>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import aa from "./aa.vue";
+
+const list = [
+  {
+    msg: "张三",
+  },
+];
+</script>
+```
+
+**通过传入定义类型**
+
+去掉 `extends` 继承，使类型完全由传入类型决定
+
+```vue
+<!-- aa.vue -->
+<template>
+  <div></div>
+</template>
+
+<script lang="ts" setup generic="T">
+import { PropType } from "vue";
+
+defineProps({
+  list: {
+    type: Array as PropType<T[]>,
+    required: true,
+  },
+});
+</script>
+```
+
+在组件使用时， `list` 是由使用时类型定义的
+
+```vue
+<!-- bb.vue -->
+<template>
+  <div>
+    <!-- 
+        悬浮鼠标可以看到类型提示
+        (property) list: {
+            msg: string;
+        }[] 
+    -->
+    <aa :list="list"></aa>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import aa from "./aa.vue";
+
+const list = [
+  {
+    msg: "张三",
+  },
+];
+</script>
+```
+
+### defineSlots
+
+```vue
+<!-- aa.vue -->
+<template>
+  <div>
+    <!-- 
+        不能将类型“unknown[]”分配给类型“{ name: string; }[]”。
+    不能将类型“unknown”分配给类型“{ name: string; }”。
+    -->
+    <slot name="default" :list="list"></slot>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { PropType } from "vue";
+
+defineProps({
+  list: {
+    // 这里定义要和 defineSlots 里面一致，否则上面使用时会报错
+    // 并且使用时，会以 defineProps 里面定义的类型为准
+    type: Array as PropType<{ name: string }[]>,
+    required: true,
+  },
+});
+
+defineSlots<{
+  default(props: { list: { name: string }[] }): any;
+}>();
+</script>
+```
+
+```vue
+<template>
+  <div>
+    <!-- 报错 -->
+    <!-- 
+        不能将类型“{ msg: string; }[]”分配给类型“{ name: string; }[]”。
+    类型 "{ msg: string; }" 中缺少属性 "name"，但类型 "{ name: string; }" 中需要该属性。
+    -->
+    <aa :list="list">
+      <!-- 
+       scoped.list 类型提示
+       (property) list: {
+            name: string;
+        }[] 
+      -->
+      <template #default="scoped">{{ scoped.list }}</template>
+    </aa>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import aa from "./aa.vue";
+
+const list = [
+  {
+    msg: "张三",
+  },
+];
+</script>
+```
+
+### 结合使用
+
+如：应用在表格组件插槽类型提示
+
+```vue
+<!-- aa.vue -->
+<template>
+  <div>
+    <slot name="default" :list="list"></slot>
+  </div>
+</template>
+
+<script lang="ts" setup generic="T">
+import { PropType } from "vue";
+
+defineProps({
+  list: {
+    type: Array as PropType<T[]>,
+    required: true,
+  },
+});
+
+defineSlots<{
+  default(props: { list: T[] }): any;
+}>();
+</script>
+```
+
+```vue
+<!-- bb.vue -->
+<template>
+  <div>
+    <aa :list="list">
+      <!-- 
+        scoped.list 类型提示
+        (property) list: {
+            msg: string;
+        }[]
+      -->
+      <template #default="scoped">{{ scoped.list }}</template>
+    </aa>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import aa from "./aa.vue";
+
+const list = [
+  {
+    msg: "张三",
+  },
+];
+</script>
+```
