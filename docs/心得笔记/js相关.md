@@ -923,3 +923,10 @@ function a(val) {
     return val
 }
 ```
+
+## toFixed 不是四舍五入算法
+
+`tofixed` 不是绝对的四舍五入，是银行家算法。尽量避免在金额计算使用，可以用 `round` 替代。
+
+![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17156658787078.png)
+
