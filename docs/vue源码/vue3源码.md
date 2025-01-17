@@ -324,11 +324,13 @@ export function triggerRefValue(ref: RefBase<any>, newVal?: any) {
 ### reactive 与 ref 区别
 
 1. 处理的数据类型不同
-2. `ref` 定义的变量可以做直接赋值全部替换，本周是多套了一层 `{_value:xxx}`
+2. `ref` 定义的变量可以做直接赋值全部替换，类似多套了一层 `{_value:xxx}`
 3. `ref` 定义的变量，需要通过 `.value` 访问，`reactive` 定义的变量直接访问
 4. `ref` 对普通数据类型做了优化，不用依赖于 `proxy`
 
 `ref` 和 `reactive` 都有解构的风险，都可以用 `const` 处理
+
+> tips 直接打印 `ref` 定义的显示为 `Ref` 类型；打印 `.value` 显示为 `Reactive` 类型
 
 ```vue
 <script setup>
