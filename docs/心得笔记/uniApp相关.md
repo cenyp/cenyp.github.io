@@ -563,3 +563,8 @@ defineOptions({
 });
 ```
 
+## 小程序调试新方式
+
+货拉拉开源，支持 web、H5、小程序，支持日志回放
+
+[Page Spy](https://www.pagespy.org/#/docs/miniprogram)
