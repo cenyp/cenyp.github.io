@@ -1430,3 +1430,260 @@ Vue 模板会被预编译成虚拟 DOM 渲染函数。Vue 也提供了 API 使�
 在实践中，模板对大多数的应用场景都是够用且高效的。渲染函数一般只会在需要处理高度动态渲染逻辑的可重用组件中使用。想了解渲染函数的更多使用细节可以去到渲染函数 & JSX 章节继续阅读。
 
 **显然，JSX 是不能享受 vue 针对模板语法的性能优化，模板语法的性能要比 jsx 高，对比 react 同理**
+
+## watch 与 ref
+
+### 源码解析
+
+可以看到分别对 `ref`、`reactive`、`array`、`function` 四种类型进行了处理，最终都转化成了 `getter` 函数，通过 `effect` 函数进行依赖收集，当依赖发生变化时，会调用 `effect` 函数，从而触发回调函数。
+
+```ts
+export function watch(
+  source: WatchSource | WatchSource[] | WatchEffect | object,
+  cb?: WatchCallback | null,
+  options: WatchOptions = EMPTY_OBJ
+): WatchHandle {
+  const { immediate, deep, once, scheduler, augmentJob, call } = options;
+
+  // traverse 是深度遍历方法
+  const reactiveGetter = (source: object) => {
+    if (deep) return source;
+    if (isShallow(source) || deep === false || deep === 0)
+      return traverse(source, 1);
+    return traverse(source);
+  };
+
+  let effect: ReactiveEffect;
+  let getter: () => any;
+  let cleanup: (() => void) | undefined;
+  let boundCleanup: typeof onWatcherCleanup;
+  let forceTrigger = false;
+  let isMultiSource = false;
+
+  if (isRef(source)) {
+    // 判断是否为 ref 类型，处理成 source.value 才能触发响应式
+    getter = () => source.value;
+    forceTrigger = isShallow(source);
+  } else if (isReactive(source)) {
+    // 判断是否为 reactive 类型，调用 reactiveGetter 进行深度遍历
+    getter = () => reactiveGetter(source);
+    forceTrigger = true;
+  } else if (isArray(source)) {
+    isMultiSource = true;
+    forceTrigger = source.some((s) => isReactive(s) || isShallow(s));
+    getter = () =>
+      // 遍历处理每个项
+      source.map((s) => {
+        if (isRef(s)) {
+          return s.value;
+        } else if (isReactive(s)) {
+          return reactiveGetter(s);
+        } else if (isFunction(s)) {
+          return call ? call(s, WatchErrorCodes.WATCH_GETTER) : s();
+        }
+      });
+  } else if (isFunction(source)) {
+    if (cb) {
+      // getter with cb
+      getter = call
+        ? () => call(source, WatchErrorCodes.WATCH_GETTER)
+        : (source as () => any);
+    } else {
+      // ...
+    }
+  } else {
+    getter = NOOP;
+  }
+
+  // 深度监听处理
+  if (cb && deep) {
+    const baseGetter = getter;
+    const depth = deep === true ? Infinity : deep;
+    getter = () => traverse(baseGetter(), depth);
+  }
+
+  const job = (immediateFirstRun?: boolean) => {
+    // 触发监听回调
+  };
+
+  // 传入的 getter，作为触发项
+  effect = new ReactiveEffect(getter);
+
+  // 依赖触发函数
+  effect.scheduler = scheduler
+    ? () => scheduler(job, false)
+    : (job as EffectScheduler);
+
+  // 执行传入的 getter，触发依赖搜集
+  if (cb) {
+    // 立即执行
+    if (immediate) {
+      job(true);
+    } else {
+      oldValue = effect.run();
+    }
+  }
+}
+```
+
+### 案例演示
+
+依源码分析，没有触发监听的，是没有依赖收集触发，即传入生成的 `getter` 函数没有触发依赖机制
+
+```vue
+<script setup>
+import { ref, watch } from "vue";
+
+const obj = ref({ name: "1" });
+
+// 生成 () => source.value
+// 监听整体赋值
+watch(obj, () => {
+  console.log("changed1");
+});
+
+// 生成 () => call(source, 2)，返回 obj 不会触发 get
+// 什么都没有监听
+watch(
+  () => obj,
+  () => {
+    console.log("changed2");
+  }
+);
+
+// 生成 () => reactiveGetter(source)
+// 按照 reactive 的规则深度监听
+watch(obj.value, () => {
+  console.log("changed3");
+});
+
+// 生成 () => call(source, 2) ，返回 obj.value
+// 监听整体赋值
+watch(
+  () => obj.value,
+  () => {
+    console.log("changed4");
+  }
+);
+</script>
+
+<template>
+  <!-- 1 4 -->
+  <button @click="obj = { name: '2' }">1111</button>
+  <!-- 3 -->
+  <input v-model="obj.name" />
+</template>
+```
+
+```vue
+<script setup>
+import { ref, watch } from "vue";
+
+const name = ref("");
+
+// 生成 () => source.value
+// 监听整体赋值
+watch(name, () => {
+  console.log("changed1");
+});
+
+// 生成 () => call(source, 2)，返回 obj 不会触发 get
+// 什么都没有监听
+watch(
+  () => name,
+  () => {
+    console.log("changed2");
+  }
+);
+
+/**
+用法报错
+No overload matches this call.
+  The last overload gave the following error.ts(2769)
+runtime-core.d.ts(1489, 25): The last overload is declared here.
+(property) Ref<string, string>.value: string
+*/
+// 生成 () => {}
+// 相当于传入 ''，并没有响应式
+watch(name.value, () => {
+  console.log("changed3");
+});
+
+// 生成 () => call(source, 2)
+// 监听整体赋值
+watch(
+  () => name.value,
+  () => {
+    console.log("changed4");
+  }
+);
+</script>
+
+<template>
+  <!-- 1 4 -->
+  <button @click="name = 1">1111</button>
+  <!-- 1 4 -->
+  <input v-model="name" />
+</template>
+```
+
+```vue
+<script setup>
+import { reactive, watch } from "vue";
+
+const obj = reactive({
+  name: "1",
+});
+
+// 生成 () => reactiveGetter(source)
+// 按照 reactive 的规则深度监听
+watch(obj, () => {
+  console.log("changed1");
+});
+
+// 生成 () => call(source, 2)
+// 无法监听整体赋值，地址值发生变化
+watch(
+  () => obj,
+  () => {
+    console.log("changed2");
+  }
+);
+
+/**
+  报错
+  No overload matches this call.
+    The last overload gave the following error.ts(2769)
+  runtime-core.d.ts(1489, 25): The last overload is declared here.
+  const obj: {
+    name: string;
+  }
+ */
+// 生成 () => {}
+// 无响应式传参
+watch(obj.name, () => {
+  console.log("changed3");
+});
+
+// 生成 () => call(source, 2)
+// 监听 name 字段
+watch(
+  () => obj.name,
+  () => {
+    console.log("changed4");
+  }
+);
+</script>
+
+<template>
+  <button @click="obj = { name: '2' }">1111</button>
+  <!-- 1 4 -->
+  <input v-model="obj.name" />
+</template>
+```
+
+总结：传入的触发项生成的 `getter` 会影响 `watch` 的监听行为。
+
+- `ref` 传入 `xxx/xxx.value`，深度监听/监听整体赋值
+- `reactive` 传入 `xxx/xxx.x`，深度监听/监听整体赋值
+- 在要进行监听处理后的值时，才使用函数，`VUE` 内部没有对函数的返回值做响应式处理
