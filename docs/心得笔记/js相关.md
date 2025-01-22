@@ -72,7 +72,6 @@ document.querySelector(`div[data-parentid^="${category.id}"]`)?.scrollIntoView({
 })
 ```
 
-
 ## 跨标签页/窗口通讯
 
 1. 缓存：`localstorage` 等等
@@ -782,6 +781,7 @@ Math.round(666.665*100)/100 // 666.67
 ```
 
 ## jsdoc
+
 对于没有 `ts` 的项目，可以使用 `jsdoc` 来做类型提示，配合 `@ts-check`，或者是开启设置 `checkJs` 来做类型检查
 
 建议在使用复杂类型的数据结构时，使用 `jsdoc`
@@ -793,6 +793,7 @@ Math.round(666.665*100)/100 // 666.67
 [jsdoc 文档](https://www.jsdoc.com.cn/)
 
 ### 普通类型
+
 ```js
 // @ts-check
 
@@ -810,6 +811,7 @@ const name = 'name'; // 不能将类型“string”分配给类型“number”
 ```
 
 ### 复杂类型
+
 ```js
 // @ts-check
 
@@ -863,6 +865,7 @@ const user = { };
 ```
 
 ### 实用类型
+
 ```ts
 interface User {
   name: string;
@@ -903,6 +906,7 @@ type UserWithoutName = Omit<User, 'name'>;
 //   age: number;
 // }
 ```
+
 ```js
 /** @typedef {{ name: string; age: number }} User */
 /** @typedef {Partial<User>} PartialUser */
@@ -913,6 +917,7 @@ type UserWithoutName = Omit<User, 'name'>;
 ```
 
 ### 泛型
+
 ```js
 /**
  * @template T
@@ -929,4 +934,3 @@ function a(val) {
 `tofixed` 不是绝对的四舍五入，是银行家算法。尽量避免在金额计算使用，可以用 `round` 替代。
 
 ![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17156658787078.png)
-
