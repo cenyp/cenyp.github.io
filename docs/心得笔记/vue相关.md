@@ -828,6 +828,19 @@ const list = [
 </script>
 ```
 
-## 全局注册 ts 无提示校验
+## 全局组件注册 ts 提示
 
 如声明全局通用组件，在页面上使用时，往往没有 `ts` 类型提示校验，改成路径引入可以避免
+
+或者是声明全局组件类型
+
+```ts
+// components.d.ts
+declare module 'vue' {
+    export interface GlobalComponents {
+        btn: (typeof import('./btn.vue'))['default']
+     }
+}
+
+export {} // 必须有这个文件，否则不生效
+```
