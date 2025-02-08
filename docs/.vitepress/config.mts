@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import { vitepressDemoPlugin } from 'vitepress-demo-plugin'; 
 
 export default defineConfig({
   head: [["link", { rel: "icon", href: "/logo.jpg" }]],
@@ -112,4 +113,9 @@ export default defineConfig({
 
     // socialLinks: [{ icon: "gitee", link: "https://gitee.com/longway__comeon" }],
   },
+  markdown: { 
+    config(md) { 
+      md.use(vitepressDemoPlugin); 
+    }, 
+  }, 
 });
