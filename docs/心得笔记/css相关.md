@@ -2,37 +2,21 @@
 
 ## white-space 妙用
 
-1. 在处理后端返回的 `\n` 上，可以保持换行
+在处理后端返回的 `\n` 上，可以保持换行，在日志等字符串上由后端灵活生成换行。
 
-<demo vue="./demos/whiteSpace.vue" />
+<demo vue="./demos/css相关/white-space 妙用.vue" />
 
-## 页面跟随提示框方案
-
-如何计算提示框的 x、y 定位
-
-1. `getBoundingClientRect` + 父节点 `scrollTop`
-2. `offsetTop` 替代 `getBoundingClientRect` 计算父子节点位置差
-
->tips：如果提示是在复杂组件内部或者是要依赖数据异步渲染的，要加延时以获取最终的定位（注意电脑性能影响）
->
->tips：优化方案，可查看**组件库**下 `tooltip` 相关章节
-
-## flex相关
+## flex 相关
 
 `flex` 可以作用于 `::after` 和 `::before`
 
-`gap` 属性可以快速完成 `flex` 子项的间隔设置
+`gap` 属性可以快速完成 `flex` 子项的间隔设置，适用于 `Flex` 和 `Grid` 布局
 
-```css
-.flexLine {
-    display: flex;
-    gap: 10px;
-}
-```
+<demo vue="./demos/css相关/flex 相关.vue" />
 
 ## h5弹窗固定标题和底部按钮
 
-可以使用 `sticky` 定位，分别设置
+可以使用 `sticky` 定位。这样子处理的好处是，弹窗的高度由内容控制；最大高度由弹窗组件控制，可以保证样式统一。
 
 ```css
 .title {
@@ -44,6 +28,8 @@
     bottom: 0;
 }
 ```
+
+<demo vue="./demos/css相关/h5弹窗固定标题和底部按钮_1.vue" />
 
 ## 子元素获取父元素高度
 
