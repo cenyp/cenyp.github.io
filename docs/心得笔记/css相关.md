@@ -29,11 +29,11 @@
 }
 ```
 
-<demo vue="./demos/css相关/h5弹窗固定标题和底部按钮_1.vue" />
+<demo vue="./demos/css相关/h5弹窗固定标题和底部按钮.vue" />
 
 ## 子元素获取父元素高度
 
-父元素高度为 auto 时子元素无法继承 min-height 的解决方案
+父元素高度为 `auto` 时子元素无法继承 `min-height` 的解决方案
 
 ```css
 .fa {
@@ -60,8 +60,10 @@
 1. `CSS` 属性 `min-height` 能够设置元素的最小高度。这样能够防止 `height` 属性的应用值小于 `min-height` 的值。
 2. 当 `min-height` 大于 `max-height` 或 `height` 时，元素的高度会设置为 `min-height` 的值。
 
-`即：height` 设置为 0 时，小于 100%，就会设置 `height` 为 100%;
-其实设置 `height` 为 100%/`inherit` 也能实现效果
+`即：height` 设置为 0 时，小于 100%，就会设置 `height` 为 `100%`;
+其实设置 `height` 为 `100%/inherit` 也能实现效果
+
+<demo vue="./demos/css相关/子元素获取父元素高度.vue" />
 
 ## css 3D/2D 转换时有齿痕
 
