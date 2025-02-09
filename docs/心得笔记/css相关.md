@@ -67,9 +67,11 @@
 
 ## css 3D/2D 转换时有齿痕
 
+处理纯色大屏场景下有效
+
 `filter: blur(0.5px);`
 
-参考：[MDN filter](https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter)
+参考链接：[MDN filter](https://developer.mozilla.org/zh-CN/docs/Web/CSS/filter)
 
 ## css 模块化
 
@@ -79,7 +81,7 @@
 
 ## 单选按钮框组边框重叠问题
 
-1. antDv 是通过在设置 `before` 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
+1. `antDv` 是通过在设置 `before` 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
 2. 通过设置 `margin-left: -1px` 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 `z-index`/`position` 来增加权重完成覆盖
 
 ## 滚动时 padding-right 失效
