@@ -79,16 +79,15 @@
 - `CSS Modules`，利用构建库来实现，如 `vue` 的 `data-v-xxxxx`
 - `CSS-in-JS`，把 `css` 手动写入 `style` 中，自然没有命名冲突的问题。如：`styled-components`
 
-## 单选按钮框组边框重叠问题
-
-1. `antDv` 是通过在设置 `before` 来实现相邻按钮项的边框，通过是否选中来显示不同颜色
-2. 通过设置 `margin-left: -1px` 让后面的按钮项覆盖前面的按钮项的边框，选中的按钮用 `z-index`/`position` 来增加权重完成覆盖
-
 ## 滚动时 padding-right 失效
 
 子节点触发滚动时 `padding-right` 失效
 
 1. 设置子节点为 `inline-block`，`inline-flex`，`inline-grid`，`inline-table`
+
+<demo vue="./demos/css相关/滚动时 padding-right 失效.vue" />
+
+// todo 忘记场景了
 
 ## flex: 1
 
