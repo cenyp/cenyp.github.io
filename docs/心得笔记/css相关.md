@@ -97,11 +97,11 @@
 - `flex-shrink: 1`：这个属性控制元素在容器空间不足时是否会缩小，以及缩小的比例。值为 1 表示当空间不足时，元素会根据需要缩小。
 - `flex-basis: 0`：这个属性设置元素的初始大小，通常指元素的“基础”宽度或高度。设置为 0 表示元素的初始尺寸为 0，所有可用空间将由 `flex-grow` 决定。
 
->tips 可以利用这个属性，让元素自动占据剩余空间，配合 `flex-direction: column` 在竖直方向下也能应用
+> tips 可以利用这个属性，让元素自动占据剩余空间，配合 `flex-direction: column` 在竖直方向下也能应用
 
 ## 项目全局重置样式
 
-```css
+```scss
 * {
     /* 统一宽度计算规则 */
     box-sizing: border-box;  
@@ -112,28 +112,24 @@
 
     /* 全局修改滚动条，不然后续在单独组件修改可能会引起组件库组件异常，如 el-table 会计算滚动条宽度来适配样式 */
     &::-webkit-scrollbar-track {
-        border-radius: 6px;
+        border-radius: 8px;
         background: transparent;
     }
     &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
+        width: 8px;
+        height: 8px;
     }
     &::-webkit-scrollbar-thumb {
-        border-radius: 6px;
+        border-radius: 8px;
         background: transparent;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: background-color 0.2s;
     }
-    &:hover {
-        &::-webkit-scrollbar-thumb {
-            // #909399 + 0.3
-            background-color: rgba(144, 147, 153, 0.3);
-            &:hover {
-                // #909399 + 0.5
-                background-color: rgba(144, 147, 153, 0.5);
-            }
-        }
+    &:hover::-webkit-scrollbar-thumb {
+        background-color: rgba(144, 147, 153, 0.3);
+    }
+    &:hover::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(144, 147, 153, 0.5);
     }
 }
 
@@ -152,7 +148,7 @@ body,
 
 在实现 `title` 前面有光亮颜色块时，可以利用伪类实现，并使用 `flex` 布局实现上下居中
 
-```css
+```scss
 .title {
     display: flex;
     align-items: center;
@@ -187,11 +183,25 @@ body,
 }
 ```
 
->tips:实现标题前面的色块除了用 `::before` 还可以通过设置左边框的方法
+> tips 实现标题前面的色块除了用 `::before` 还可以通过设置左边框的方法
 
 ## scss css 属性快速插入
 
->todo
+可以处理常复用的样式：如 `flex布局`；相关业务样式，如提示文案、标题等等
+
+```scss
+@mixin sexy-border($color, $width: 1in) {
+    border: {
+        color: $color;
+        width: $width;
+        style: dashed;
+    }
+}
+p { @include sexy-border(blue); }
+h1 { @include sexy-border(blue, 2in); }
+```
+
+参考文档 [scss](https://www.sass.hk/docs/index.html)
 
 ## 文本鼠标移入放大
 
