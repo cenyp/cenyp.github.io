@@ -4,7 +4,19 @@
 
 它被作为一个轻量版的 `Document` 使用，就像标准的 `document` 一样，存储由节点 `nodes` 组成的文档结构。与 `document` 相比，最大的区别是它不是真实 `DOM` 树的一部分，它的变化不会触发 `DOM` 树的重新渲染，且不会对性能产生影响。
 
+相比于 `document.createElement`，`DocumentFragment`创造的是虚拟节点，在做批量操作时，可以降低 `DOM` 层数/`DOM` 操作次数
+
+| 优势              | 说明                           |
+| ----------------- | ------------------------------ |
+| 减少 DOM 操作次数 | 一次性插入节点，减少重排和重绘 |
+| 避免中间状态渲染  | 离屏操作，避免页面闪烁         |
+| 代码结构更清晰    | 集中操作 DOM，代码更易维护     |
+| 支持批量操作      | 适合处理大量节点               |
+| 减少内存占用      | 轻量级容器，不占用额外渲染资源 |
+
 参考链接：[MDN DocumentFragment](https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment)
+
+<demo vue="./demos/js相关/DocumentFragment.vue" />
 
 ## IntersectionObserver
 
