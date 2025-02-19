@@ -768,6 +768,8 @@ export { init, getData };
 
 `sessionStorage` 不能在多个窗口或标签页之间共享数据，但是当通过 `window.open` 或链接打开新页面时(不能是新窗口)，新页面会复制前一页的 `sessionStorage`
 
+`localStorage` 和 `sessionStorage` 的数据共享受同源策略影响
+
 ## toFixed 不是四舍五入
 
 `toFixed` 使用的是银行家算法
@@ -943,6 +945,8 @@ function a(val) {
 
 ## toFixed 不是四舍五入算法
 
-`tofixed` 不是绝对的四舍五入，是银行家算法。尽量避免在金额计算使用，可以用 `round` 替代。
+`toFixed` 不是绝对的四舍五入，是银行家算法。尽量避免在金额计算使用，可以用 `round` 替代。
 
 ![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17156658787078.png)
+
+ 
