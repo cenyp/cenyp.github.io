@@ -2,33 +2,33 @@
   <div class="bg">
     <div class="title">标题</div>
     <div class="content">
-      内容 start<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容<br>
-      内容 end<br>
+      内容 start<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容<br />
+      内容 end<br />
     </div>
     <div class="footer">底部按钮</div>
   </div>
@@ -48,7 +48,7 @@
   position: sticky;
   top: 0;
 }
- 
+
 .footer {
   height: 30px;
   background-color: aquamarine;

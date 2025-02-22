@@ -1287,6 +1287,10 @@ effect.scheduler = () => queueJob(job)
 - 开发环境下会根据文件相对路径生成唯一 ID，比如 vite 中 src/App.vue 固定生成 7a7a37b1
 - 生产环境下会根据文件相对路径+文件内容共同生成唯一 ID
 
+解决方法：在没有插入 `body` 下时，外层套用 `div` 标签，该标签上就会生成 `data-v-xxxxx` 属性，结合 `css` 根下使用 `:deep(){}` 来
+
+<demo vue="./demos/组件 data-v-xxxxx 属性消失.vue" />
+
 ## inject 为什么要在 setup 使用
 
 参考链接：[面试官：来谈谈 Vue3 的 provide 和 inject 实现多级传递的原理](https://juejin.cn/post/7443736271645376562)
