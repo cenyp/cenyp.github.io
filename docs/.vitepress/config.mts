@@ -1,5 +1,5 @@
 import { defineConfig } from "vitepress";
-import { vitepressDemoPlugin } from 'vitepress-demo-plugin'; 
+import { vitepressDemoPlugin } from "vitepress-demo-plugin";
 
 export default defineConfig({
   head: [["link", { rel: "icon", href: "/logo.jpg" }]],
@@ -73,6 +73,7 @@ export default defineConfig({
           items: [
             { text: "文章链接大全", link: "/文章收录/文章链接大全" },
             { text: "多项目多仓库理念", link: "/文章收录/多项目多仓库理念" },
+            { text: "vue 与 react 区别", link: "/文章收录/vue 与 react 区别" },
             {
               text: "CSS 实现多行文本“展开收起”",
               link: "/文章收录/CSS 实现多行文本“展开收起”",
@@ -113,9 +114,9 @@ export default defineConfig({
 
     // socialLinks: [{ icon: "gitee", link: "https://gitee.com/longway__comeon" }],
   },
-  markdown: { 
-    config(md) { 
-      md.use(vitepressDemoPlugin); 
-    }, 
-  }, 
+  markdown: {
+    config(md) {
+      md.use(vitepressDemoPlugin);
+    },
+  },
 });

@@ -949,4 +949,12 @@ function a(val) {
 
 ![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17156658787078.png)
 
- 
+## 获取缩放的屏幕高度
+
+`window.innerHeight` 获取的是缩放后的屏幕高度
+
+浏览器窗口的视口（viewport）高度（以像素为单位）；如果有水平滚动条，也包括滚动条高度。
+
+[MDN innerHeight](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/innerHeight)
+
+<demo vue="./demos/js相关/获取缩放的屏幕高度.vue" />
