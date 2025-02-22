@@ -74,6 +74,7 @@ export default defineConfig({
             { text: "文章链接大全", link: "/文章收录/文章链接大全" },
             { text: "多项目多仓库理念", link: "/文章收录/多项目多仓库理念" },
             { text: "vue 与 react 区别", link: "/文章收录/vue 与 react 区别" },
+            { text: "uniApp 函数式弹窗", link: "/文章收录/uniApp 函数式弹窗" },
             {
               text: "CSS 实现多行文本“展开收起”",
               link: "/文章收录/CSS 实现多行文本“展开收起”",
