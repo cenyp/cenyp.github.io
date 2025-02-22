@@ -1,15 +1,15 @@
 <template>
   <el-button type="primary" @click="handleClick">点击插入 DOM</el-button>
+  <div>DOM 渲染次数：{{ num }}</div>
   <div class="DocumentFragment_test"></div>
 </template>
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
+const num = ref(0);
 onMounted(() => {
   const observer = new MutationObserver((mutationsList) => {
     for (let mutation of mutationsList) {
-      if (mutation.type === "childList") {
-        console.log("DOM 重新渲染");
-      }
+      if (mutation.type === "childList") num.value++;
     }
   });
 
