@@ -35,56 +35,64 @@
 ### 扩展：目录滚动跟随
 
 ```js
-const listenScrollTimer = listenScroll()
+const listenScrollTimer = listenScroll();
 // 滚动监听
 function listenScroll() {
-    // 停止监听滚动事件
-    if (listenScrollTimer) listenScrollTimer.disconnect()
+  // 停止监听滚动事件
+  if (listenScrollTimer) listenScrollTimer.disconnect();
 
-    // 存储所有监听元素，方便在 DOM 消失时判断选中状态
-    // 大数据情况下，可以用别的方式处理
-    let doms = [] 
+  // 存储所有监听元素，方便在 DOM 消失时判断选中状态
+  // 大数据情况下，可以用别的方式处理
+  let doms = [];
 
-    const observer = new IntersectionObserver(
-        entries => {
-            if (!doms?.length) { // 初始化会先触发一次，返回全部监听元素
-                doms = entries
-            } else {
-                // 更新监听元素
-                for (const entry of entries) {
-                    doms.splice(
-                        doms.findIndex(item => item.target?.dataset?.parentid === entry.target?.dataset?.parentid),
-                        1,
-                        entry
-                    )
-                }
-            }
-
-            // 获取第一个可见元素
-            const dom = doms.find(item => item.intersectionRatio > 0.1)
-            if (dom) activeCategory.value = Number(dom.target?.dataset?.parentid?.split('-')[0])
-        },
-        {
-            // warn 要设置 >0 不然 intersectionRatio 会存在为 0 的情况，不好处理，同时避免频繁触发
-            threshold: 0.1, 
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (!doms?.length) {
+        // 初始化会先触发一次，返回全部监听元素
+        doms = entries;
+      } else {
+        // 更新监听元素
+        for (const entry of entries) {
+          doms.splice(
+            doms.findIndex(
+              (item) =>
+                item.target?.dataset?.parentid ===
+                entry.target?.dataset?.parentid
+            ),
+            1,
+            entry
+          );
         }
-    )
+      }
 
-    // 监听 parentId 写在目录对应的整个 DOM 上
-    document.querySelectorAll('div[data-parentId]')?.forEach(item => {
-        observer.observe(item)
-    })
+      // 获取第一个可见元素
+      const dom = doms.find((item) => item.intersectionRatio > 0.1);
+      if (dom)
+        activeCategory.value = Number(
+          dom.target?.dataset?.parentid?.split("-")[0]
+        );
+    },
+    {
+      // warn 要设置 >0 不然 intersectionRatio 会存在为 0 的情况，不好处理，同时避免频繁触发
+      threshold: 0.1,
+    }
+  );
 
-    // 暴露方法，方便取消监听
-    return observer
+  // 监听 parentId 写在目录对应的整个 DOM 上
+  document.querySelectorAll("div[data-parentId]")?.forEach((item) => {
+    observer.observe(item);
+  });
+
+  // 暴露方法，方便取消监听
+  return observer;
 }
 
 // 点击左边目录滚动
 document.querySelector(`div[data-parentId^="${item.id}"]`)?.scrollIntoView({
-    // smooth 滚动时，会存在部分 dom 显示隐藏不会触发事件，同时事件频繁触发，存在闪烁，加之无法控制滚动动画时间
-    // 可以使用 js 控制滚动动画时间来限制监听事件的触发，同时可以控制滚动到指定位置
-    // behavior: 'smooth',
-})
+  // smooth 滚动时，会存在部分 dom 显示隐藏不会触发事件，同时事件频繁触发，存在闪烁，加之无法控制滚动动画时间
+  // 可以使用 js 控制滚动动画时间来限制监听事件的触发，同时可以控制滚动到指定位置
+  // behavior: 'smooth',
+});
 ```
 
 ## 跨标签页/窗口通讯
@@ -103,40 +111,49 @@ document.querySelector(`div[data-parentId^="${item.id}"]`)?.scrollIntoView({
 
 1. 全局执行环境
 2. 函数执行环境
-3. eval执行环境（可以看看下面不可控的例子）
+3. eval 执行环境（可以看看下面不可控的例子）
 
-## eval函数
+## eval 函数
 
 计算 `JavaScript` 字符串，并把它作为脚本代码来执行。
 
 ```js
-  eval('1+1') // 2
+eval("1+1"); // 2
 ```
 
 这个 `eval` 非常危险，常用于攻击、侵入网站；可以通过设置一下头部来限制；意思是限制各种 `src` 资源的加载必须通过 `https`
 
 ```html
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*; img-src https://*; child-src 'none';">
+<meta
+  http-equiv="Content-Security-Policy"
+  content="default-src 'self' https://*; img-src https://*; child-src 'none';"
+/>
 ```
 
 不建议使用，会导致代码不可控
 
 ```js
-var gEval = eval;                // 使用别名调用 eval 将是全局eval
-var x="global",y="global";       // 两个全局变量
-function f(){                    // 函数内执行的是局部eval
-    var x="local";               // 定义局部变量
-    eval("x += '-changed';");    // 直接使用eval改变的局部变量的值
-    return x;                    // 返回更改后的局部变量
+var gEval = eval; // 使用别名调用 eval 将是全局eval
+var x = "global",
+  y = "global"; // 两个全局变量
+function f() {
+  // 函数内执行的是局部eval
+  var x = "local"; // 定义局部变量
+  eval("x += '-changed';"); // 直接使用eval改变的局部变量的值
+  return x; // 返回更改后的局部变量
 }
-function g(){                    // 这个函数内执行了全局eval
-    var y="local";
-    // 使用了全局的 eval()，通过 gEval 调用了全局的 eval 函数。全局的 eval() 会在全局作用域内执行，而不是在 g() 函数的作用域内
-    gEval("y += '-changed';");   // 直接调用改变了全局变量的值
-    return y;
+function g() {
+  // 这个函数内执行了全局eval
+  var y = "local";
+  /*
+    使用了全局的 eval()，通过 gEval 调用了全局的 eval 函数。
+    全局的 eval() 会在全局作用域内执行，而不是在 g() 函数的作用域内
+    */
+  gEval("y += '-changed';"); // 直接调用改变了全局变量的值
+  return y;
 }
-console.log(f(),x);              //改变了局部变量，输出 local-changed global
-console.log(g(),y);              //改变了全局变量，输出 local global-changed
+console.log(f(), x); //改变了局部变量，输出 local-changed global
+console.log(g(), y); //改变了全局变量，输出 local global-changed
 ```
 
 ## 事件循环进阶
@@ -148,7 +165,8 @@ async function async1() {
 }
 async function async2() {
   console.log("async2");
-  Promise.resolve().then(() => { // 增加 return 在最前面 async1 会晚执行两个 then
+  Promise.resolve().then(() => {
+    // 增加 return 在最前面 async1 会晚执行两个 then
     console.log("async2-return");
     // console.log("async1"); 相当于在这里
   });
@@ -190,28 +208,45 @@ new Promise((resolve) => {
 ## js 类型判断
 
 ```ts
-export const isArray = Array.isArray
+// 数组
+export const isArray = Array.isArray;
+
+// Map
 export const isMap = (val: unknown): val is Map<any, any> =>
-  toTypeString(val) === '[object Map]'
+  toTypeString(val) === "[object Map]";
+
+// Set
 export const isSet = (val: unknown): val is Set<any> =>
-  toTypeString(val) === '[object Set]'
+  toTypeString(val) === "[object Set]";
 
+// Date
 export const isDate = (val: unknown): val is Date =>
-  toTypeString(val) === '[object Date]'
+  toTypeString(val) === "[object Date]";
+
+// function
 export const isFunction = (val: unknown): val is Function =>
-  typeof val === 'function'
-export const isString = (val: unknown): val is string => typeof val === 'string'
-export const isSymbol = (val: unknown): val is symbol => typeof val === 'symbol'
+  typeof val === "function";
+
+// string
+export const isString = (val: unknown): val is string =>
+  typeof val === "string";
+
+// symbol
+export const isSymbol = (val: unknown): val is symbol =>
+  typeof val === "symbol";
+
+// Object
 export const isObject = (val: unknown): val is Record<any, any> =>
-  val !== null && typeof val === 'object'
+  val !== null && typeof val === "object";
 
+// Promise
 export const isPromise = <T = any>(val: unknown): val is Promise<T> => {
-  return isObject(val) && isFunction(val.then) && isFunction(val.catch)
-}
+  return isObject(val) && isFunction(val.then) && isFunction(val.catch);
+};
 
-export const objectToString = Object.prototype.toString
+export const objectToString = Object.prototype.toString;
 export const toTypeString = (value: unknown): string =>
-  objectToString.call(value)
+  objectToString.call(value);
 ```
 
 ## 异步并发控制
@@ -225,61 +260,60 @@ export const toTypeString = (value: unknown): string =>
  * 3. 返回 Promise.all 方法，等待所有 Promise 执行完毕
  */
 /**
- * 
- * @param { Promise数组} promiseFactories 
- * @param { 并发数量 } limit 
- * @returns 
+ *
+ * @param { Promise数组} promiseFactories
+ * @param { 并发数量 } limit
+ * @returns
  */
 function limitedConcurrency(promiseFactories, limit) {
-    // 异步队列数组
-    const executing = [];
+  // 异步队列数组
+  const executing = [];
 
-    
-    const enqueue = async (promiseFactory) => {
-        // 套一层，执行完删除数组的自身
-        const promise = promiseFactory().then(result => {
-            executing.splice(executing.indexOf(promise), 1);
-            return result;
-        });
-        // 加入数组
-        executing.push(promise);
-        return promise;
-    };
-
-    const promises = promiseFactories.map(factory => {
-        // 数组满了，利用Promise.race()方法，控制并发数量
-        if (executing.length >= limit) {
-            return Promise.race(executing).then(() => enqueue(factory));
-        }
-        return enqueue(factory);
+  const enqueue = async (promiseFactory) => {
+    // 套一层，执行完删除数组的自身
+    const promise = promiseFactory().then((result) => {
+      executing.splice(executing.indexOf(promise), 1);
+      return result;
     });
+    // 加入数组
+    executing.push(promise);
+    return promise;
+  };
 
-    return Promise.all(promises);
+  const promises = promiseFactories.map((factory) => {
+    // 数组满了，利用Promise.race()方法，控制并发数量
+    if (executing.length >= limit) {
+      return Promise.race(executing).then(() => enqueue(factory));
+    }
+    return enqueue(factory);
+  });
+
+  return Promise.all(promises);
 }
 ```
 
 ## object 与 Map
 
-网上很多观点obj的插入是会自动排序的；其实这个是分情况的：
+网上很多观点 obj 的插入是会自动排序的；其实这个是分情况的：
 
-- key是数字/伪数字时，是会自动排序的
-- key是字符串时，是不会自动排序的
+- key 是数字/伪数字时，是会自动排序的
+- key 是字符串时，是不会自动排序的
 
 一般说 `object` 是无序的，`Map` 是有序的；但是浏览器一般会做优化，如下
 
 ```js
-let obj = {}
-obj.b = 2
-obj.a = 1
-console.log(Object.keys(obj)) // (2) ['b', 'a']
+let obj = {};
+obj.b = 2;
+obj.a = 1;
+console.log(Object.keys(obj)); // (2) ['b', 'a']
 ```
 
 ## 轮播动画/循环动画
 
 如轮播图，可以抽象成三个图片做循环动画，如：初始为 `[1,2,3]`
 
-1. 方案一：动画实现。如向右滚动，`1=>2`，`2=>3`，`3=>1`，改变 `css` 定位，利用 `transition` 属性，或者是 `vue transition` 组件，分别执行对应的过渡动画，做 `translateX` 偏移。*不适合拖拽移动，要自动播放*
-2. 方案二：图片重置。扩充原数组（为了增加流畅性）为 `[3,1,2,3,1]`，在滚动到 第一个 3 或者最后一个 1 时，重置数组。如 `currentIndex` 为 第一个 ，则重置 `currentIndex` 指向到最后一个 3，可以让用户感觉是循环滚动。*适合拖拽移动，要有停顿时间来重置 `current`*
+1. 方案一：动画实现。如向右滚动，`1=>2`，`2=>3`，`3=>1`，改变 `css` 定位，利用 `transition` 属性，或者是 `vue transition` 组件，分别执行对应的过渡动画，做 `translateX` 偏移。_不适合拖拽移动，要自动播放_
+2. 方案二：图片重置。扩充原数组（为了增加流畅性）为 `[3,1,2,3,1]`，在滚动到 第一个 3 或者最后一个 1 时，重置数组。如 `currentIndex` 为 第一个 ，则重置 `currentIndex` 指向到最后一个 3，可以让用户感觉是循环滚动。_适合拖拽移动，要有停顿时间来重置 `current`_
 
 场景：30 个数据循环播放，只显示 10 个数据。对于单个数据来说，是从下到上的循环移动（位置 11 到 0 的移动），设置 12 个 `DOM`，用定时器让她们实现向上移动效果，当到达 0 位置时，重置到 11 位置，实现循环效果。
 
@@ -289,12 +323,11 @@ console.log(Object.keys(obj)) // (2) ['b', 'a']
 
 如果不同文件同时用 `var` 声明同一变量，在使用时会冲突，避免方法如下：
 
-1. 使用 `ES6` 模块 `import/export` 或 `CommonJS` 模块 `require/module.exports` 来避免使用全局变量。这样每个模块都有自己的作用域
-2.使用 `IIFE` (立即调用函数表达式)
+1. 使用 `ES6` 模块 `import/export` 或 `CommonJS` 模块 `require/module.exports` 来避免使用全局变量。这样每个模块都有自己的作用域 2.使用 `IIFE` (立即调用函数表达式)
 
 ```js
-(function() {
-    var privateVar = 'I am private';
+(function () {
+  var privateVar = "I am private";
 })();
 ```
 
@@ -321,7 +354,7 @@ console.log(Object.keys(obj)) // (2) ['b', 'a']
 
 ```js
 // 这种方法只适用于跨页签的 LocalStorage 修改，在同一页签下无法触发该事件
-window.addEventListener("storage", (event) => {      
+window.addEventListener("storage", (event) => {
   ...
 });
 ```
@@ -336,23 +369,20 @@ window.addEventListener("storage", (event) => {
 ```js
 // 监听同步代码。无法处理异步代码
 try {
-    
-} catch (error) {
-    
-}
+} catch (error) {}
 
 new Promise((res, rej) => {})
-    .then(
-        () => {
-            // 处理上一个成功的回调
-        },
-        () => {
-            // 处理上一个失败的回调
-        }
-    )
-    .catch(() => {
-        // 处理所有失败的回调
-    })
+  .then(
+    () => {
+      // 处理上一个成功的回调
+    },
+    () => {
+      // 处理上一个失败的回调
+    }
+  )
+  .catch(() => {
+    // 处理所有失败的回调
+  });
 ```
 
 ## onfocus 事件
@@ -397,30 +427,30 @@ try {
 
 ```js
 const person = {
-  name: '张三',
+  name: "张三",
   get Fullname() {
     console.log(this); // { name: '李四' }
     return this.name;
   },
-}
+};
 let personProxy = new Proxy(person, {
   get(target, key, receiver) {
-    return Reflect.get(target, key) // 这样子打印的就是张三
+    return Reflect.get(target, key); // 这样子打印的就是张三
     //相当于 return target[key]
 
-    return Reflect.get(target, key, receiver)
+    return Reflect.get(target, key, receiver);
   },
   set(target, key, value, receiver) {
-    return Reflect.set(target, key, value, receiver)
-  }
-})
+    return Reflect.set(target, key, value, receiver);
+  },
+});
 
 const p1 = {
   __proto__: personProxy,
-  name: '李四'
-}
+  name: "李四",
+};
 
-console.log(p1.Fullname) // 李四
+console.log(p1.Fullname); // 李四
 ```
 
 ## 文件预览
@@ -437,21 +467,23 @@ console.log(p1.Fullname) // 李四
 
 ```js
 const promise1 = new Promise((resolve, reject) => {
-    console.log('Promise 1');
-    resolve('Promise 1 resolve')
-})
+  console.log("Promise 1");
+  resolve("Promise 1 resolve");
+});
 const promise2 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        console.log('Promise 2');
-        reject('Promise 2 reject')
-    })
-})
+  setTimeout(() => {
+    console.log("Promise 2");
+    reject("Promise 2 reject");
+  });
+});
 
-Promise.all([promise1, promise2]).then((res) => {
-    console.log('then',res)
-}).catch((res) => {
-    console.log('catch',res) 
-})
+Promise.all([promise1, promise2])
+  .then((res) => {
+    console.log("then", res);
+  })
+  .catch((res) => {
+    console.log("catch", res);
+  });
 /**
 Promise 1
 Promise 2
@@ -463,25 +495,27 @@ catch Promise 2 reject
 
 与 `all` 不同的是，`race` 是看哪个 `promise` 先执行完，返回第一个执行完的 `promise` 的值，不管状态如何。而且数组中的异步依旧会执行
 
-``` js
+```js
 const promise1 = new Promise((resolve, reject) => {
-    // setTimeout(() => {
-        console.log('Promise 1');
-        resolve('Promise 1 resolve')
-    // })
-})
+  // setTimeout(() => {
+  console.log("Promise 1");
+  resolve("Promise 1 resolve");
+  // })
+});
 const promise2 = new Promise((resolve, reject) => {
-    setTimeout(() => {
-        console.log('Promise 2');
-        reject('Promise 2 reject')
-    })
-})
+  setTimeout(() => {
+    console.log("Promise 2");
+    reject("Promise 2 reject");
+  });
+});
 
-Promise.race([promise1, promise2]).then((res) => {
-    console.log('then',res)
-}).catch((res) => {
-    console.log('catch',res) 
-})
+Promise.race([promise1, promise2])
+  .then((res) => {
+    console.log("then", res);
+  })
+  .catch((res) => {
+    console.log("catch", res);
+  });
 /**
 Promise 1
 then Promise 1 resolve
@@ -493,21 +527,23 @@ Promise 2
 
 `allSettled` 是不管 `promise` 的状态如何，都会返回所有 `promise` 的结果，并且结果中包含状态和值。
 
-``` js
+```js
 const promise1 = new Promise((resolve, reject) => {
-    console.log('Promise 1');
-        resolve('Promise 1 resolve')
- })
+  console.log("Promise 1");
+  resolve("Promise 1 resolve");
+});
 const promise2 = new Promise((resolve, reject) => {
-    console.log('Promise 2');
-    reject('Promise 2 reject')
- })
+  console.log("Promise 2");
+  reject("Promise 2 reject");
+});
 
-Promise.allSettled([promise1, promise2]).then((res) => {
-    console.log('then',res)
-}).catch((res) => {
-    console.log('catch',res) 
-})
+Promise.allSettled([promise1, promise2])
+  .then((res) => {
+    console.log("then", res);
+  })
+  .catch((res) => {
+    console.log("catch", res);
+  });
 /**
 Promise 1
 Promise 2
@@ -549,64 +585,68 @@ new Promise((res, req) => {
 ## map 和 el-table 的二三事
 
 ```js
-const arr = [{ a: 1 }, { a: 2 }]
-const arr2 = arr.map(item => {
-    item.b = 3
-    return item
-})
-console.log(arr[0] === arr2[0]) // true
-console.log(arr[1] === arr2[1]) // true
+const arr = [{ a: 1 }, { a: 2 }];
+const arr2 = arr.map((item) => {
+  item.b = 3;
+  return item;
+});
+console.log(arr[0] === arr2[0]); // true
+console.log(arr[1] === arr2[1]); // true
 ```
 
 ```js
-const arr = [{ a: 1 }, { a: 2 }]
-const arr2 = arr.map(item => ({ ...item }))
-console.log(arr[0] === arr2[0])
-console.log(arr[1] === arr2[1])
+const arr = [{ a: 1 }, { a: 2 }];
+const arr2 = arr.map((item) => ({ ...item }));
+console.log(arr[0] === arr2[0]);
+console.log(arr[1] === arr2[1]);
 ```
 
 可以清楚看出，`map` 并没有改变原数组的内存地址。在 `el-table` 中是用 `row` 作为行数据标识，当行选中时，改变改行的数据内存地址，会被认为是两个数据，影响选中效果，会有异常
 
-## 复制方法兼容mac
+## 复制方法兼容 mac
 
 ```ts
 /**复制到剪贴板 */
 export function copy(txt: string) {
-  return new Promise<void>(resolve => {
-    const textString = txt.toString()
-    const textarea = document.createElement('textarea')
-    textarea.readOnly = true // 防止ios聚焦触发键盘事件
-    textarea.style.opacity = '0'
-    document.body.appendChild(textarea)
+  return new Promise<void>((resolve) => {
+    const textString = txt.toString();
+    const textarea = document.createElement("textarea");
+    textarea.readOnly = true; // 防止ios聚焦触发键盘事件
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
 
-    textarea.value = textString
+    textarea.value = textString;
     // ios必须先选中文字且不支持 input.select();
-    selectText(textarea, 0, textString.length)
-    if (document.execCommand('copy')) {
-      document.execCommand('copy')
-      message.success('复制成功')
+    selectText(textarea, 0, textString.length);
+    if (document.execCommand("copy")) {
+      document.execCommand("copy");
+      message.success("复制成功");
     }
-    document.body.removeChild(textarea)
-    resolve()
+    document.body.removeChild(textarea);
+    resolve();
 
     // 选中文本
-    function selectText(textbox: HTMLTextAreaElement, startIndex: number, stopIndex: number) {
+    function selectText(
+      textbox: HTMLTextAreaElement,
+      startIndex: number,
+      stopIndex: number
+    ) {
       // @ts-ignore
       if (textbox.createTextRange) {
         //ie
         // @ts-ignore
-        const range = textbox.createTextRange()
-        range.collapse(true)
-        range.moveStart('character', startIndex) //起始光标
-        range.moveEnd('character', stopIndex - startIndex) //结束光标
-        range.select() //不兼容苹果
+        const range = textbox.createTextRange();
+        range.collapse(true);
+        range.moveStart("character", startIndex); //起始光标
+        range.moveEnd("character", stopIndex - startIndex); //结束光标
+        range.select(); //不兼容苹果
       } else {
         //firefox/chrome
-        textbox.setSelectionRange(startIndex, stopIndex)
-        textbox.focus()
+        textbox.setSelectionRange(startIndex, stopIndex);
+        textbox.focus();
       }
     }
-  })
+  });
 }
 ```
 
@@ -782,20 +822,20 @@ export { init, getData };
 
 规则是：
 
-- 当舍去位的数值<5时，直接舍去
-- 当舍去位的数值>=6时，在舍去的同时向前进一位
-- 当舍去位的数值=5时：
-  - 5后不为空且不全为0，在舍去的同时向前进一位
-  - 5后为空或全为0：
-    - 5前数值为奇数，则在舍去的同时向前进一位
-    - 5前数值为偶数，则直接舍去
+- 当舍去位的数值<5 时，直接舍去
+- 当舍去位的数值>=6 时，在舍去的同时向前进一位
+- 当舍去位的数值=5 时：
+  - 5 后不为空且不全为 0，在舍去的同时向前进一位
+  - 5 后为空或全为 0：
+    - 5 前数值为奇数，则在舍去的同时向前进一位
+    - 5 前数值为偶数，则直接舍去
 
 可以使用 `round` 方法替换
 
 ```js
-666.665.toFixed(2) // '666.66'
-666.6651.toFixed(2) // '666.67'
-Math.round(666.665*100)/100 // 666.67
+(666.665).toFixed(2); // '666.66'
+(666.6651).toFixed(2); // '666.67'
+Math.round(666.665 * 100) / 100; // 666.67
 ```
 
 ## jsdoc
@@ -818,14 +858,13 @@ Math.round(666.665*100)/100 // 666.67
 /**
  * @type {number}
  */
-const name = 'name'; // 不能将类型“string”分配给类型“number”
+const name = "name"; // 不能将类型“string”分配给类型“number”
 
 // 字面量类型及联合类型
 /**
  * @type {'age'|'name'}
  */
- const type = 'age'
-
+const type = "age";
 ```
 
 ### 复杂类型
@@ -837,39 +876,40 @@ const name = 'name'; // 不能将类型“string”分配给类型“number”
 /**
  * @type {number[][]}
  */
- const arr = [[1, 2], [3, 4]]
+const arr = [
+  [1, 2],
+  [3, 4],
+];
 
 /**
  * @type [number,string]
  */
-const arr = [1, '2']
-
+const arr = [1, "2"];
 
 // 对象
 /**
  * @type {{ a : number }}
  */
 const obj = {
-    a: '1', // 不能将类型“string”分配给类型“number”。
-}
+  a: "1", // 不能将类型“string”分配给类型“number”。
+};
 
-/** 
+/**
  * @typedef {object} User
- * @property {string} name 
- * @property {number} age 
+ * @property {string} name
+ * @property {number} age
  */
 // /** @typedef {{ name: string; age: number }} User */ 简洁版
 /** @type {User} */
-const user = { name: 'John Doe', age: 25 };
-
+const user = { name: "John Doe", age: 25 };
 
 /** @typedef {number} Age */ // 类型别名
-/** 
+/**
  * @typedef {object} User
  * @property {number} [Age] // 可选
  */
 /** @type {User} */
-const user = { };
+const user = {};
 
 // 函数
 /**
@@ -877,7 +917,7 @@ const user = { };
  * @param {number} b
  * @returns {number}
  */
- function sum(a, b) {
+function sum(a, b) {
   return a + b;
 }
 ```
@@ -905,7 +945,7 @@ type ReadonlyUser = Readonly<User>;
 // }
 
 // Record：使用联合的键和特定类型的值创建新类型
-type UserRole = 'admin' | 'user';
+type UserRole = "admin" | "user";
 type Roles = Record<UserRole, boolean>;
 // {
 //   admin: boolean;
@@ -913,13 +953,13 @@ type Roles = Record<UserRole, boolean>;
 // }
 
 // Pick：从另一个类型中选择特定属性创建新类型
-type UserWithoutAge = Pick<User, 'name'>;
+type UserWithoutAge = Pick<User, "name">;
 // {
 //   name: string;
 // }
 
 // Omit：从另一个类型中省略特定属性创建新类型
-type UserWithoutName = Omit<User, 'name'>;
+type UserWithoutName = Omit<User, "name">;
 // {
 //   age: number;
 // }
@@ -943,7 +983,7 @@ type UserWithoutName = Omit<User, 'name'>;
  * @returns {T} 返回传入的值
  */
 function a(val) {
-    return val
+  return val;
 }
 ```
 

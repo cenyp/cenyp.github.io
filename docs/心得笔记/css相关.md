@@ -14,18 +14,18 @@
 
 <demo vue="./demos/css相关/flex 相关.vue" />
 
-## h5弹窗固定标题和底部按钮
+## h5 弹窗固定标题和底部按钮
 
 可以使用 `sticky` 定位。这样子处理的好处是，弹窗的高度由内容控制；最大高度由弹窗组件控制，可以保证样式统一。
 
 ```css
 .title {
-    position: sticky;
-    top: 0;
+  position: sticky;
+  top: 0;
 }
 .footer {
-    position: sticky;
-    bottom: 0;
+  position: sticky;
+  bottom: 0;
 }
 ```
 
@@ -37,21 +37,21 @@
 
 ```css
 .fa {
-    height: auto;
-    min-height: 100%;
+  height: auto;
+  min-height: 100%;
 }
 .ch {
-    height: 50%; // 算不出值
+  height: 50%; // 算不出值
 }
 ```
 
 ```css
 .fa {
-    height: 0; // 改成0就可以了
-    min-height: 100%;
+  height: 0; // 改成0就可以了
+  min-height: 100%;
 }
 .ch {
-    height: 50%; 
+  height: 50%;
 }
 ```
 
@@ -103,42 +103,42 @@
 
 ```scss
 * {
-    /* 统一宽度计算规则 */
-    box-sizing: border-box;  
-    /* 避免浏览器差异 */
-    margin: 0; 
-    padding: 0;
-    word-break: break-all;
+  /* 统一宽度计算规则 */
+  box-sizing: border-box;
+  /* 避免浏览器差异 */
+  margin: 0;
+  padding: 0;
+  word-break: break-all;
 
-    /* 全局修改滚动条，不然后续在单独组件修改可能会引起组件库组件异常，如 el-table 会计算滚动条宽度来适配样式 */
-    &::-webkit-scrollbar-track {
-        border-radius: 8px;
-        background: transparent;
-    }
-    &::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    &::-webkit-scrollbar-thumb {
-        border-radius: 8px;
-        background: transparent;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    &:hover::-webkit-scrollbar-thumb {
-        background-color: rgba(144, 147, 153, 0.3);
-    }
-    &:hover::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(144, 147, 153, 0.5);
-    }
+  /* 全局修改滚动条，不然后续在单独组件修改可能会引起组件库组件异常，如 el-table 会计算滚动条宽度来适配样式 */
+  &::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: transparent;
+  }
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: rgba(144, 147, 153, 0.3);
+  }
+  &:hover::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(144, 147, 153, 0.5);
+  }
 }
 
 html,
 body,
 #app {
-    width: 100%;
-    height: 100%;
-    font-size: 14px;
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
 }
 ```
 
@@ -150,41 +150,40 @@ body,
 
 ```scss
 .title {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    font-weight: bold;
-    font-style: normal;
-    color: #222835;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  color: #222835;
 
-    &::before {
-        content: ' ';
-        display: inline-block;
-        width: 3px;
-        height: 13px;
-        margin-right: 8px;
-        background: #04b78c;
-    }
+  &::before {
+    content: " ";
+    display: inline-block;
+    width: 3px;
+    height: 13px;
+    margin-right: 8px;
+    background: #04b78c;
+  }
 }
 ```
 
 注意 `css` 语法糖的写法
 
 ```scss
-.div{
-    // 是在div>子元素>::after
-    ::after{
-        content:' ',
-    }
-    // 是在div>::after
-    &::after{
-        content:' ',
-    }
+.div {
+  // 是在div>子元素>::after
+  ::after {
+    content: " ";
+  }
+  // 是在div>::after
+  &::after {
+    content: " ";
+  }
 }
 ```
 
 <demo vue="./demos/css相关/伪类元素.vue" />
-
 
 > tips 实现标题前面的色块除了用 `::before` 还可以通过设置左边框的方法
 
@@ -194,14 +193,18 @@ body,
 
 ```scss
 @mixin sexy-border($color, $width: 1in) {
-    border: {
-        color: $color;
-        width: $width;
-        style: dashed;
-    }
+  border: {
+    color: $color;
+    width: $width;
+    style: dashed;
+  }
 }
-p { @include sexy-border(blue); }
-h1 { @include sexy-border(blue, 2in); }
+p {
+  @include sexy-border(blue);
+}
+h1 {
+  @include sexy-border(blue, 2in);
+}
 ```
 
 参考文档 [scss](https://www.sass.hk/docs/index.html)
@@ -210,8 +213,8 @@ h1 { @include sexy-border(blue, 2in); }
 
 ```css
 :hover {
-    transform: scale(1.2);
-    transition: all 0.3s;
+  transform: scale(1.2);
+  transition: all 0.3s;
 }
 ```
 
@@ -219,7 +222,7 @@ h1 { @include sexy-border(blue, 2in); }
 
 <demo vue="./demos/css相关/文本鼠标移入放大.vue" />
 
->tips 父节点设置 `display: flex` 会默认把子元素变成 `display: block`，影响样式效果
+> tips 父节点设置 `display: flex` 会默认把子元素变成 `display: block`，影响样式效果
 
 ## overflow hidden 不能隐藏子节点
 
