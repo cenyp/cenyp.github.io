@@ -323,7 +323,7 @@ console.log(Object.keys(obj)); // (2) ['b', 'a']
 
 如果不同文件同时用 `var` 声明同一变量，在使用时会冲突，避免方法如下：
 
-1. 使用 `ES6` 模块 `import/export` 或 `CommonJS` 模块 `require/module.exports` 来避免使用全局变量。这样每个模块都有自己的作用域 
+1. 使用 `ES6` 模块 `import/export` 或 `CommonJS` 模块 `require/module.exports` 来避免使用全局变量。这样每个模块都有自己的作用域
 2. 使用 `IIFE` (立即调用函数表达式)
 
 ```js
@@ -384,8 +384,61 @@ new Promise((res, rej) => {})
     }
   )
   .catch(() => {
-    // 处理所有失败的回调
+    // 处理所有没有被捕获失败的回调
   });
+```
+
+```js
+// 示例
+new Promise((res, rej) => {
+  rej();
+})
+  .then(
+    () => {
+      console.log("then 1");
+    },
+    () => {
+      console.log("then 2");
+      throw new Error("Error in first then");
+    }
+  )
+  .catch(() => {
+    console.log("catch");
+  });
+/**
+ * 输出
+ * then 2
+ * catch
+ */
+
+new Promise((res, rej) => {
+  rej();
+})
+  .then(
+    () => {
+      console.log("then 1");
+    },
+    () => {
+      console.log("then 2");
+      throw new Error("Error in first then");
+    }
+  )
+  .then(
+    () => {
+      console.log("then 1");
+    },
+    () => {
+      console.log("then 2");
+    }
+  )
+  .catch(() => {
+    console.log("catch");
+  });
+/**
+ * 输出
+ * then 2
+ * then 2
+ */
 ```
 
 ## onfocus 事件
