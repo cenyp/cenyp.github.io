@@ -122,20 +122,21 @@ document.querySelector(`div[data-parentId^="${item.id}"]`)?.scrollIntoView({
 不建议使用，会导致代码不可控
 
 ```js
-var gEval = eval;                //使用别名调用 eval 将是全局eval
-var x="global",y="global";    //两个全局变量
-function f(){                //函数内执行的是局部eval
-    var x="local";            //定义局部变量
-    eval("x += ' changed';");//直接使用eval改变的局部变量的值
-    return x;                //返回更改后的局部变量
+var gEval = eval;                // 使用别名调用 eval 将是全局eval
+var x="global",y="global";       // 两个全局变量
+function f(){                    // 函数内执行的是局部eval
+    var x="local";               // 定义局部变量
+    eval("x += '-changed';");    // 直接使用eval改变的局部变量的值
+    return x;                    // 返回更改后的局部变量
 }
-function g(){                //这个函数内执行了全局eval
+function g(){                    // 这个函数内执行了全局eval
     var y="local";
-    gEval("y += ' changed';"); //直接调用改变了全局变量的值
+    // 使用了全局的 eval()，通过 gEval 调用了全局的 eval 函数。全局的 eval() 会在全局作用域内执行，而不是在 g() 函数的作用域内
+    gEval("y += '-changed';");   // 直接调用改变了全局变量的值
     return y;
 }
-console.log(f(),x);            //改变了布局变了，输出 “local changed global”
-console.log(g(),y);            //改变了全局变量，输出  “local global changed”
+console.log(f(),x);              //改变了局部变量，输出 local-changed global
+console.log(g(),y);              //改变了全局变量，输出 local global-changed
 ```
 
 ## 事件循环进阶
