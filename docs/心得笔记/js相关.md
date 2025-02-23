@@ -356,12 +356,13 @@ console.log(Object.keys(obj)); // (2) ['b', 'a']
 ```js
 // 这种方法只适用于跨页签的 LocalStorage 修改，在同一页签下无法触发该事件
 // 即在 A 页面监听，B 页面修改，触发 A 页面监听
+// sessionStorage 无效
 window.addEventListener("storage", (event) => {
   ...
 });
 ```
 
-解决方案：
+同一页签解决方案：
 
 1. 轮询存储数据
 2. 封装方法，建立发布订阅模式监听数据
