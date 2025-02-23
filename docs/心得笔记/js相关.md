@@ -30,9 +30,12 @@
 
 [MDN IntersectionObserver](https://developer.mozilla.org/zh-CN/docs/Web/API/IntersectionObserver)
 
-### 目录滚动跟随
+<demo vue="./demos/js相关/IntersectionObserver.vue" />
+
+### 扩展：目录滚动跟随
 
 ```js
+const listenScrollTimer = listenScroll()
 // 滚动监听
 function listenScroll() {
     // 停止监听滚动事件
@@ -67,8 +70,8 @@ function listenScroll() {
         }
     )
 
-    // 监听 DOM，parentid 写在目录对应的整个 DOM 上
-    document.querySelectorAll('div[data-parentid]')?.forEach(item => {
+    // 监听 parentId 写在目录对应的整个 DOM 上
+    document.querySelectorAll('div[data-parentId]')?.forEach(item => {
         observer.observe(item)
     })
 
@@ -77,7 +80,7 @@ function listenScroll() {
 }
 
 // 点击左边目录滚动
-document.querySelector(`div[data-parentid^="${category.id}"]`)?.scrollIntoView({
+document.querySelector(`div[data-parentId^="${item.id}"]`)?.scrollIntoView({
     // smooth 滚动时，会存在部分 dom 显示隐藏不会触发事件，同时事件频繁触发，存在闪烁，加之无法控制滚动动画时间
     // 可以使用 js 控制滚动动画时间来限制监听事件的触发，同时可以控制滚动到指定位置
     // behavior: 'smooth',
