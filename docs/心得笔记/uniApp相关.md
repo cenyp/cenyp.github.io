@@ -568,3 +568,16 @@ defineOptions({
 货拉拉开源，支持 web、H5、小程序，支持日志回放
 
 [Page Spy](https://www.pagespy.org/#/docs/miniprogram)
+
+## scroll-view 组件内部 fixed 失效
+
+`fixed` 布局遇到 `scroll-view` 组件，会随着 `scroll-view` 一起滚动，导致 `fixed` 布局失效
+
+1. 解决方法：弹窗组件放置在 `scroll-view` 外部
+2. 使用 `root-portal` 组件进行包裹，`root-portal` 组件会使整个子树从页面中脱离出来，类似于在 CSS 中使用 fixed position 的效果。主要用于制作弹窗、弹出层等
+
+参考链接：
+
+[scroll-view组件内部的元素使用position:fixed定位，会随着scroll一起滚动](https://developers.weixin.qq.com/community/develop/doc/0006a226400f00bb88bc300c05b800)
+
+[root-portal](https://developers.weixin.qq.com/miniprogram/dev/component/root-portal.html)
