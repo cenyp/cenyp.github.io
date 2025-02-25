@@ -574,7 +574,7 @@ defineOptions({
 `fixed` 布局遇到 `scroll-view` 组件，会随着 `scroll-view` 一起滚动，导致 `fixed` 布局失效
 
 1. 解决方法：弹窗组件放置在 `scroll-view` 外部
-2. 使用 `root-portal` 组件进行包裹，`root-portal` 组件会使整个子树从页面中脱离出来，类似于在 CSS 中使用 fixed position 的效果。主要用于制作弹窗、弹出层等
+2. 使用 `root-portal` 组件进行包裹，`root-portal` 组件会使整个子树从页面中脱离出来，类似于在 `CSS` 中使用 `fixed position` 的效果。主要用于制作弹窗、弹出层等。`root-portal` 是一个虚拟节点，要嵌套一层 `view` 组件，才可以使用 `u-popup` 组件，否则不会生效。
 
 参考链接：
 
