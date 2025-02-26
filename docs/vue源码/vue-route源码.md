@@ -2,11 +2,11 @@
 
 参考链接:
 
-[vue-router源码解析上](https://juejin.cn/post/6880529850159874062)
+[vue-router 源码解析上](https://juejin.cn/post/6880529850159874062)
 
-[vue-router源码解析中](https://juejin.cn/post/6901047675227996167)
+[vue-router 源码解析中](https://juejin.cn/post/6901047675227996167)
 
-[vue-router源码解析下](https://juejin.cn/post/6902992939115855880)
+[vue-router 源码解析下](https://juejin.cn/post/6902992939115855880)
 
 ## push 如何实现路由切换
 
@@ -27,28 +27,28 @@ push (location: RawLocation, onComplete?: Function, onAbort?: Function) {
 
 ```js
 if (replace) {
-    history.replaceState({ key: _key }, '', url)
+  history.replaceState({ key: _key }, "", url);
 } else {
-    _key = genKey()
-    history.pushState({ key: _key }, '', url)
+  _key = genKey();
+  history.pushState({ key: _key }, "", url);
 }
 
 // hash 也是同样调用上面的方法
 function pushHash(path) {
-    if (supportsPushState) {
-        pushState(getUrl(path))
-    } else {
-        window.location.hash = path
-    }
+  if (supportsPushState) {
+    pushState(getUrl(path));
+  } else {
+    window.location.hash = path;
+  }
 }
 
 // 替换hash记录
 function replaceHash(path) {
-    if (supportsPushState) {
-        replaceState(getUrl(path))
-    } else {
-        window.location.replace(getUrl(path))
-    }
+  if (supportsPushState) {
+    replaceState(getUrl(path));
+  } else {
+    window.location.replace(getUrl(path));
+  }
 }
 ```
 
@@ -56,21 +56,21 @@ function replaceHash(path) {
 
 ```js
 export const supportsPushState =
-    inBrowser &&
-    (function () {
-        const ua = window.navigator.userAgent
+  inBrowser &&
+  (function () {
+    const ua = window.navigator.userAgent;
 
-        if (
-            (ua.indexOf('Android 2.') !== -1 || ua.indexOf('Android 4.0') !== -1) &&
-            ua.indexOf('Mobile Safari') !== -1 &&
-            ua.indexOf('Chrome') === -1 &&
-            ua.indexOf('Windows Phone') === -1
-        ) {
-            return false
-        }
+    if (
+      (ua.indexOf("Android 2.") !== -1 || ua.indexOf("Android 4.0") !== -1) &&
+      ua.indexOf("Mobile Safari") !== -1 &&
+      ua.indexOf("Chrome") === -1 &&
+      ua.indexOf("Windows Phone") === -1
+    ) {
+      return false;
+    }
 
-        return window.history && 'pushState' in window.history
-    })()
+    return window.history && "pushState" in window.history;
+  })();
 ```
 
 回到 `transitionTo`，主要是做了路由组件的切换，和路由数据的更新，以及路由守卫的触发。
@@ -148,9 +148,61 @@ render (/* h*/_, /* context*/{ props, children, parent, data }) {
 ```js
 // 注册全局混入
 Vue.mixin({
-    beforeCreate() {
-        // 响应式定义_route属性，保证_route发生变化时，组件(router-view)会重新渲染
-        Vue.util.defineReactive(this, '_route', this._router.history.current)
-    },
-})
+  beforeCreate() {
+    // 响应式定义_route属性，保证_route发生变化时，组件(router-view)会重新渲染
+    Vue.util.defineReactive(this, "_route", this._router.history.current);
+  },
+});
+```
+
+## $router 和 $store 注入
+
+`vue2` 中为什么能在每个组件中直接使用 `this.$router` 和 `this.$store`
+
+```js
+// install 插件初始化中执行
+// 在Vue原型上注入$router、$route属性，方便在vue实例中通过this.$router、this.$route快捷访问
+Object.defineProperty(Vue.prototype, "$router", {
+  get() {
+    return this._routerRoot._router;
+  },
+});
+
+Object.defineProperty(Vue.prototype, "$route", {
+  get() {
+    return this._routerRoot._route;
+  },
+});
+```
+
+## 如何实现路径匹配
+
+使用了 `path-to-regexp` 这个库，这个库的作用就是将路径字符串转换为正则表达式，然后通过正则表达式进行匹配，下面是简单例子
+
+1.转换路径到正则表达式
+
+```js
+const pathToRegexp = require("path-to-regexp");
+
+// 定义一个路径模板
+const path = "/users/:id";
+
+// 将路径模板转换为正则表达式
+const regex = pathToRegexp(path);
+
+console.log(regex); // 输出： /^\/users\/([^\/?]+)/
+```
+
+2.使用正则表达式匹配 `URL`
+
+```js
+const pathToRegexp = require("path-to-regexp");
+
+const path = "/users/:id";
+const regex = pathToRegexp(path);
+
+// 现在可以使用这个正则表达式来匹配 URL
+const match = regex.exec("/users/123");
+
+console.log(match); // 输出： ['/users/123', '123']
 ```
