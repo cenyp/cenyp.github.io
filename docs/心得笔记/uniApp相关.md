@@ -4,7 +4,7 @@
 
 ```js
 // 利用利用命令，可以发现在微信、支付宝和抖音下都是支持 Proxy 的，所以也是可以直接使用 pinia 的
-console.log(Proxy ,typeof Proxy === 'function');
+console.log(Proxy, typeof Proxy === "function");
 ```
 
 但是在低版本的系统是不支持的，如微信是不支持 ios10 一下的（别家的没有发现说明）
@@ -15,7 +15,7 @@ console.log(Proxy ,typeof Proxy === 'function');
 
 [JavaScript 支持情况](https://developers.weixin.qq.com/miniprogram/dev/framework/runtime/js-support.html)
 
-[开发者工具ES6转ES5不转Proxy吗？](https://developers.weixin.qq.com/community/develop/doc/000a60e7b1ce38818857f901656c00?highLine=proxy)
+[开发者工具 ES6 转 ES5 不转 Proxy 吗？](https://developers.weixin.qq.com/community/develop/doc/000a60e7b1ce38818857f901656c00?highLine=proxy)
 
 ## vueUse
 
@@ -70,18 +70,18 @@ uni.switchTab = function (e) {
 function watchLife(lift: any) {
   const _lift = {
     onLaunch: function (e) {
-    // 监听
-    console.log("APP启动了！", e);
+      // 监听
+      console.log("APP启动了！", e);
     },
     onError: function (e) {
-    // 监听
-    console.error("APP error", e);
+      // 监听
+      console.error("APP error", e);
     },
-    };
-    for (const item in _lift) {
-      const fn = "function" == typeof lift[item] && lift[item];
+  };
+  for (const item in _lift) {
+    const fn = "function" == typeof lift[item] && lift[item];
 
-      lift[item] = function () {
+    lift[item] = function () {
       _lift[item].apply(this, arguments);
       fn && fn.apply(this, arguments);
     };
@@ -89,14 +89,13 @@ function watchLife(lift: any) {
   return lift;
 }
 
-
 export default {
- ...watchLife({
-  onLaunch: (e) => {
-   console.log(1111111111);
-  }
- })
-}
+  ...watchLife({
+    onLaunch: (e) => {
+      console.log(1111111111);
+    },
+  }),
+};
 </script>
 ```
 
@@ -158,7 +157,7 @@ todo
 会在工具栏生成运行选项
 ![输入图片说明](../image/%E4%BC%81%E4%B8%9A%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_17198022638579.png)
 
-或者是执行脚本命令（可绕开HBuilderX）
+或者是执行脚本命令（可绕开 HBuilderX）
 
 ```cmd
 npm run dev:custom a-wx-dev
@@ -172,48 +171,50 @@ npm run dev:custom a-wx-dev
 ```js
 export default {
   dev: {
-    wxUrl: 'https://xxx.dev.com',
+    wxUrl: "https://xxx.dev.com",
   },
   test: {
-    wxUrl: 'https://xxx.test.com',
+    wxUrl: "https://xxx.test.com",
   },
   ready: {
-    wxUrl: 'https://xxx-ready.com',
+    wxUrl: "https://xxx-ready.com",
   },
   prod: {
-    wxUrl: 'https://xxx.com',
+    wxUrl: "https://xxx.com",
   },
-}
+};
 ```
 
 `config\script.js` 对不能通过环境变量处理及要手动生成的文件做处理
 
 ```js
-const fs = require('fs')
-const path = require('path')
+const fs = require("fs");
+const path = require("path");
 
 //以生成抖音文件为例
 export function createPackage() {
-  const dirPath = path.join(__dirname, '../dist/dev/mp-toutiao/app.js')
-  const filePath = path.join(__dirname, '../dist/dev/mp-toutiao/package.json')
+  const dirPath = path.join(__dirname, "../dist/dev/mp-toutiao/app.js");
+  const filePath = path.join(__dirname, "../dist/dev/mp-toutiao/package.json");
 
   function writeFile() {
     fs.writeFileSync(
       filePath,
       `{ "industrySDK": true, "ttPlugins": { "dependencies": { "microapp-trade-plugin": { "version": "1.1.2", "isDynamic": true } } } }`
-    )
-    console.error('--------------------生成package.json文件成功--------------------')
+    );
+    console.error(
+      "--------------------生成package.json文件成功--------------------"
+    );
   }
 
   try {
     const key = setInterval(() => {
       if (fs.existsSync(dirPath, fs.constants.F_OK)) {
-        writeFile()
-        clearInterval(key)
+        writeFile();
+        clearInterval(key);
       }
-    }, 1000)
+    }, 1000);
   } catch (error) {
-    console.error('生成package.json文件失败', error)
+    console.error("生成package.json文件失败", error);
   }
 }
 ```
@@ -245,7 +246,7 @@ export default defineConfig(({ mode }) => ({
 
 ```js
 // 根据数据配置及环境变量，获取对应接口域名
-option.url = process.ENV_CONFIG[process.ENV_TYPE].wxUrl + option.url
+option.url = process.ENV_CONFIG[process.ENV_TYPE].wxUrl + option.url;
 ```
 
 ### import.meta 实现
@@ -258,8 +259,8 @@ option.url = process.ENV_CONFIG[process.ENV_TYPE].wxUrl + option.url
 
 ```js
 // 可以这么使用
-import { loadEnv } from 'vite'
-const env = loadEnv('dev', process.cwd())
+import { loadEnv } from "vite";
+const env = loadEnv("dev", process.cwd());
 ```
 
 ## 自动化构建
@@ -275,7 +276,7 @@ const env = loadEnv('dev', process.cwd())
 ```ts
 import simpleGit from "simple-git";
 const projectPath = "../cd-mini-program";
- 
+
 // 如下，获取最新的分支代码，确保构建的代码是最新的
 export function gitFetch() {
   return new Promise((resolve, reject) => {
@@ -314,28 +315,29 @@ export function gitFetch() {
 
 ```ts
 const project = new ci.Project({
-    appid: "xxxx", // 小程序项目的 appid
-    type: "miniProgram", // 项目类型
-    projectPath: `${PATH}/dist/${buildType}/mp-weixin`, //  项目路径
-    privateKeyPath: `xxxxx.key`, // 项目私钥
-    ignores: [`node_modules/**/*`],
-  });
-  const previewResult = await ci.preview({
-    project,
-    setting: { // 支持的配置参数，与模拟器同理
-      minifyJS: true,
-      minifyWXML: true,
-      minifyWXSS: true,
-      minify: true,
-    },
-    bigPackageSizeSupport: true,
-    qrcodeFormat: "image", // 返回二维码文件的格式
-    qrcodeOutputDest: `./${envType}.png`, // 生成图片路径
-    useCOS: true,
-    onProgressUpdate: (data: any) => {
-      // console.log('onProgressUpdate',data);
-    },
-  });
+  appid: "xxxx", // 小程序项目的 appid
+  type: "miniProgram", // 项目类型
+  projectPath: `${PATH}/dist/${buildType}/mp-weixin`, //  项目路径
+  privateKeyPath: `xxxxx.key`, // 项目私钥
+  ignores: [`node_modules/**/*`],
+});
+const previewResult = await ci.preview({
+  project,
+  setting: {
+    // 支持的配置参数，与模拟器同理
+    minifyJS: true,
+    minifyWXML: true,
+    minifyWXSS: true,
+    minify: true,
+  },
+  bigPackageSizeSupport: true,
+  qrcodeFormat: "image", // 返回二维码文件的格式
+  qrcodeOutputDest: `./${envType}.png`, // 生成图片路径
+  useCOS: true,
+  onProgressUpdate: (data: any) => {
+    // console.log('onProgressUpdate',data);
+  },
+});
 ```
 
 ### 网站建设
@@ -358,15 +360,15 @@ const project = new ci.Project({
 
 ```ts
 this.$axios
-     .post("/api/getGitBranch")
-     .then(({ data }) => {
-       this.$data.branchList = data.data;
-     })
-     .catch((error) => {
-       console.error(error);
-       message.error("获取分支失败");
-       this.$data.messageText = "获取分支失败";
-     });
+  .post("/api/getGitBranch")
+  .then(({ data }) => {
+    this.$data.branchList = data.data;
+  })
+  .catch((error) => {
+    console.error(error);
+    message.error("获取分支失败");
+    this.$data.messageText = "获取分支失败";
+  });
 ```
 
 #### 接口逻辑处理
@@ -379,56 +381,49 @@ this.$axios
     { path: "/api/buildFile", handler: "./serverMiddleware/buildFile" },
     { path: "/api/getCodeImg", handler: "./serverMiddleware/getCodeImg" },
     { path: "/api/getGitBranch", handler: "./serverMiddleware/getGitBranch" },
-  ]
+  ];
 }
 ```
 
 下面介绍部分 `buildFile` 接口的处理流程
 
 ```js
-
 // 引入bodyParser对接口测试解析
 const bodyParser = require("body-parser");
- 
+
 // 获取分支名称及构建方式（dev/test）
 const { type, name } = req.body;
- 
+
 // 丢弃本地分支修改，切换分支，获取分支最新代码
 await gitOptimize(name);
- 
+
 // 删除多余代码
 shell.cd(PATH);
 shell.rm("-rf", "./dist/*");
 shell.rm("-rf", "test.png");
 shell.rm("-rf", "dev.png");
- 
+
 // 使用文件读取确认构建完成（build构建方式可以不用）
- let hasFile = false;
-  const key = setInterval(() => {
-    if (
-      shell.test("-f", `./dist/${buildType}/mp-weixin/app.json`) &&
-      !hasFile
-    ) {
-      hasFile = true;
-      clearInterval(key);
-      console.log("--------二维码构建---------------");
-      preview(() => {
-        fn(() =>
-          setTimeout(() => {
-            console.log("-----关闭进程------");
-            shell.exit(0);
-          }, 30 * 1000)
-        );
-      });
-    }
-  }, 500);
-  shell.exec(
-    scriptMap[envType],
-    { windowsHide: true }
-  );
- 
+let hasFile = false;
+const key = setInterval(() => {
+  if (shell.test("-f", `./dist/${buildType}/mp-weixin/app.json`) && !hasFile) {
+    hasFile = true;
+    clearInterval(key);
+    console.log("--------二维码构建---------------");
+    preview(() => {
+      fn(() =>
+        setTimeout(() => {
+          console.log("-----关闭进程------");
+          shell.exit(0);
+        }, 30 * 1000)
+      );
+    });
+  }
+}, 500);
+shell.exec(scriptMap[envType], { windowsHide: true });
+
 // 构建完成生成预览码
-preview()
+preview();
 
 // 最后由客户端发起图片获取
 ```
@@ -441,14 +436,14 @@ preview()
 
 ```js
 module.exports = {
-    apps: [
-      {
-        name: '小工具', // 替换成你的应用名称
-        script: './node_modules/nuxt/bin/nuxt.js',
-        args: 'start',
-      }
-    ]
-  }
+  apps: [
+    {
+      name: "小工具", // 替换成你的应用名称
+      script: "./node_modules/nuxt/bin/nuxt.js",
+      args: "start",
+    },
+  ],
+};
 ```
 
 ### vite 插件处理自定义文件
@@ -578,6 +573,23 @@ defineOptions({
 
 参考链接：
 
-[scroll-view组件内部的元素使用position:fixed定位，会随着scroll一起滚动](https://developers.weixin.qq.com/community/develop/doc/0006a226400f00bb88bc300c05b800)
+[scroll-view 组件内部的元素使用 position:fixed 定位，会随着 scroll 一起滚动](https://developers.weixin.qq.com/community/develop/doc/0006a226400f00bb88bc300c05b800)
 
 [root-portal](https://developers.weixin.qq.com/miniprogram/dev/component/root-portal.html)
+
+## scroll-view 滚顶
+
+```vue
+<scroll-view scroll-y :scroll-top="scrollTop" @scroll="onScroll"> </scroll-view>
+
+<script setup>
+const scrollTop = ref(0)
+function onScroll(e) {
+  scrollTop.value = e.detail.scrollTop
+}
+</script>
+```
+
+这样子实时赋值，容易导致页面滚动时抖动。
+
+滚顶可以用0/1做处理：`scrollTop.value = scrollTop.value === 0 ? 1 : 0`
