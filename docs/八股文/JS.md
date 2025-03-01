@@ -405,6 +405,22 @@ it.next();
 >{value: undefined, done: true}
 ```
 
+简单实现一个迭代器：
+
+```js
+let iterator = {
+  current: 0,
+  last: 3,
+  next: function() {
+    if (this.current <= this.last) {
+      return { value: this.current++, done: false };
+    } else {
+      return { value: undefined, done: true };
+    }
+  }
+};
+```
+
 ### 4.4 class
 
 ES6 的类，完全可以看作构造函数的另一种写法。
