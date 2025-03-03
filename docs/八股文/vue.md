@@ -276,6 +276,10 @@ export default {
 
 当然 `@hook` 方法不仅仅是可以监听 `mounted`，其它的生命周期事件，例如：`created`，`updated` 等都可以监听。还在第三方库没有`change`回调时有重要作用。
 
+> 补充
+> [VNode 生命周期事件](https://v3-migration.vuejs.org/zh/breaking-changes/vnode-lifecycle-events.html)
+> 在 `Vue3` 中，事件名附带的是 `vue:` 前缀：`<child-component @vue:updated="onUpdated">`
+
 ## keep-alive
 
 `keep-alive` 是 Vue 内置的一个组件，可以使被包含的组件保留状态，避免重新渲染 ，其有以下特性：
@@ -704,7 +708,9 @@ observeArray (items: Array<any>) {
 let childOb = !shallow && observe(val) // observe 功能为监测数据的变化
 ```
 
-通过以上 Vue 源码部分查看，我们就能知道 Vue 框架是通过遍历数组 和递归遍历对象，从而达到利用  `Object.defineProperty()` 也能对对象和数组（部分方法的操作）进行监听。
+`vue2` 通过循环遍历对象和数组来劫持每个项，`$set` 则补充对新增属性的处理
+
+通过以上 `Vue` 源码部分查看，我们就能知道 `Vue` 框架是通过遍历数组 和递归遍历对象，从而达到利用  `Object.defineProperty()` 也能对对象和数组（部分方法的操作）进行监听。
 
 ## Proxy 与 Object.defineProperty 对比
 
@@ -722,9 +728,9 @@ let childOb = !shallow && observe(val) // observe 功能为监测数据的变化
 
 ## vm.$set() 解决对象新增属性不能响应
 
-受现代 `JavaScript` 的限制 ，Vue **无法检测到对象属性的添加或删除**。由于 Vue 会在初始化实例时对属性执行 getter/setter 转化，所以属性必须在 data 对象上存在才能让 Vue 将它转换为响应式的。但是 Vue 提供了 `Vue.set (object, propertyName, value) / vm.$set (object, propertyName, value)`  来实现为对象添加响应式属性，那框架本身是如何实现的呢？
+受现代 `JavaScript` 的限制 ，`Vue` **无法检测到对象属性的添加或删除**。由于 `Vue` 会在初始化实例时对属性执行 `getter/setter` 转化，所以属性必须在 `data` 对象上存在才能让 `Vue` 将它转换为响应式的。但是 `Vue` 提供了 `Vue.set (object, propertyName, value) / vm.$set (object, propertyName, value)`  来实现为对象添加响应式属性，那框架本身是如何实现的呢？
 
-我们查看对应的 Vue 源码：`vue/src/core/instance/index.js`
+我们查看对应的 `Vue` 源码：`vue/src/core/instance/index.js`
 
 ```js
 export function set (target: Array<any> | Object, key: any, val: any): any {
@@ -754,10 +760,10 @@ export function set (target: Array<any> | Object, key: any, val: any): any {
 }
 ```
 
-我们阅读以上源码可知，vm.$set 的实现原理是：
+我们阅读以上源码可知，`vm.$set` 的实现原理是：
 
 - 如果目标是数组，直接使用数组的 **splice** 方法触发相应式；
-- 如果目标是对象，会先判读属性是否存在、对象是否是响应式，最终如果要对属性进行响应式处理，则是通过调用 **defineReactive** 方法进行响应式处理（ `defineReactive`方法就是  Vue 在初始化对象时，给对象属性采用 `Object.defineProperty` 动态添加 getter 和 setter 的功能所调用的方法）
+- 如果目标是对象，会先判读属性是否存在、对象是否是响应式，最终如果要对属性进行响应式处理，则是通过调用 **defineReactive** 方法进行响应式处理（ `defineReactive`方法就是  `Vue` 在初始化对象时，给对象属性采用 `Object.defineProperty` 动态添加 `getter` 和 `setter` 的功能所调用的方法）
 
 ## 虚拟 DOM 的优缺点
 

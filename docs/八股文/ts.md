@@ -559,7 +559,7 @@ type User = Name & {
     type PetList = [Dog, Pet]
     ```
 
-2. type 语句中还可以使用 typeof 获取实例的 类型进行赋值
+2. type 语句中还可以使用 typeof 获取实例的 类型进行赋值。**还可以对vue组件使用，生成组件类型**
 
     ```ts
     // 当你想获取一个变量的类型时，使用 typeof
@@ -657,6 +657,6 @@ const aaa: Lady[] = [
 
 [any](https://typescript.p6p.net/typescript-tutorial/any.html)
 
-1. unknown 不能直接使用，比如赋值或者是调用属性方法
-2. unknown 要在进行了类型判断之后才能进行运算/操作
-3. 只能进行比较运算（运算符==、===、!=、!==、||、&&、?）、取反运算（运算符!）、typeof运算符和instanceof运算符这几种，其他运算都会报错
+1. `unknown` 不能直接使用，比如赋值或者是调用属性方法
+2. `unknown` 要在进行了类型判断之后才能进行运算/操作
+3. 只能进行比较运算（运算符==、===、!=、!==、||、&&、?）、取反运算（运算符!）、`typeof` 运算符和 `instanceof` 运算符这几种，其他运算都会报错
