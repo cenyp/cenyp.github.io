@@ -188,16 +188,16 @@ Vue 实例有一个完整的生命周期，也就是从开始创建、初始化�
 
 **（2）各个生命周期的作用:**
 
-| 生命周期      | 描述                                                                  |
-| ------------- | --------------------------------------------------------------------- |
+| 生命周期        | 描述                                                                  |
+| --------------- | --------------------------------------------------------------------- |
 | `beforeCreate`  | 组件实例被创建之初，组件的属性生效之前                                |
 | `created`       | 组件实例已经完全创建，属性也绑定，但真实 dom 还没有生成，$el 还不可用 |
-| `beforeMount`   | 在挂载开始之前被调用：相关的 `render` 函数首次被调用                    |
-| `mounted`       | el 被新创建的 `vm.$el` 替换，并挂载到实例上去之后调用该钩子             |
+| `beforeMount`   | 在挂载开始之前被调用：相关的 `render` 函数首次被调用                  |
+| `mounted`       | el 被新创建的 `vm.$el` 替换，并挂载到实例上去之后调用该钩子           |
 | `beforeUpdate`  | 组件数据更新之前调用，发生在虚拟 DOM 打补丁之前                       |
 | `update`        | 组件数据更新之后                                                      |
-| `activated`     | `keep-alive` 专属，组件被激活时调用                                     |
-| `deactivated`   | `keep-alive` 专属，组件被销毁时调用                                     |
+| `activated`     | `keep-alive` 专属，组件被激活时调用                                   |
+| `deactivated`   | `keep-alive` 专属，组件被销毁时调用                                   |
 | `beforeDestroy` | 组件销毁前调用                                                        |
 | `destroyed`     | 组件销毁后调用                                                        |
 
@@ -652,6 +652,10 @@ var app = new Vue({
 ```
 
 ![img](../image/v2-f32a2759e4f734b9be436a2e912bd215_720w.jpg)
+
+### vue 不是 MVVM模式？
+
+`Vue.js` 并没有完全遵循 `MVVM` 模型，可以使用 `ref` 来获取组件实例，从而修改视图。
 
 ## 数据双向绑定
 
@@ -1186,7 +1190,7 @@ Vue.component('my-checkbox', {
 </label>
 ```
 
-`inheritAttrs: false` 选项**不会**影响 `style` 和 `class` 的绑定
+`inheritAttrs: false` 对`class/style` 也生效，样式生效
 
 ## 自定义指令
 
