@@ -633,7 +633,7 @@ function createComputedGetter(key) {
 引入虚拟 `DOM` 的好处
 
 1. 对重复 `DOM` 操作有性能优化，确保 `DOM` 操作的性能。这里是通过 `diff` 算法对比新旧虚拟 `DOM` 树，只更新必要的 `DOM` 节点；还有 `nextTick` 等方法做优化
-2. 跨平台，虚拟 `DOM` 可以渲染到不同平台，如 web、weex、小程序等。通过 `ast` 树渲染成一个抽象的 `DOM` 树，然后通过不同平台的 `render` 方法渲染成平台 `DOM` 
+2. 跨平台，虚拟 `DOM` 可以渲染到不同平台，如 web、weex、小程序等。通过 `ast` 树渲染成一个抽象的 `DOM` 树，然后通过不同平台的 `render` 方法渲染成平台 `DOM`
 3. 打开函数式 UI 编程的大门，使得组件抽象化，使得代码更易维护。最早是 `react` 在 13 年提出的。
 
 虚拟 `DOM` 被诟病的地方是，在某些情境下，对于一些不需要重新渲染的节点会重新渲染，如：一个组件里面有大量节点可以复用，但因为判断为是不同节点，从而重新渲染，还有比如静态节点（不含变量）
@@ -656,6 +656,15 @@ vue2 里面会有有三种 `watcher`
 
 1. 监听 `watcher`，便于解除 `watcher` 的订阅，当有监听是废弃时，要去掉对应的 `watcher`
 2. 计算 `watcher`，为了让这些 `dep` 能够有机会收集渲染 `watcher`，计算属性的依赖可能并不会在页面渲染的时候用到，修改对应依赖。触发更新时，`dep` 会遍历所有 `watcher`，收集 `dep` 是为了避免 `dep` 里面没有对应的 `watcher`，导致无法触发更新（因为在渲染上是没有的）
+
+    结合源码来看 `watcher` 收集 `dep` 主要是在 `watcher.depend` 中使用，调用 `dep.depend` 方法，再调用 `watcher.addDep` 来完成 `dep` 和 `watcher` 的双向收集。
+
+    而 `watcher.depend` 在什么时候使用呢？只有 `createComputedGetter`，即计算属性的 `getter` 中使用。再往上推导就是 `initComputed` 中使用，对每个计算属性处理。所以，计算属性在初始化的时候，会收集依赖，并不会等到渲染的时候再收集。
+
+    计算属性双向依赖收集流程：
+
+    `initComputed` --> `defineComputed` --> `createComputedGetter` --> `watcher.depend` --> `dep.depend` --> `watcher.addDep`
+
 3. 渲染 `watcher`，便于解除 `watcher` 的订阅
 
 ## 为什么 v-for 和 v-if 不能一起用
@@ -713,6 +722,8 @@ function genElement(el: ASTElement): string {
 在用户调用时，把函数压入执行栈中，等 `dom` 节点更新完成再调用执行栈。
 
 因为 `dom` 操作是宏任务，在实现上优先用 `promise` > `MutationObserver`（监听 `dom` 节点变化）> `setImmediate` > `setTimeout(0)`
+
+在涉及 `setTimeout` 等定时器时，无法获取最新DOM。如：弹窗显示动画，一般是固定时间的
 
 注意在 `vue3` 中不再对低版本支持，所以只有 `promise` 方法实现
 
