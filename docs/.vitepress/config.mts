@@ -73,6 +73,10 @@ export default defineConfig({
           items: [
             { text: "文章链接大全", link: "/文章收录/文章链接大全" },
             {
+              text: "nextTick 与 数据更新",
+              link: "/文章收录/nextTick 与 数据更新",
+            },
+            {
               text: "Web 中的“选区”和“光标”",
               link: "/文章收录/Web 中的“选区”和“光标”",
             },
