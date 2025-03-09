@@ -434,6 +434,18 @@ let iterator = {
 };
 ```
 
+**扩展：对象解构成数组：**
+
+```js
+// 通过给对象添加属性来实现，同for of 遍历原理
+Object.prototype[Symbol.iterator] = function(){
+    return Object.values(this)[Symbol.iterator]()
+}
+let [a,b] = {a:1,b:2} // [1, 2]
+```
+
+参考链接：[对象解构成数组](https://juejin.cn/post/7374308419074146313#heading-4)
+
 ### 4.4 class
 
 ES6 的类，完全可以看作构造函数的另一种写法。

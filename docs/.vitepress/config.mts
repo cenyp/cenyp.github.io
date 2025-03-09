@@ -72,6 +72,14 @@ export default defineConfig({
           text: "文章收录",
           items: [
             { text: "文章链接大全", link: "/文章收录/文章链接大全" },
+            {
+              text: "Web 中的“选区”和“光标”",
+              link: "/文章收录/Web 中的“选区”和“光标”",
+            },
+            {
+              text: "Map的时间复杂度是多少",
+              link: "/文章收录/Map的时间复杂度是多少",
+            },
             { text: "多项目多仓库理念", link: "/文章收录/多项目多仓库理念" },
             { text: "vue 与 react 区别", link: "/文章收录/vue 与 react 区别" },
             { text: "uniApp 函数式弹窗", link: "/文章收录/uniApp 函数式弹窗" },
