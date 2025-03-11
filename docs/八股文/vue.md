@@ -176,9 +176,7 @@ vm.items.splice(indexOfItem, 1, newValue)
 vm.items.splice(newLength)
 ```
 
-> 原因是 VUE2 使用 `object.defineProperty` 对数据进行劫持，只能对单个属性作监听，若对整个数组或对象进行监听，性能消耗太大，弊大于利
->
-> VUE3 使用 `proxy` 对数据进行劫持，可以对对象进行监听，从而完成对数组赋值的监听
+> 原因是 VUE2 使用 `object.defineProperty` 对数据进行劫持，无法自动劫持新属性，所以会在新属性负责后再劫持一次
 
 ## Vue 生命周期的理解
 
