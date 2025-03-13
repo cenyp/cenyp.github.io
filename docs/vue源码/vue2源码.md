@@ -661,11 +661,11 @@ function createComputedGetter(key) {
 vue2 里面会有有三种 `watcher`
 
 1. 监听 `watcher`，便于解除 `watcher` 的订阅，当有监听是废弃时，要去掉对应的 `watcher`
-2. 计算 `watcher`，为了让这些 `dep` 能够有机会收集渲染 `watcher`，计算属性的依赖可能并不会在页面渲染的时候用到，修改对应依赖。触发更新时，`dep` 会遍历所有 `watcher`，收集 `dep` 是为了避免 `dep` 里面没有对应的 `watcher`，导致无法触发更新（因为在渲染上是没有的）
+2. 计算 `watcher`，为了让这些 `dep` 能够有机会收集渲染 `watcher`，计算属性的依赖可能并不会在页面渲染的时候用到，修改对应依赖。触发更新时，`dep` 会遍历所有 `watcher`，收集 `dep` 是为了避免 `dep` 里面没有对应的 `watcher`，导致无法触发更新（因为在渲染上是没有的） ？？？存疑
 
     结合源码来看 `watcher` 收集 `dep` 主要是在 `watcher.depend` 中使用，调用 `dep.depend` 方法，再调用 `watcher.addDep` 来完成 `dep` 和 `watcher` 的双向收集。
 
-    而 `watcher.depend` 在什么时候使用呢？只有 `createComputedGetter`，即计算属性的 `getter` 中使用。再往上推导就是 `initComputed` 中使用，对每个计算属性处理。所以，计算属性在初始化的时候，会收集依赖，并不会等到渲染的时候再收集。
+    而 `watcher.depend` 在什么时候使用呢？只有 `createComputedGetter`，即计算属性的 `getter` 中使用（这里猜测是兼容动态修改计算函数，每次触发时都重新收集）。再往上推导就是 `initComputed` 中使用，对每个计算属性处理。所以，计算属性在初始化的时候，会收集依赖，并不会等到渲染的时候再收集。
 
     计算属性双向依赖收集流程：
 
@@ -674,6 +674,8 @@ vue2 里面会有有三种 `watcher`
     **扩展：**`a=b+c`。当 `a` 在模版中使用了，计算 `watcher` 和渲染 `watcher` 是不能相互收集的，答案就是触发了 `a` 的 `getter` 计算，让 `b/c` 收集到了计算 `watcher` 和渲染 `watcher`
 
 3. 渲染 `watcher`，便于解除 `watcher` 的订阅
+
+总结：理解是在组件销毁时，解除没有用的依赖，因为是多对多关系，不会说某个 `dep/watcher` 会完全销毁，所以需要双向解除。比如 `watcher` 依赖于多个组件的数据，当单个组件销毁时，需要解除依赖，避免内存泄漏。
 
 ## 为什么 v-for 和 v-if 不能一起用
 
