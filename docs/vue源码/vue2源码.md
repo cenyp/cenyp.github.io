@@ -214,24 +214,7 @@ function patchVShow(oldVnode, vnode) {
 
 `v-show` 为什么用 `display` 不用 `visibility`
 
-`v-show` 使用 `display` 而不是 `visibility` 主要是为了性能和行为上的差异。
-
-1.性能优化
-
-`display: none`：当元素的 `v-show` 条件为 `false` 时，`Vue` 会将该元素的 `display` 设置为 `none`，而不是将其从 `DOM` 中移除。这样，元素在切换时不会销毁，只是通过修改 `display` 样式来控制显示与隐藏。这意味着在显示和隐藏之间切换时，`Vue` 不需要重新渲染 DOM，性能较好，尤其是在频繁切换的场景下。
-
-`visibility: hidden`：如果使用 `visibility` 来隐藏元素，元素仍然占据页面的空间，但是不会显示出来。这意味着即使元素不可见，它仍然会占据空间，可能会影响布局。
-
-因此，`v-show` 选择 `display: none` 是为了完全移除元素的占位，不影响其他元素的布局。
-
-2.行为差异
-
-`display: none`：元素完全从文档流中消失，不占据任何空间。这是 `v-show` 默认的行为，因为它不仅隐藏元素，还能让布局不受影响。
-
-`visibility: hidden`：元素依然存在于页面上，只是不显示出来，它仍然占据原本的空间。这种方式不适合 `v-show`，因为 `v-show` 期望能够完全移除元素，而不是保留它的占位。
-
-总结：
-`v-show` 通过改变 `display` 属性来隐藏元素，可以完全移除元素的占位和影响布局，且在频繁切换的情况下比使用 `visibility` 更具性能优势。
+`visibility: hidden` 只是单纯隐藏 `DOM` 但仍然会在页面上占有空间，而 `display: none` 是彻底隐藏 `DOM`，不会在页面上占用空间。
 
 ## v-for
 
