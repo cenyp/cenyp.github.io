@@ -1422,6 +1422,9 @@ export function inject(
 }
 ```
 
+总结：这种传递只用一次，不用维持全局的存储，所以放在 `setup` 里面，`setup` 执行完后，`currentInstance` 就会恢复到初始值。
+如果要在非初始化阶段传值，比如这个是动态的，可以套一层响应式再传递。
+
 ## 模板语法 VS JSX
 
 参考链接：[模板 vs. 渲染函数](https://cn.vuejs.org/guide/extras/rendering-mechanism.html#templates-vs-render-functions)
