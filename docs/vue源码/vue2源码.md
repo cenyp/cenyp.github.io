@@ -671,6 +671,8 @@ vue2 里面会有有三种 `watcher`
 
     `initComputed` --> `defineComputed` --> `createComputedGetter` --> `watcher.depend` --> `dep.depend` --> `watcher.addDep`
 
+    **扩展：**`a=b+c`。当 `a` 在模版中使用了，计算 `watcher` 和渲染 `watcher` 是不能相互收集的，答案就是触发了 `a` 的 `getter` 计算，让 `b/c` 收集到了计算 `watcher` 和渲染 `watcher`
+
 3. 渲染 `watcher`，便于解除 `watcher` 的订阅
 
 ## 为什么 v-for 和 v-if 不能一起用
