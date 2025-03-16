@@ -731,7 +731,7 @@ function genElement(el: ASTElement): string {
 
 在用户调用时，把函数压入执行栈中，等 `dom` 节点更新完成再调用执行栈。
 
-因为 `dom` 操作是宏任务，在实现上优先用 `promise` > `MutationObserver`（监听 `dom` 节点变化）> `setImmediate` > `setTimeout(0)`
+因为 `dom` 操作是同步的（直接执行），在实现上优先用 `promise` > `MutationObserver`（监听 `dom` 节点变化）> `setImmediate` > `setTimeout(0)`
 
 在涉及 `setTimeout` 等定时器时，无法获取最新DOM。如：弹窗显示动画，一般是固定时间的
 
