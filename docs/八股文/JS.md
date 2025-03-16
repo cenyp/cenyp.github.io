@@ -1389,6 +1389,24 @@ Promise.resolve()
 // then 2
 ```
 
+#### 4.6.8 可中断的 promise
+
+```js
+function abortWrapper(p1) {
+  let abort
+  let p2 = new Promise((resolve, reject) => (abort = reject))
+  let p = Promise.race([p1, p2])
+  p.abort = abort
+  return p
+}
+
+const req = abortWrapper(request)
+req.then(res => console.log(res)).catch(e => console.log(e))
+setTimeout(() => req.abort('用户手动终止请求'), 2000) // 这里可以是用户主动点击
+```
+
+参考链接：[如何中断Promise？](https://juejin.cn/post/6847902216028848141)
+
 ## 5. Common.JS、cmd、amd
 
 ### commonjs
