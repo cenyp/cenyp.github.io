@@ -1681,6 +1681,8 @@ $("#div1").mousedown(function (event) {
 
 ## 10. 宏任务和微任务
 
+**操作 `DOM` 是同步代码，非宏微任务**
+
 我们可以使用`Promise`添加异步任务！
 
 我们看到`Promise`在微任务列表中！ 当一个`Promise`解决`resolve`并且调用它的`then()`、`catch()`或 `finally()`方法的时候，这些方法里的回调函数被添加到微任务队列！
