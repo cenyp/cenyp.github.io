@@ -11,13 +11,13 @@
 一个 `HTML` 元素要创建 `BFC`，则满足下列的任意一个或多个条件即可： 下列方式会创建块格式化上下文：
 
 - 根元素(`root`)
-- 浮动元素（元素的 `float`不是 `none`）
-- 绝对定位元素（元素的 `position`为 `absolute`或 `fixed`）
-- 行内块元素（元素的 `display`为 `inline-block`）
+- 浮动元素（元素的 `float`不是 `none`） **常见**
+- 绝对定位元素（元素的 `position`为 `absolute`或 `fixed`） **常见**
+- 行内块元素（元素的 `display`为 `inline-block`） **常见**
 - 表格单元格（元素的 `display`为 `table-cell`，`HTML`表格单元格默认为该值）
 - 表格标题（元素的 `display`为 `table-caption`，`HTML`表格标题默认为该值）
 - 匿名表格单元格元素（元素的`display`为`table、table-row、 table-row-group、table-header-group、table-footer-group`（分别是`HTML table、row、tbody、thead、tfoot`的默认属性）或`inline-table`）
-- `overflow`值不为`visible`的块元素-弹性元素（`display`为 `flex`或 `inline-flex`元素的直接子元素）
+- `overflow`值不为`visible`的块元素-弹性元素（`display`为 `flex`或 `inline-flex`元素的直接子元素）**常见**
 - 网格元素（`display`为`grid`或`inline-grid`元素的直接子元素） 等等。
 
 ### 1.3 BFC渲染规则
@@ -383,40 +383,40 @@ style 增加:
 
 **media feature:**
 
-| aspect-ratio            | 定义输出设备中的页面可见区域宽度与高度的比率                 |
-| ----------------------- | ------------------------------------------------------------ |
-| color                   | 定义输出设备每一组彩色原件的个数。如果不是彩色设备，则值等于0 |
-| color-index             | 定义在输出设备的彩色查询表中的条目数。如果没有使用彩色查询表，则值等于0 |
-| device-aspect-ratio     | 定义输出设备的屏幕可见宽度与高度的比率。                     |
-| device-height           | 定义输出设备的屏幕可见高度。                                 |
-| device-width            | 定义输出设备的屏幕可见宽度。                                 |
-| grid                    | 用来查询输出设备是否使用栅格或点阵。                         |
-| height                  | 定义输出设备中的页面可见区域高度。                           |
-| max-aspect-ratio        | 定义输出设备的屏幕可见宽度与高度的最大比率。                 |
-| max-color               | 定义输出设备每一组彩色原件的最大个数。                       |
-| max-color-index         | 定义在输出设备的彩色查询表中的最大条目数。                   |
-| max-device-aspect-ratio | 定义输出设备的屏幕可见宽度与高度的最大比率。                 |
-| max-device-height       | 定义输出设备的屏幕可见的最大高度。                           |
-| max-device-width        | 定义输出设备的屏幕最大可见宽度。                             |
-| max-height              | 定义输出设备中的页面最大可见区域高度。                       |
-| max-monochrome          | 定义在一个单色框架缓冲区中每像素包含的最大单色原件个数。     |
-| max-resolution          | 定义设备的最大分辨率。                                       |
-| max-width               | 定义输出设备中的页面最大可见区域宽度。                       |
-| min-aspect-ratio        | 定义输出设备中的页面可见区域宽度与高度的最小比率。           |
-| min-color               | 定义输出设备每一组彩色原件的最小个数。                       |
-| min-color-index         | 定义在输出设备的彩色查询表中的最小条目数。                   |
-| min-device-aspect-ratio | 定义输出设备的屏幕可见宽度与高度的最小比率。                 |
-| min-device-width        | 定义输出设备的屏幕最小可见宽度。                             |
-| min-device-height       | 定义输出设备的屏幕的最小可见高度。                           |
-| min-height              | 定义输出设备中的页面最小可见区域高度。                       |
-| min-monochrome          | 定义在一个单色框架缓冲区中每像素包含的最小单色原件个数       |
-| min-resolution          | 定义设备的最小分辨率。                                       |
-| min-width               | 定义输出设备中的页面最小可见区域宽度。                       |
+| aspect-ratio            | 定义输出设备中的页面可见区域宽度与高度的比率                                    |
+| ----------------------- | ------------------------------------------------------------------------------- |
+| color                   | 定义输出设备每一组彩色原件的个数。如果不是彩色设备，则值等于0                   |
+| color-index             | 定义在输出设备的彩色查询表中的条目数。如果没有使用彩色查询表，则值等于0         |
+| device-aspect-ratio     | 定义输出设备的屏幕可见宽度与高度的比率。                                        |
+| device-height           | 定义输出设备的屏幕可见高度。                                                    |
+| device-width            | 定义输出设备的屏幕可见宽度。                                                    |
+| grid                    | 用来查询输出设备是否使用栅格或点阵。                                            |
+| height                  | 定义输出设备中的页面可见区域高度。                                              |
+| max-aspect-ratio        | 定义输出设备的屏幕可见宽度与高度的最大比率。                                    |
+| max-color               | 定义输出设备每一组彩色原件的最大个数。                                          |
+| max-color-index         | 定义在输出设备的彩色查询表中的最大条目数。                                      |
+| max-device-aspect-ratio | 定义输出设备的屏幕可见宽度与高度的最大比率。                                    |
+| max-device-height       | 定义输出设备的屏幕可见的最大高度。                                              |
+| max-device-width        | 定义输出设备的屏幕最大可见宽度。                                                |
+| max-height              | 定义输出设备中的页面最大可见区域高度。                                          |
+| max-monochrome          | 定义在一个单色框架缓冲区中每像素包含的最大单色原件个数。                        |
+| max-resolution          | 定义设备的最大分辨率。                                                          |
+| max-width               | 定义输出设备中的页面最大可见区域宽度。                                          |
+| min-aspect-ratio        | 定义输出设备中的页面可见区域宽度与高度的最小比率。                              |
+| min-color               | 定义输出设备每一组彩色原件的最小个数。                                          |
+| min-color-index         | 定义在输出设备的彩色查询表中的最小条目数。                                      |
+| min-device-aspect-ratio | 定义输出设备的屏幕可见宽度与高度的最小比率。                                    |
+| min-device-width        | 定义输出设备的屏幕最小可见宽度。                                                |
+| min-device-height       | 定义输出设备的屏幕的最小可见高度。                                              |
+| min-height              | 定义输出设备中的页面最小可见区域高度。                                          |
+| min-monochrome          | 定义在一个单色框架缓冲区中每像素包含的最小单色原件个数                          |
+| min-resolution          | 定义设备的最小分辨率。                                                          |
+| min-width               | 定义输出设备中的页面最小可见区域宽度。                                          |
 | monochrome              | 定义在一个单色框架缓冲区中每像素包含的单色原件个数。如果不是单色设备，则值等于0 |
-| orientation             | 定义输出设备中的页面可见区域高度是否大于或等于宽度。         |
-| resolution              | 定义设备的分辨率。如：96dpi, 300dpi, 118dpcm                 |
-| scan                    | 定义电视类设备的扫描工序。                                   |
-| width                   | 定义输出设备中的页面可见区域宽度。                           |
+| orientation             | 定义输出设备中的页面可见区域高度是否大于或等于宽度。                            |
+| resolution              | 定义设备的分辨率。如：96dpi, 300dpi, 118dpcm                                    |
+| scan                    | 定义电视类设备的扫描工序。                                                      |
+| width                   | 定义输出设备中的页面可见区域宽度。                                              |
 
 ## 7. flex
 
@@ -510,17 +510,17 @@ div{
 }
 ```
 
-| 属性                                                         | 描述                                                         |
-| :----------------------------------------------------------- | :----------------------------------------------------------- |
-| [@keyframes](https://www.runoob.com/cssref/css3-pr-animation-keyframes.html) | 规定动画。                                                   |
-| [animation](https://www.runoob.com/cssref/css3-pr-animation.html) | 所有动画属性的简写属性。                                     |
-| [animation-name](https://www.runoob.com/cssref/css3-pr-animation-name.html) | 规定 `@keyframes` 动画的名称。                                 |
-| [animation-duration](https://www.runoob.com/cssref/css3-pr-animation-duration.html) | 规定动画完成一个周期所花费的秒或毫秒。默认是 0。             |
-| [animation-timing-function](https://www.runoob.com/cssref/css3-pr-animation-timing-function.html) | 规定动画的速度曲线。默认是 `ease`。                          |
-| [animation-fill-mode](https://www.runoob.com/cssref/css3-pr-animation-fill-mode.html) | 规定当动画不播放时（当动画完成时，或当动画有一个延迟未开始播放时），要应用到元素的样式。 |
-| [animation-delay](https://www.runoob.com/cssref/css3-pr-animation-delay.html) | 规定动画何时开始。默认是 0。                                 |
-| [animation-iteration-count](https://www.runoob.com/cssref/css3-pr-animation-iteration-count.html) | 规定动画被播放的次数。默认是 1。                             |
-| [animation-direction](https://www.runoob.com/cssref/css3-pr-animation-direction.html) | 规定动画是否在下一周期逆向地播放。默认是 `normal`。          |
+| 属性                                                                                              | 描述                                                                                     |
+| :------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------- |
+| [@keyframes](https://www.runoob.com/cssref/css3-pr-animation-keyframes.html)                      | 规定动画。                                                                               |
+| [animation](https://www.runoob.com/cssref/css3-pr-animation.html)                                 | 所有动画属性的简写属性。                                                                 |
+| [animation-name](https://www.runoob.com/cssref/css3-pr-animation-name.html)                       | 规定 `@keyframes` 动画的名称。                                                           |
+| [animation-duration](https://www.runoob.com/cssref/css3-pr-animation-duration.html)               | 规定动画完成一个周期所花费的秒或毫秒。默认是 0。                                         |
+| [animation-timing-function](https://www.runoob.com/cssref/css3-pr-animation-timing-function.html) | 规定动画的速度曲线。默认是 `ease`。                                                      |
+| [animation-fill-mode](https://www.runoob.com/cssref/css3-pr-animation-fill-mode.html)             | 规定当动画不播放时（当动画完成时，或当动画有一个延迟未开始播放时），要应用到元素的样式。 |
+| [animation-delay](https://www.runoob.com/cssref/css3-pr-animation-delay.html)                     | 规定动画何时开始。默认是 0。                                                             |
+| [animation-iteration-count](https://www.runoob.com/cssref/css3-pr-animation-iteration-count.html) | 规定动画被播放的次数。默认是 1。                                                         |
+| [animation-direction](https://www.runoob.com/cssref/css3-pr-animation-direction.html)             | 规定动画是否在下一周期逆向地播放。默认是 `normal`。                                      |
 
 ## 11. 设置div元素的高度为宽度的一半
 
@@ -560,12 +560,12 @@ div{
 
 ## 12.rem、em、vw、vh详解
 
-| 单位 | 说明                                                         | 兼容性                       |
-| ---- | :----------------------------------------------------------- | ---------------------------- |
+| 单位 | 说明                                                                                                                                                 | 兼容性                       |
+| ---- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
 | em   | 相对长度单位，相对于当前对象内文本的字体尺寸， 根据父元素字体大小而变化。元素的 `width/height/padding/margin` 用 em 的话是相对于该元素的 `font-size` | 良好                         |
-| rem  | 相对长度单位，相对于根元素（ 即 html 元素）`font-size` 的倍数， 不会被它的父元素影响 | IE9+、火狐 3.6+、 safari5.0+ |
-| vw   | 相对于视口的宽度， 视口被均分为 100 单位的 vw                | 高版本浏览器均支持           |
-| vh   | 相对于视口的宽度， 视口被均分为 100 单位的 vh                | 高版本浏览器均支持           |
+| rem  | 相对长度单位，相对于根元素（ 即 html 元素）`font-size` 的倍数， 不会被它的父元素影响                                                                 | IE9+、火狐 3.6+、 safari5.0+ |
+| vw   | 相对于视口的宽度， 视口被均分为 100 单位的 vw                                                                                                        | 高版本浏览器均支持           |
+| vh   | 相对于视口的宽度， 视口被均分为 100 单位的 vh                                                                                                        | 高版本浏览器均支持           |
 
 ## 13. 半像素
 
@@ -642,12 +642,12 @@ div{
 
 ## 16. 图片剪裁 object-fit
 
-| 属性       | 说明                                                         |
-| ---------- | ------------------------------------------------------------ |
-| fill       | 默认，不保证保持原有的比例，内容拉伸填充整个内容容器。       |
-| contain    | 保持原有尺寸比例。内容被缩放。                               |
-| cover      | 保持原有尺寸比例。但部分内容可能被剪切。                     |
-| none       | 保留原有元素内容的长度和宽度，也就是说内容不会被重置。       |
+| 属性       | 说明                                                                                                            |
+| ---------- | --------------------------------------------------------------------------------------------------------------- |
+| fill       | 默认，不保证保持原有的比例，内容拉伸填充整个内容容器。                                                          |
+| contain    | 保持原有尺寸比例。内容被缩放。                                                                                  |
+| cover      | 保持原有尺寸比例。但部分内容可能被剪切。                                                                        |
+| none       | 保留原有元素内容的长度和宽度，也就是说内容不会被重置。                                                          |
 | scale-down | 保持原有尺寸比例。内容的尺寸与 `none` 或 `contain` 中的一个相同，取决于它们两个之间谁得到的对象尺寸会更小一些。 |
 
 ## 17. 图片懒加载
