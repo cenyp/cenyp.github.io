@@ -525,7 +525,7 @@ div{
 ## 11. 设置div元素的高度为宽度的一半
 
 ```html
-<!-- 利用padding-bottom==父元素的height -->
+<!-- 利用padding-bottom==父元素的宽度 -->
 <style>
 .out {
   width: 100%;

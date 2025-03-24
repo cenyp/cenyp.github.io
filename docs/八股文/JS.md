@@ -1389,6 +1389,24 @@ Promise.resolve()
 // then 2
 ```
 
+#### 4.6.8 可中断的 promise
+
+```js
+function abortWrapper(p1) {
+  let abort
+  let p2 = new Promise((resolve, reject) => (abort = reject))
+  let p = Promise.race([p1, p2])
+  p.abort = abort
+  return p
+}
+
+const req = abortWrapper(request)
+req.then(res => console.log(res)).catch(e => console.log(e))
+setTimeout(() => req.abort('用户手动终止请求'), 2000) // 这里可以是用户主动点击
+```
+
+参考链接：[如何中断Promise？](https://juejin.cn/post/6847902216028848141)
+
 ## 5. Common.JS、cmd、amd
 
 ### commonjs
@@ -1680,6 +1698,8 @@ $("#div1").mousedown(function (event) {
 3.`event.target == event.currentTarget`，让触发事件的元素等于绑定事件的元素，也可以阻止事件冒泡
 
 ## 10. 宏任务和微任务
+
+**操作 `DOM` 是同步代码，非宏微任务**
 
 我们可以使用`Promise`添加异步任务！
 
