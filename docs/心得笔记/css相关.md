@@ -242,3 +242,9 @@ h1 {
 `min-width/max-width` 会在计算后的宽度小于/大于 `min-width/max-width` 时生效，由此判断 `min-width/max-width` 的优先级大于 `flex: 1`
 
 <demo vue="./demos/css相关/破解 flex 不能控制宽度.vue" />
+
+## overflow: hidden 会影响 sticky 定位布局
+1. `overflow-x: hidden` 导致 `sticky` 不生效，谁页面滚动
+2. `overflow-y: hidden` 导致 `ios` 下滚动条被 `sticky` 定位遮挡
+
+具体原因没有研究
