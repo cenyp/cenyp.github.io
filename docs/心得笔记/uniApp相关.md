@@ -594,8 +594,11 @@ function onScroll(e) {
 
 滚顶可以用0/1做处理：`scrollTop.value = scrollTop.value === 0 ? 1 : 0`
 
-## addRange(): The given range isn't in document.
+## editor 坑坑坑坑坑坑坑坑坑坑坑坑坑坑坑
 
-`editor` 组件使用 `editorContext.setContents` 方法插入数据是会报错 `addRange(): The given range isn't in document.`
+
+1. `editor` 组件使用 `editorContext.setContents` 方法插入数据是会报错 `addRange(): The given range isn't in document.`
 
 解决方法，在使用 `setContents` 时套一层 `setTimeout`
+
+2. `setContents` 方法会使光标前置，用 `delta` 模式拼接 `'\n'` 可以修复，但是只能处理纯文本，会使样式等识别错误
