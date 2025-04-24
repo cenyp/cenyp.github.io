@@ -583,22 +583,97 @@ defineOptions({
 <scroll-view scroll-y :scroll-top="scrollTop" @scroll="onScroll"> </scroll-view>
 
 <script setup>
-const scrollTop = ref(0)
+const scrollTop = ref(0);
 function onScroll(e) {
-  scrollTop.value = e.detail.scrollTop
+  scrollTop.value = e.detail.scrollTop;
 }
 </script>
 ```
 
 这样子实时赋值，容易导致页面滚动时抖动。
 
-滚顶可以用0/1做处理：`scrollTop.value = scrollTop.value === 0 ? 1 : 0`
+滚顶可以用 0/1 做处理：`scrollTop.value = scrollTop.value === 0 ? 1 : 0`
 
 ## editor 坑坑坑坑坑坑坑坑坑坑坑坑坑坑坑
-
 
 1. `editor` 组件使用 `editorContext.setContents` 方法插入数据是会报错 `addRange(): The given range isn't in document.`
 
 解决方法，在使用 `setContents` 时套一层 `setTimeout`
 
 2. `setContents` 方法会使光标前置，用 `delta` 模式拼接 `'\n'` 可以修复，但是只能处理纯文本，会使样式等识别错误
+
+## 简单富文本编辑器
+
+思路 `textarea` 覆盖在 `u-parse` 上面并隐藏
+
+```vue
+<template>
+  <view class="publishContent">
+    <!-- 隐藏的textarea用于用户输入 -->
+    <textarea
+      id="hidden-textarea"
+      v-model="form.artIntroduce"
+      class="hidden-textarea"
+      placeholder="添加正文"
+      maxlength="-1"
+      :adjust-position="false"
+      @input="handleTextareaInput"
+    ></textarea>
+
+    <u-parse class="visible-content" :content="parsedContent"></u-parse>
+  </view>
+</template>
+<script>
+export default {
+  methods: {
+    // 处理textarea的输入事件
+    handleTextareaInput() {
+      this.parsedContent = this.convertTextToHtml(this.form.artIntroduce);
+    },
+
+    // 将文本转换为带高亮标签的HTML
+    convertTextToHtml(text) {
+      if (!text) return "添加正文";
+      text = text.replace(/\n/g, "<br>");
+      // 只匹配合法输入
+      const regex = /#([a-zA-Z0-9\u4e00-\u9fa5]+)/g;
+      return text.replace(regex, '<span style="color: #65b7ff;">$&</span>');
+    },
+  },
+};
+</script>
+<style>
+.hidden-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  font-size: 26rpx;
+  box-sizing: border-box;
+  color: transparent;
+  caret-color: black;
+  font-size: 26rpx;
+  white-space: pre-wrap;
+  word-break: break-all;
+  padding: 0 20rpx;
+  min-height: 400rpx;
+  height: 100%;
+}
+
+.visible-content {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+  pointer-events: none;
+  font-size: 26rpx;
+  white-space: pre-wrap;
+  word-break: break-all;
+  padding: 0 20rpx;
+  color: #33333380;
+  min-height: 400rpx;
+}
+</style>
+```
