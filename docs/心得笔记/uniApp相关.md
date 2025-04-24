@@ -593,3 +593,9 @@ function onScroll(e) {
 这样子实时赋值，容易导致页面滚动时抖动。
 
 滚顶可以用0/1做处理：`scrollTop.value = scrollTop.value === 0 ? 1 : 0`
+
+## addRange(): The given range isn't in document.
+
+`editor` 组件使用 `editorContext.setContents` 方法插入数据是会报错 `addRange(): The given range isn't in document.`
+
+解决方法，在使用 `setContents` 时套一层 `setTimeout`
