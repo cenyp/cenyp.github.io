@@ -147,6 +147,9 @@ todo
         "env": {
           "UNI_PLATFORM": "mp-weixin",
           "ENV_TYPE": "dev"
+        },
+        "define": {
+          "WX-DEV": true // 还可以这么使用
         }
       }
     }
@@ -261,6 +264,17 @@ option.url = process.ENV_CONFIG[process.ENV_TYPE].wxUrl + option.url;
 // 可以这么使用
 import { loadEnv } from "vite";
 const env = loadEnv("dev", process.cwd());
+```
+
+### 补充编译条件
+
+```js
+// #ifdef WX-DEV
+const url = "dev";
+// #endif
+// #ifndef WX-DEV
+const url = "prod";
+// #endif
 ```
 
 ## 自动化构建
