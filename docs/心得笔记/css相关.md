@@ -244,7 +244,17 @@ h1 {
 <demo vue="./demos/css相关/破解 flex 不能控制宽度.vue" />
 
 ## overflow: hidden 会影响 sticky 定位布局
+
 1. `overflow-x: hidden` 导致 `sticky` 不生效，谁页面滚动
 2. `overflow-y: hidden` 导致 `ios` 下滚动条被 `sticky` 定位遮挡
 
 具体原因没有研究
+
+## 100vh H5 高度覆盖
+
+`100vh` 在 `H5` 浏览器上会受浏览器搜索栏影响，如 `safari`
+
+解决方法：
+
+1. `uniapp` 下使用 `uni.getSystemInfo().windowHeight` 替换
+2. 使用 `vh-check` 来修正 `100vh` 值
