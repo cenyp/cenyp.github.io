@@ -691,3 +691,9 @@ export default {
 }
 </style>
 ```
+
+## textarea ios 高度异常
+
+微信小程序在 `ios`  下 `textarea` 会有自带的内边距
+
+解决方法：`disable-default-padding`
