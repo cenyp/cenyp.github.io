@@ -609,7 +609,7 @@ export default defineConfig({
 
 [浅谈低代码平台远程组件加载方案](https://juejin.cn/post/7127440050937151525)
 
-[给我5分钟，保证教会你在vue3中动态加载远程组件](https://juejin.cn/post/7399986979729424418)
+[给我 5 分钟，保证教会你在 vue3 中动态加载远程组件](https://juejin.cn/post/7399986979729424418)
 
 `defineAsyncComponent` 接受的是编译后的代码，并不能直接解析 `vue` 文件，可以加载项目本身构建成的组件 `js` 文件
 
@@ -836,11 +836,36 @@ const list = [
 
 ```ts
 // components.d.ts
-declare module 'vue' {
-    export interface GlobalComponents {
-        btn: (typeof import('./btn.vue'))['default']
-     }
+declare module "vue" {
+  export interface GlobalComponents {
+    btn: typeof import("./btn.vue")["default"];
+  }
 }
 
-export {} // 必须有这个文件，否则不生效
+export {}; // 必须有这个文件，否则不生效
+```
+
+## vuex getter 响应式不触发
+
+```js
+const getters = {
+    userSetting: (state) => {
+      const token = uni.getStorageSync("token");
+      const userSetting = state.userSetting; // 这里是关键，getter本质上是一个 computed，要收集依赖；当未登录的情况下，token 是为 false，导致 state.userSetting 依赖无法收集，导致更新 state.userSetting 时无法触发响应式更新
+
+      if (!token) {
+        return {
+          ... // 设置
+        };
+      }
+
+      if (userSetting && Object.keys(userSetting).length > 0) {
+        return userSetting;
+      } else {
+        const userSetting = uni.getStorageSync("BTuserSetting") || {};
+        state.userSetting = userSetting;
+        return userSetting;
+      }
+    },
+},
 ```
