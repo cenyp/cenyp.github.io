@@ -243,6 +243,18 @@ export default defineConfig(({ mode }) => ({
 }));
 ```
 
+`vue2/webpack`
+```js
+module.exports = {
+  chainWebpack: (config) => {
+    config.plugin("define").tap((args) => {
+      args[0]["__SOURCE__"] = JSON.stringify(source);
+      return args;
+    });
+  },
+};
+```
+
 ### 使用
 
 以接口域名为例
