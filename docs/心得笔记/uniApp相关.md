@@ -709,3 +709,7 @@ export default {
 微信小程序在 `ios`  下 `textarea` 会有自带的内边距
 
 解决方法：`disable-default-padding`
+
+## 小程序 v-show
+
+微信小程序原生是不支持 `v-show`，是通过样式来隐藏，这样子会与 `display` 样式冲突，导致功能异常
