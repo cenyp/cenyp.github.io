@@ -244,6 +244,7 @@ export default defineConfig(({ mode }) => ({
 ```
 
 `vue2/webpack`
+
 ```js
 module.exports = {
   chainWebpack: (config) => {
@@ -706,10 +707,51 @@ export default {
 
 ## textarea ios 高度异常
 
-微信小程序在 `ios`  下 `textarea` 会有自带的内边距
+微信小程序在 `ios` 下 `textarea` 会有自带的内边距
 
 解决方法：`disable-default-padding`
 
 ## 小程序 v-show
 
 微信小程序原生是不支持 `v-show`，是通过样式来隐藏，这样子会与 `display` 样式冲突，导致功能异常
+
+## 小程序的 DOM 树结构
+
+```html
+<!-- c 组件中 -->
+<a>
+  <b></b>
+</a>
+```
+
+如上所示，`vue` 中可以在 b 组件中修改 `this` 指向到 `$parent` 来获取父组件 c 的数据/方法
+
+但是在小程序中是不行的，小程序组件树结构不同，如下所示，直接修改指向只能获取组件 a 的数据/方法
+
+```js
+// VUE
+const vue = {
+  name: "c",
+  child: [
+    {
+      name: "a",
+    },
+    {
+      name: "b",
+    },
+  ],
+};
+
+// 小程序
+const mini = {
+  name: "c",
+  child: [
+    {
+      name: "a",
+      child: [{ name: "b" }],
+    },
+  ],
+};
+```
+
+> 在日常开发中不要使用这样子的去获取父组件的
