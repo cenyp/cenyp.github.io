@@ -204,9 +204,7 @@ export function createPackage() {
       filePath,
       `{ "industrySDK": true, "ttPlugins": { "dependencies": { "microapp-trade-plugin": { "version": "1.1.2", "isDynamic": true } } } }`
     );
-    console.error(
-      "--------------------生成package.json文件成功--------------------"
-    );
+    console.error("--------------------生成package.json文件成功--------------------");
   }
 
   try {
@@ -767,3 +765,50 @@ const mini = {
 1. 首先是样式代码，由于经历多次迭代，往往会产生较多没有使用的样式代码
 2. 被注释组件的引入没有相应注释，同理还有对应的方法，这些无法被摇树算法去掉，涉及底层引用
 3. 上述的可以较快处理，长期优化还可以关注代码逻辑简化
+
+## app 保存图片
+
+兼容透明图片保存
+
+```js
+// #ifdef APP-PLUS
+// 使用 plus.gallery.save 保存透明PNG图片
+uni.showLoading({
+  title: "保存中...",
+  mask: true,
+});
+
+const downloadTask = plus.downloader.createDownload(url, {}, (d, status) => {
+  if (status == 200) {
+    // 将下载的文件保存到相册
+    const filePath = plus.io.convertLocalFileSystemURL(d.filename);
+
+    plus.gallery.save(
+      filePath,
+      () => {
+        uni.hideLoading();
+        uni.showToast({
+          title: "保存成功",
+          icon: "success",
+        });
+      },
+      (error) => {
+        uni.hideLoading();
+        console.error("保存失败:", error);
+        uni.showToast({
+          title: "保存失败，请检查相册权限",
+          icon: "none",
+        });
+      }
+    );
+  } else {
+    uni.hideLoading();
+    uni.showToast({
+      title: "下载失败",
+      icon: "none",
+    });
+  }
+});
+downloadTask.start();
+// #endif
+```
