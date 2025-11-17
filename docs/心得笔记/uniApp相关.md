@@ -812,3 +812,12 @@ const downloadTask = plus.downloader.createDownload(url, {}, (d, status) => {
 downloadTask.start();
 // #endif
 ```
+
+## uni.getSystemInfo().windowHeight
+
+`windowHeight` 是可使用窗口高度，在没有默认tab栏，没有顶部导航栏的页面下，是包含ios安全区域和状态栏的，即整块屏幕的高度
+
+如果含默认tab栏，`windowHeight` 是不包含 tab 栏高度和ios安全区域
+
+如果使用的默认导航栏，则不包括状态栏和导航栏高度
+
