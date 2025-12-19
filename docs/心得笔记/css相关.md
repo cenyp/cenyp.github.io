@@ -258,3 +258,38 @@ h1 {
 
 1. `uniapp` 下使用 `uni.getSystemInfo().windowHeight` 替换
 2. 使用 `vh-check` 来修正 `100vh` 值
+
+## css 聊天气泡
+
+```css
+.buddle {
+  background-color: transparent;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 34px 51px;
+  border-image: url(xxxxxx.png)
+    58% 40% 40% 42% fill / 49px 55px 33px 53px / 1px repeat;
+  padding: 0px;
+  margin-top: -11px;
+}
+```
+
+`border-image: url(xxxxxx.png) 58% 40% 40% 42% fill / 49px 55px 33px 53px / 1px repeat;` 拆解
+
+- `border-image-source: url(xxxx.png)`
+- `border-image-slice: 58% 40% 40% 42% fill;` 设定边框图片切割点位，顺序为上右下左
+- `border-image-width: 49px 55px 33px 53px;` 图片边框宽度，一般为图片 `border-image-slice` 的比例放大缩小
+- `border-image-outset: 1px;`
+- `border-image-repeat: repeat;`
+
+`border-width: 34px 51px;` 为边框的宽度，一般要和 `border-image-slice` 保持一致，可以避免显示气泡框大小不同导致的边框拉伸
+
+比例/数据确认顺序
+
+1. 确认裁剪的点位，支持百分比/数值，裁剪后的图片要支持填充，不然会出现宫格纹
+2. 确认边框图片数据，根据图片大小\*点位比例\*缩放比例可得
+3. 边框宽度一般和 `border-image-slice` 保持一致，可小范围调整
+
+> 注
+`border-width` 代表实际的边框大小
+`border-image-width` 代表在边框上图片显示的宽度，所以一般和 `border-width` 一致
