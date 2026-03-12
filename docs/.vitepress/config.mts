@@ -30,6 +30,7 @@ export default defineConfig({
           { text: "心得笔记", link: "/心得笔记/js相关" },
           { text: "文章收录", link: "/文章收录/文章链接大全" },
           { text: "八股文", link: "/八股文/CSS" },
+          { text: "AI相关", link: "/AI相关/项目配置" },
           // { text: "算法", link: "/心得笔记/js相关" },
         ],
       },
@@ -123,6 +124,14 @@ export default defineConfig({
           ],
         },
       ],
+      "AI相关":[
+        {
+          text: "AI相关",
+          items: [
+            { text: "项目配置", link: "/AI相关/项目配置" },
+          ],
+        }
+      ]
     },
 
     // socialLinks: [{ icon: "gitee", link: "https://gitee.com/longway__comeon" }],

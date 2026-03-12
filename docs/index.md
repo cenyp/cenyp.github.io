@@ -27,6 +27,10 @@ features:
   title: 八股文
   details: 前端面试八股文，包括但不限于：JS基础、浏览器原理、网络、框架原理等等
   link: /八股文/CSS
+- icon: 🤖
+  title: AI相关
+  details: 拥抱AI
+  link: /AI相关/项目配置
 - icon: 🧮
   title: 算法
   details: 计划对 leetCode 算法题进行文章记录
