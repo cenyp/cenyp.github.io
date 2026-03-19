@@ -124,11 +124,12 @@ export default defineConfig({
           ],
         },
       ],
-      "AI相关":[
+      "AI相关": [
         {
           text: "AI相关",
           items: [
             { text: "项目配置", link: "/AI相关/项目配置" },
+            { text: "ollama使用", link: "/AI相关/ollama使用" },
           ],
         }
       ]
