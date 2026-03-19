@@ -82,8 +82,6 @@ Ollama 的 API 允许您通过编程方式运行模型并与之交互。
 
 ollama 默认运行在 `https://:11434/api`
 
-
-
 > 方法示例
 
 
@@ -142,3 +140,213 @@ openclaw onboard --install-daemon
 ollama launch openclaw
 ```
 
+
+
+## RAG
+
+RAG（检索增强生成）是一种让大语言模型在回答问题前，先“查阅资料”的技术框架
+
+
+### 目录
+```
+your-project/
+├── documents/          # 存放你的所有资料（.txt, .pdf, .docx）
+├─────密码.txt  `问：密码是什么？ 答：12345678`
+├─────喜好.txt  `问：喜欢吃的水果 答：香蕉`
+├── rag.js       # 主脚本
+└── vector-store.json   # 生成的向量库
+```
+
+### 示例代码
+
+```js
+// rag-txt-only.js
+import fs from "fs/promises";
+import path from "path";
+import { fileURLToPath } from "url";
+import ollama from "ollama";
+import { log } from "console";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// 配置
+const DOCS_DIR = path.join(__dirname, "documents"); // 存放 .txt 文件的文件夹
+const EMBEDDING_MODEL = "nomic-embed-text"; // 向量模型
+const LLM_MODEL = "qwen3.5:0.8b"; // 对话模型
+const VECTOR_STORE = path.join(__dirname, "vector-store.json"); // 向量存储文件
+const CHUNK_SIZE = 500; // 每个文本块最大字符数
+const CHUNK_OVERLAP = 50; // 重叠字符数
+
+/**
+ * 读取所有 .txt 文件并切分成块
+ */
+async function loadAndChunkDocuments() {
+  const files = await fs.readdir(DOCS_DIR);
+  const txtFiles = files.filter((f) => f.toLowerCase().endsWith(".txt"));
+
+  if (txtFiles.length === 0) {
+    throw new Error("documents 文件夹中没有找到 .txt 文件");
+  }
+
+  const chunks = [];
+  for (const file of txtFiles) {
+    const filePath = path.join(DOCS_DIR, file);
+    const content = await fs.readFile(filePath, "utf-8");
+
+    // 简单的滑动窗口切分
+    for (let i = 0; i < content.length; i += CHUNK_SIZE - CHUNK_OVERLAP) {
+      const chunkText = content.substring(i, i + CHUNK_SIZE);
+      if (chunkText.trim().length > 0) {
+        chunks.push({
+          id: `${file}-${i}`,
+          text: chunkText,
+          source: file,
+        });
+      }
+    }
+  }
+  return chunks;
+}
+
+/**
+ * 构建索引：生成向量并保存
+ */
+async function buildIndex() {
+  console.log("📄 读取文档并切分...");
+  const chunks = await loadAndChunkDocuments();
+  console.log(`   共 ${chunks.length} 个文本块`);
+
+  console.log("⚡ 生成向量 (Embedding)...");
+  const vectorStore = [];
+  for (let i = 0; i < chunks.length; i++) {
+    const chunk = chunks[i];
+    const response = await ollama.embed({
+      model: EMBEDDING_MODEL,
+      input: chunk.text,
+    });
+    vectorStore.push({
+      id: chunk.id,
+      text: chunk.text,
+      source: chunk.source,
+      vector: response.embeddings[0],
+    });
+    if ((i + 1) % 20 === 0) {
+      console.log(`   已完成 ${i + 1}/${chunks.length}`);
+    }
+  }
+
+  await fs.writeFile(VECTOR_STORE, JSON.stringify(vectorStore, null, 2));
+  console.log(`✅ 索引构建完成，已保存至 ${VECTOR_STORE}`);
+}
+
+/**
+ * 余弦相似度计算
+ */
+function cosineSimilarity(vecA, vecB) {
+  const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
+  const normA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
+  const normB = Math.sqrt(vecB.reduce((sum, b) => sum + b * b, 0));
+  return dot / (normA * normB);
+}
+
+/**
+ * 回答问题
+ */
+async function ask(question) {
+  // 加载向量库
+  const raw = await fs.readFile(VECTOR_STORE, "utf-8");
+  const vectorStore = JSON.parse(raw);
+
+  // 问题向量化
+  const qEmbed = await ollama.embed({
+    model: EMBEDDING_MODEL,
+    input: question,
+  });
+  const qVec = qEmbed.embeddings[0];
+
+  // 检索 top 5 最相似的块
+  const scored = vectorStore.map((item) => ({
+    ...item,
+    score: cosineSimilarity(qVec, item.vector),
+  }));
+  scored.sort((a, b) => b.score - a.score);
+  const topK = scored.slice(0, 5);
+
+  // 构建上下文
+  const context = topK.map((item) => item.text).join("\n\n---\n\n");
+  console.log(context);
+  // 生成 prompt
+  const prompt = `你是一个只会严格依据资料回答的助手。
+  请根据以下资料回答问题。
+  
+  规则：
+  - 如果资料中提供了问题的明确答案，则只输出答案本身，不要添加任何解释或前缀。
+  - 如果资料中没有提供问题的明确答案，则必须只输出“不知道”三个字，不要输出任何其他文字。`;
+
+  const messages = [
+    {
+      role: "system",
+      content: prompt,
+    },
+    { role: "user", content: `资料：\n${context}\n\n问题：${question}` },
+  ];
+
+  // 调用对话模型
+  const response = await ollama.chat({
+    model: LLM_MODEL,
+    messages: messages,
+    // think: false,
+  });
+
+  console.log(`\n🤖 回答：${response.message.content}`);
+}
+
+/**
+ * 命令行入口
+ */
+async function main() {
+  const cmd = process.argv[2];
+  if (cmd === "build") {
+    await buildIndex();
+  } else if (cmd === "ask") {
+    const question = process.argv.slice(3).join(" ");
+    if (!question) return console.log('请提供问题，例如：node rag-txt-only.js ask "你的问题"');
+    await ask(question);
+  } else {
+    console.log(`
+用法:
+  node rag-txt-only.js build          # 构建索引（处理 documents 文件夹下的所有 .txt）
+  node rag-txt-only.js ask "你的问题"  # 提问
+    `);
+  }
+}
+
+main().catch(console.error);
+```
+
+
+> 执行效果
+
+```js
+// 安装依赖
+// nomic-embed-text 是一个高性能的开源文本嵌入模型，它的核心作用是将文本（如句子、文档）转换为计算机能理解的向量。你可以把它看作一个“语义编码器”，在构建RAG应用时负责文本的向量化工作
+> ollama pull nomic-embed-text
+
+// 构建索引
+> node rag.js build
+
+> node rag.js ask "aa"
+> 🤖 回答：不知道
+
+> node rag.js ask "aa"
+> 🤖 回答：不知道
+
+> node rag.js ask "你最不喜欢的水果是什么"
+> 🤖 回答：不知道
+
+> node rag.js ask "你最喜欢的水果是什么"
+> 🤖 回答：香蕉
+
+> node rag.js ask "密码是多少"
+> 🤖 回答：12345678
+```
