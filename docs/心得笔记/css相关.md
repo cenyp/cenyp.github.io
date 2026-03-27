@@ -267,8 +267,7 @@ h1 {
   border-color: transparent;
   border-style: solid;
   border-width: 34px 51px;
-  border-image: url(xxxxxx.png)
-    58% 40% 40% 42% fill / 49px 55px 33px 53px / 1px repeat;
+  border-image: url(xxxxxx.png) 58% 40% 40% 42% fill / 49px 55px 33px 53px / 1px repeat;
   padding: 0px;
   margin-top: -11px;
 }
@@ -291,5 +290,38 @@ h1 {
 3. 边框宽度一般和 `border-image-slice` 保持一致，可小范围调整
 
 > 注
-`border-width` 代表实际的边框大小
-`border-image-width` 代表在边框上图片显示的宽度，所以一般和 `border-width` 一致
+> `border-width` 代表实际的边框大小
+> `border-image-width` 代表在边框上图片显示的宽度，所以一般和 `border-width` 一致
+
+## 样式优先级
+
+项目代码的效果为，整个红色节点线上偏移 10px
+
+```css
+.fa {
+  background-color: red;
+}
+
+.ch {
+  background-color: red;
+  margin-top: -10px;
+}
+```
+
+为什么？
+
+AI 回答：
+
+父元素 .fa 的高度默认由子元素的高度和子元素的 margin 共同决定（即块级格式化上下文中的高度计算）。子元素的 margin-top 为负值，会减少父元素内容区域的高度，具体减少的数值等于负 margin 的绝对值（若子元素没有其他正 margin 抵消）。
+因此，父元素的高度会减小 10px，其底部边界向上移动。
+
+如何去避免，添加 flex，很神奇，fa 的偏移消失了！，只剩下 ch 的偏移！！
+
+```css
+.fa {
+  display: flex;
+  flex-direction: column;
+}
+```
+
+> 推测是 flex 优先级更高
