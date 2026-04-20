@@ -130,6 +130,7 @@ export default defineConfig({
           items: [
             { text: "项目配置", link: "/AI相关/项目配置" },
             { text: "ollama使用", link: "/AI相关/ollama使用" },
+            { text: "手搓agent.md", link: "/AI相关/手搓agent.md" },
           ],
         }
       ]
